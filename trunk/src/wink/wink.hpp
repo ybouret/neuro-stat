@@ -137,7 +137,22 @@ namespace wink
         permutation&operator=(const permutation & );
     };
     
-    
+    //! used to convert R matrix into C matrix
+    class c_matrix
+    {
+    public:
+        c_matrix( size_t nr, size_t ncol );
+        ~c_matrix() throw();
+        const size_t nrow;
+        const size_t ncol;
+        const size_t nobj;
+        double      *data;
+        
+        
+    private:
+        c_matrix(const c_matrix &);
+        c_matrix&operator=(const c_matrix & );
+    };
     
     class neuro_trials
     {
