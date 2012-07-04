@@ -1,10 +1,10 @@
-ADD_LIBRARY(coincidence STATIC coincidence.hpp coincidence.cpp)
+ADD_LIBRARY(wink STATIC wink.hpp wink.cpp)
 
 ADD_EXECUTABLE(test_coincidence test_coincidence.cpp)
-TARGET_LINK_LIBRARIES(test_coincidence coincidence)
+TARGET_LINK_LIBRARIES(test_coincidence wink)
 
 ADD_EXECUTABLE(test_windows test_windows.cpp)
-TARGET_LINK_LIBRARIES(test_windows coincidence)
+TARGET_LINK_LIBRARIES(test_windows wink)
 
 ENABLE_TESTING()
 ADD_TEST(Coincidences test_coincidence)
