@@ -53,9 +53,9 @@ namespace wink
     
     void neuro_trials:: prepare_windows( double a, double b ) throw()
     {
-        for( size_t i=0; i < num; ++i )
+        for( size_t i=0; i<num; ++i )
         {
-            record &r = rec[num];
+            record &r = rec[i];
             r.W.initialize(a,b, r.X);
         }
     }
