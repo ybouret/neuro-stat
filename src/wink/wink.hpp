@@ -15,6 +15,8 @@ namespace wink
     //! returns a uniform random number generator in ]0:1[
     double alea();
     
+    size_t random_index( double (*uniform_generator)() = wink::alea );
+    
     //! sort by increasing order
     /**
      \param x an array of reals
@@ -134,9 +136,29 @@ namespace wink
         
         void prepare_windows( double a, double b ) throw();
         
+        
+        void display() const;
+        
     private:
         neuro_trials( const neuro_trials & );
         neuro_trials&operator=(const neuro_trials & );
+    };
+    
+    class permutation
+    {
+    public:
+        permutation( size_t n );
+        ~permutation() throw();
+        
+        const size_t size;
+        size_t      *indices;
+        
+        void identity() throw();
+        void rebuild( double (*uniform_generator)() = wink::alea ) throw();
+        
+    private:
+        permutation( const permutation & );
+        permutation&operator=(const permutation & );
     };
     
     

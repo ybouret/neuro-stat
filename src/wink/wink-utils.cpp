@@ -20,6 +20,18 @@ namespace wink
         return ans;
     }
     
+    size_t random_index( double (*uniform_generator)()  )
+    {
+        assert(uniform_generator);
+        size_t ans = 0;
+        for( size_t i=0; i < sizeof(size_t); ++i )
+        {
+            ans <<= 1;
+            ans |= (uniform_generator()>0.5?1:0);
+        }
+        return ans;
+    }
+    
     static inline int compare_doubles( const void *lhs, const void *rhs )
     {
         const double L = *(double *)lhs;
