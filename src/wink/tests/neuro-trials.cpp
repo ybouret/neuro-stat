@@ -64,6 +64,7 @@ int main( int argc, char *argv[] )
             delete []data;
         }
     
+        delete []Bcoinc;
         return 0;
     }
     catch(...)

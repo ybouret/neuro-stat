@@ -137,6 +137,8 @@ namespace wink
         permutation&operator=(const permutation & );
     };
     
+    
+        
     //! used to convert R matrix into C matrix
     class c_matrix
     {
