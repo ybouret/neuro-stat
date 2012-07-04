@@ -23,7 +23,6 @@ SEXP demo( SEXP data1, SEXP data2 ) throw()
     SEXP Rdim1 = getAttrib(data1, R_DimSymbol);
     const size_t  nrow1 = INTEGER(Rdim1)[0];
     const size_t  ncol1 = INTEGER(Rdim1)[1];
-    const double *addr1 = REAL(data1);
     Rprintf("N1: nrow=%u, ncol=%u\n", unsigned(nrow1), unsigned(ncol1) );
     
     //==========================================================================
@@ -32,7 +31,6 @@ SEXP demo( SEXP data1, SEXP data2 ) throw()
     SEXP Rdim2 = getAttrib(data2, R_DimSymbol);
     const size_t  nrow2 = INTEGER(Rdim2)[0];
     const size_t  ncol2 = INTEGER(Rdim2)[1];
-    const double *addr2 = REAL(data2);
     Rprintf("N2: nrow=%u, ncol=%u\n", unsigned(nrow2), unsigned(ncol2) );
     
     if( nrow1 != nrow2 )
@@ -46,8 +44,17 @@ SEXP demo( SEXP data1, SEXP data2 ) throw()
         //======================================================================
         // transform R data intro C++ objects
         //======================================================================
-        wink::neuro_trials N1(addr1,nrow1,ncol1);
-        wink::neuro_trials N2(addr2,nrow2,ncol2);
+        wink::c_matrix     M1(nrow1,ncol1);
+        wink::c_matrix     M2(nrow2,ncol2);
+        
+        M1.loadR( REAL(data1) );
+        M2.loadR( REAL(data2) );
+        
+        //======================================================================
+        // make C++ neuro_trials
+        //======================================================================
+        wink::neuro_trials N1(M1.data,nrow1,ncol1);
+        wink::neuro_trials N2(M2.data,nrow2,ncol2);
         N1.display();
         N2.display();
     }
