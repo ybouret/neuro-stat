@@ -34,6 +34,18 @@ int main( int argc, char *argv[] )
             std::cerr << "N2: " << std::endl;
             N2.display();
             
+            wink::permutation perm(ntrials);
+            
+            const double step = 0.05;
+            const double w0   = 0.5;
+            for( double a = -step; a <= L + step; a += step )
+            {
+                const double b = a + w0 + w0 * wink::alea();
+                N1.prepare_windows(a, b);
+                N2.prepare_windows(a, b);
+                
+            }
+            
             
             delete []data;
         }

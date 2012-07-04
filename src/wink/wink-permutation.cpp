@@ -39,6 +39,7 @@ namespace wink
     {
         if( size < 1 ) throw "invalid permutation size";
         indices = new size_t[ size ];
+        identity();
     }
     
     void permutation::identity() throw() { build_identity(indices, size); }
