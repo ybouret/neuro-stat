@@ -43,7 +43,7 @@ namespace wink
     }
     
     void permutation::identity() throw() { build_identity(indices, size); }
-    void permutation::rebuild( double (*uniform_generator)() ) throw() { build_permutation(indices, size); }
+    void permutation::rebuild( double (*uniform_generator)() ) throw() { build_permutation(indices, size,uniform_generator); }
     
 }
 
