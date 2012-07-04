@@ -32,7 +32,7 @@ namespace wink
         return ans;
     }
     
-    static inline int compare_doubles( const void *lhs, const void *rhs )
+    static inline int compare_doubles( const void *lhs, const void *rhs ) throw()
     {
         const double L = *(double *)lhs;
         const double R = *(double *)rhs;
@@ -45,7 +45,7 @@ namespace wink
         qsort(x, n, sizeof(double), compare_doubles);
     }
     
-    static inline int compare_indices( const void *lhs, const void *rhs )
+    static inline int compare_indices( const void *lhs, const void *rhs ) throw()
     {
         const size_t L = *(size_t *)lhs;
         const size_t R = *(size_t *)rhs;
