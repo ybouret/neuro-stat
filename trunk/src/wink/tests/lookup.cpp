@@ -1,5 +1,6 @@
 #include "../wink.hpp"
 #include <iostream>
+#include <cstdio>
 
 static inline
 void fill_array( double *x, size_t n )
@@ -33,7 +34,7 @@ int main( int argc, char *argv[] )
         for( size_t iter=1; iter <= 1024; ++iter )
         {
             const size_t Nx = 10 + size_t( wink::alea() * 100.0 );
-            std::cerr << "Nx=" << Nx << std::endl;
+            //std::cerr << "Nx=" << Nx << std::endl;
             
             double *X = new double[Nx+1];
             X[0] = Nx;
@@ -60,6 +61,7 @@ int main( int argc, char *argv[] )
                 
             }
             fclose(fp);
+            delete []X;
         }
         return 0;
     }
