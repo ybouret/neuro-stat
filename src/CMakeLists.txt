@@ -9,5 +9,6 @@ PROJECT(neuro-stat)
 
 
 ADD_SUBDIRECTORY(wink)
+ADD_SUBDIRECTORY(wink_R)
 
 
