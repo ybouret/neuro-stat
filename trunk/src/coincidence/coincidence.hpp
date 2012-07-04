@@ -34,14 +34,31 @@ size_t coincidences(const double *X,
                     const double  delta);
 
 
-//! find index such that X[i] >= a
+//! find index such that  X[i-1] < a <= X[i]
 /**
  \param a any real
  \param X a record X[0] = Nx, X[1..Nx] are the ORDERED data
  \param i the index
  \return true if this is possible and i is the answer, false otherwise and i=0
  */
-bool find_index_greater_than( double a, const double *X, size_t &i );
+bool find_index_after( double a, const double *X, size_t &i );
 
+//! find index such that  X[i] <= b < X[i+1]
+/**
+ \param b any real
+ \param X a record X[0] = Nx, X[1..Nx] are the ORDERED data
+ \param i the index
+ \return true if this is possible and i is the answer, false otherwise and i=0
+ */
+bool find_index_before( double b, const double *X, size_t &i );
+
+//! location of data
+struct IWindow
+{
+    size_t indexA; //!< first index
+    size_t indexB; //!< last  index
+    size_t length; //!< indexB - indexA  +1, 0 is no valid data
+    void   initialize( double a, double b, const double *X );
+};
 
 #endif

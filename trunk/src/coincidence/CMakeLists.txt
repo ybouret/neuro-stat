@@ -10,3 +10,6 @@ ENABLE_TESTING()
 ADD_TEST(Coincidences test_coincidence)
 ADD_TEST(Windows      test_windows)
 
+ADD_CUSTOM_TARGET(check1 ALL COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS test_coincidence test_windows)
+
+
