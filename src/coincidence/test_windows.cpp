@@ -30,34 +30,37 @@ int main( int argc, char *argv[] )
     try
     {
         init_alea();
-        const size_t Nx = 10 + size_t( alea() * 100.0 );
-        std::cerr << "Nx=" << Nx << std::endl;
-
-        double *X = new double[Nx+1];
-        X[0] = Nx;
-        fill_array(X+1,Nx); save_array(X+1, Nx, "x1.dat");
-        
-        FILE *fp = fopen("win.dat","wb");
-        if(!fp)
+        for( size_t iter=1; iter <= 1024; ++iter )
         {
-            std::cerr << "Can't open file" << std::endl;
-            throw;
-        }
-        
-        const double step = 0.01;
-        for( double a = -step; a <= 1+step; a += step )
-        {
-            size_t i=0;
-            if( ! find_index_greater_than(a, X, i) )
+            const size_t Nx = 10 + size_t( alea() * 100.0 );
+            std::cerr << "Nx=" << Nx << std::endl;
+            
+            double *X = new double[Nx+1];
+            X[0] = Nx;
+            fill_array(X+1,Nx); save_array(X+1, Nx, "x1.dat");
+            
+            FILE *fp = fopen("win.dat","wb");
+            if(!fp)
             {
-                fprintf(fp,"%g -1\n",a);
+                std::cerr << "Can't open file" << std::endl;
+                throw;
             }
-            else
+            
+            const double step = 0.01;
+            for( double a = -5*step; a <= 1+5*step; a += step )
             {
-                fprintf(fp,"%g %u\n", a, unsigned(i) );
+                size_t ia=0;
+                size_t ib=0;
+                const bool found_a = find_index_after(a, X, ia);
+                const bool found_b = find_index_before(a, X, ib);
+                fprintf(fp,"%g", a);
+                if( found_a ) fprintf(fp," %u", unsigned(ia) ); else fprintf(fp," -1");
+                if( found_b ) fprintf(fp," %u", unsigned(ib) ); else fprintf(fp," -1");
+                fprintf(fp, "\n");
+                
             }
+            fclose(fp);
         }
-        fclose(fp);
         return 0;
     }
     catch(...)
