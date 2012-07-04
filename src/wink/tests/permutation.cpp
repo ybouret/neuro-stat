@@ -29,7 +29,7 @@ int main( int argc, char *argv[] )
             const size_t idx3=n-1;
             for(size_t count=1; count <= COUNT; ++count )
             {
-                wink::build_permutation(indices,n);
+                wink::build_permutation(indices,n,wink::alea);
 #if 0
                 for( size_t i=0; i < n; ++i )
                     std::cerr << " " << indices[i];

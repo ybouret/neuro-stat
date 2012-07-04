@@ -7,11 +7,14 @@ int main( int argc, char *argv[] )
     wink::init_alea();
     try
     {
+        const size_t Bcount = 500;
+        size_t      *Bcoinc = new size_t[ Bcount ];
+        
         const double L = 10.0;
         for( size_t iter = 1; iter <= 1; ++iter )
         {
             const size_t ntrials = 5  + size_t( 10 * wink::alea() );
-            const size_t ntop    = 10 + size_t( 10 * wink::alea() );
+            const size_t ntop    = 50 + size_t( 100 * wink::alea() );
             const size_t nr      = ntrials * 2;
             const size_t nc      = ntop + 1;
             const size_t nd      = nr * nc;
@@ -36,13 +39,24 @@ int main( int argc, char *argv[] )
             
             wink::permutation perm(ntrials);
             
-            const double step = 0.05;
-            const double w0   = 0.5;
+            const double step  = 0.05;
+            const double w0    = 0.5;
+            const double delta = 0.1;
+            FILE *fp = fopen("pvalue.dat","wb");
+            if(!fp)
+                throw "can't open pvalue.dat";
+            
             for( double a = -step; a <= L + step; a += step )
             {
                 const double b = a + w0 + w0 * wink::alea();
                 N1.prepare_windows(a, b);
                 N2.prepare_windows(a, b);
+                
+                const size_t true_coinc = wink::true_coincidences(N1, N2,delta,perm);
+                //std::cerr << "true_coinc [" << a << "," << b <<"]=" << true_coinc << std::endl;
+                wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, wink::alea );
+                const double pvalue = wink::permutation_pvalue(true_coinc, Bcoinc, Bcount);
+                fprintf(fp, "%g %g %g\n", a,b,pvalue);
                 
             }
             

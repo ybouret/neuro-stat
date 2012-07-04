@@ -23,6 +23,15 @@ namespace wink
      \param n x[0..n-1]
      */
     void   sort_array( double *x, size_t n );
+   
+    //! sort by increasing order
+    /**
+     \param x an array of indices
+     \param n x[0..n-1]
+     */
+    void   sort_indices( size_t *x, size_t n );
+
+    
     
     //! fill array with alea value
     void   fill_alea_array( double *x, size_t n, double a, double b );
@@ -105,10 +114,29 @@ namespace wink
      \param num indices[0..num]
      \param uniform_generator in [0:1]
      */
-    void build_permutation( size_t *indices, size_t num, double (*uniform_generator)() = wink::alea );
+    void build_permutation( size_t *indices, size_t num, double (*uniform_generator)() );
     
     //! build an identity vector
     void build_identity( size_t *indices, size_t num );
+    
+    //! holds memory for a permutation
+    class permutation
+    {
+    public:
+        permutation( size_t n );
+        ~permutation() throw();
+        
+        const size_t size;
+        size_t      *indices;
+        
+        void identity() throw();
+        void rebuild( double (*uniform_generator)() ) throw();
+        
+    private:
+        permutation( const permutation & );
+        permutation&operator=(const permutation & );
+    };
+    
     
     
     class neuro_trials
@@ -144,26 +172,54 @@ namespace wink
         neuro_trials&operator=(const neuro_trials & );
     };
     
-    class permutation
-    {
-    public:
-        permutation( size_t n );
-        ~permutation() throw();
-        
-        const size_t size;
-        size_t      *indices;
-        
-        void identity() throw();
-        void rebuild( double (*uniform_generator)() = wink::alea ) throw();
-        
-    private:
-        permutation( const permutation & );
-        permutation&operator=(const permutation & );
-    };
+    
+    //! total coincidences on a prepared window.
+    /**
+     The windows must have been prepared before: 
+     N1.prepare_windows(a,b);
+     N2.prepare_windows(a,b);
+     */
+    size_t total_coincidences(const neuro_trials &N1, 
+                              const neuro_trials &N2, 
+                              const double       delta,
+                              const permutation &perm ) throw();
     
     
+    //! true coincidences on a prepared window
+    /**
+     call perm.identity() and total_coincidences(N1,N2,perm,delta);
+     */
+    size_t true_coincidences(const neuro_trials &N1, 
+                             const neuro_trials &N2, 
+                             const double       delta,
+                             permutation       &perm) throw();
     
+    //! bootstrap coincidences on a prepared window
+    /**
+     call perm.rebuild(uniform_generator)
+     and total_coincidences(N1,N2,perm,delta);
+     */
+    size_t bootstrap_coincidences(const neuro_trials &N1, 
+                                  const neuro_trials &N2, 
+                                  const double       delta,
+                                  permutation       &perm,
+                                  double            (*uniform_generator)()) throw();
     
+    //! create a bootstrap sample
+    /**
+     \param Bcoinc coincidences
+     \param Bcount Bcoinc[0..Bcount-1]
+     */
+    void permutation_bootstrap(size_t             *Bcoinc, 
+                               const size_t        Bcount, 
+                               const neuro_trials &N1, 
+                               const neuro_trials &N2, 
+                               const double       delta,
+                               permutation       &perm,
+                               double            (*uniform_generator)()) throw();
+    
+    //! find the pvalue from a sample and a true coincidence
+    double permutation_pvalue( const size_t true_coinc, const size_t *Bcoinc, const size_t Bcount ) throw();
     
 }
 
