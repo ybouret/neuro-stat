@@ -10,15 +10,22 @@ TARGET_LINK_LIBRARIES(t_windows wink)
 ADD_EXECUTABLE(t_permutation permutation.cpp)
 TARGET_LINK_LIBRARIES(t_permutation wink)
 
+ADD_EXECUTABLE(t_neuro_trials neuro-trials.cpp)
+TARGET_LINK_LIBRARIES(t_neuro_trials wink)
 
 ENABLE_TESTING()
 ADD_TEST(Coincidences t_coincidence)
 ADD_TEST(LookUp       t_lookup)
 ADD_TEST(Windows      t_windows)
 ADD_TEST(Permutations t_permutation) 
+ADD_TEST(NeuroTrials  t_neuro_trials)
 
 ADD_CUSTOM_TARGET(check1 ALL 
 	COMMAND ${CMAKE_CTEST_COMMAND} 
-	DEPENDS t_coincidence t_lookup t_windows t_permutation)
+	DEPENDS t_coincidence 
+			t_lookup 
+			t_windows 
+			t_permutation 
+			t_neuro_trials)
 
 

@@ -40,8 +40,6 @@ int main( int argc, char *argv[] )
         fill_array(X,Nx); save_array(X, Nx, "x.dat");
         fill_array(Y,Ny); save_array(Y, Ny, "y.dat");
         const size_t nc = wink::coincidences(X, Nx, Y, Ny, 0.01);
-        std::cerr << "Nx=" << Nx << std::endl;
-        std::cerr << "Ny=" << Ny << std::endl;
         std::cerr << "NC=" << nc << std::endl;
         
         return 0;
