@@ -1,4 +1,4 @@
-#include "wink.hpp"
+#include "../wink.hpp"
 #include <iostream>
 
 static inline
