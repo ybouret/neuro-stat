@@ -1,17 +1,23 @@
 #include "coincidence.hpp"
 #include <time.h>
 #include <cassert>
-
+#include <iostream>
 
 void init_alea()
 {
     srand( time(NULL) );
+    for( size_t i=0; i < 128; ++i )
+    {
+        rand();
+    }
 }
 
 double alea()
 {
-    const double factor = 1.0 / ( double(RAND_MAX) + 1 );
-    return factor * ( 0.5 + double( rand() ) );
+    static const double factor = 1.0 / ( double(RAND_MAX) + 1 );
+    const double ans    = factor * ( 0.5 + double( rand() ) );
+    //std::cerr << "alea=" << ans << std::endl;
+    return ans;
 }
 
 static inline int compare_doubles( const void *lhs, const void *rhs )
@@ -75,3 +81,72 @@ size_t coincidences(const double *X,
     
     return count;
 }
+
+bool find_index_greater_than( double a, const double *X, size_t &i )
+{
+    assert(X!=NULL);
+    const size_t Nx = size_t(X[0]);
+    
+    switch( Nx )
+    {
+        case 0:
+            i=0;
+            return false;
+            
+        case 1:
+            if( X[1] >= a )
+            {
+                i=1;
+                return true;
+            }
+            else
+            {
+                i=0;
+                return false;
+            }
+            break;
+            
+        default:
+            assert(Nx>=2);
+            if( a > X[Nx] )
+            {
+                //--------------------------------------------------------------
+                // trivial case
+                //--------------------------------------------------------------
+                i=0;
+                return false;
+            }
+            else 
+            {
+                if( X[1] >= a )
+                {
+                    //----------------------------------------------------------
+                    // another trivial case
+                    //----------------------------------------------------------
+                    i = 1;
+                    return true;
+                }
+                else 
+                {
+                    //----------------------------------------------------------
+                    // generic case: bissection
+                    //----------------------------------------------------------
+                    size_t ilo = 1;
+                    size_t ihi = Nx;
+                    while( ihi-ilo > 1 )
+                    {
+                        const size_t mid = (ilo+ihi) >> 1;
+                        if( X[mid] >= a )
+                            ihi = mid;
+                        else 
+                            ilo = mid;
+                    }
+                    i = ilo;
+                    assert(i>0);
+                    return true;
+                }
+                
+            }
+    }
+}
+
