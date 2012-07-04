@@ -8,6 +8,6 @@ PROJECT(neuro-stat)
 
 
 
-ADD_SUBDIRECTORY(coincidence)
+ADD_SUBDIRECTORY(wink)
 
 

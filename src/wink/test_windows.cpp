@@ -1,11 +1,11 @@
-#include "coincidence.hpp"
+#include "wink.hpp"
 #include <iostream>
 
 static inline
 void fill_array( double *x, size_t n )
 {
-    for( size_t i=0; i < n; ++i ) x[i] = alea();
-    sort_array(x,n);
+    for( size_t i=0; i < n; ++i ) x[i] = wink::alea();
+    wink::sort_array(x,n);
 }
 
 static inline void save_array( double *x, size_t n, const char *filename )
@@ -29,10 +29,10 @@ int main( int argc, char *argv[] )
     
     try
     {
-        init_alea();
+        wink::init_alea();
         for( size_t iter=1; iter <= 1024; ++iter )
         {
-            const size_t Nx = 10 + size_t( alea() * 100.0 );
+            const size_t Nx = 10 + size_t( wink::alea() * 100.0 );
             std::cerr << "Nx=" << Nx << std::endl;
             
             double *X = new double[Nx+1];
@@ -51,8 +51,8 @@ int main( int argc, char *argv[] )
             {
                 size_t ia=0;
                 size_t ib=0;
-                const bool found_a = find_index_after(a, X, ia);
-                const bool found_b = find_index_before(a, X, ib);
+                const bool found_a = wink::find_index_after(a, X, ia);
+                const bool found_b = wink::find_index_before(a, X, ib);
                 fprintf(fp,"%g", a);
                 if( found_a ) fprintf(fp," %u", unsigned(ia) ); else fprintf(fp," -1");
                 if( found_b ) fprintf(fp," %u", unsigned(ib) ); else fprintf(fp," -1");
