@@ -1,5 +1,4 @@
 ADD_LIBRARY(wink STATIC wink.hpp 
-			wink.cpp
 			wink-utils.cpp
 			wink-coincidence.cpp
 			wink-lookup.cpp
