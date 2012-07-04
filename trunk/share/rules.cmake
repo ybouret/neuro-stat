@@ -1,8 +1,6 @@
 ########################################################################
 ##
 ########################################################################
-MESSAGE( STATUS "" )
-MESSAGE( STATUS "---------------- <yocto>  ----------------" )
 SET(CMAKE_SKIP_PREPROCESSED_SOURCE_RULES ON)
 SET(CMAKE_SKIP_ASSEMBLY_SOURCE_RULES     ON)
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS    ON)
@@ -64,11 +62,11 @@ IF( "${CC_NAME}" MATCHES "gcc.*" )
   SET(YOCTO_GNU ON)
   MESSAGE( STATUS "Using GNU compilers" )
   
-  SET(COMMON_C_FLAGS        "-Wall -pipe ${MY_CFLAGS}" )
+  SET(COMMON_C_FLAGS        "-Wall -pipe ${MY_CFLAGS} -fPIC" )
   SET(CMAKE_C_FLAGS_DEBUG   "${COMMON_C_FLAGS} -g" )
   SET(CMAKE_C_FLAGS_RELEASE "${COMMON_C_FLAGS} -O2 -DNDEBUG=1")
   
-  SET(COMMON_CXX_FLAGS        "-Wall -pipe -fexceptions -Weffc++ ${MY_CXXFLAGS}" )
+  SET(COMMON_CXX_FLAGS        "-Wall -pipe -fexceptions -Weffc++ ${MY_CXXFLAGS} -fPIC" )
   SET(CMAKE_CXX_FLAGS_DEBUG   "${COMMON_CXX_FLAGS} -g" )
   SET(CMAKE_CXX_FLAGS_RELEASE "${COMMON_CXX_FLAGS} -O2 -DNDEBUG=1")
 
@@ -199,5 +197,3 @@ MACRO(TARGET_LINK_YOCTO tgt)
   
 ENDMACRO()
 
-MESSAGE( STATUS "---------------- </yocto> ----------------" )
-MESSAGE( STATUS "" )

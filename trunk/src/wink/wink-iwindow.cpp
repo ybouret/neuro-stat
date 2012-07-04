@@ -31,17 +31,15 @@ namespace wink
         assert(Y!=NULL);
         if( Wx.length>0 && Wy.length>0 )
         {
-            const size_t Nx = size_t(X[0]);
             assert( Wx.indexA>0 );
             assert( Wx.indexB>0 );
-            assert( Wx.indexA <= Nx );
-            assert( Wx.indexB <= Nx );
+            assert( Wx.indexA <= size_t(X[0]) );
+            assert( Wx.indexB <= size_t(X[0]) );
             
-            const size_t Ny = size_t(Y[0]);
             assert( Wy.indexA>0 );
             assert( Wy.indexB>0 );
-            assert( Wy.indexA <= Ny );
-            assert( Wy.indexB <= Ny );
+            assert( Wy.indexA <= size_t(Y[0]) );
+            assert( Wy.indexB <= size_t(Y[0]) );
             return coincidences(X+Wx.indexA, Wx.length, Y+Wy.indexA, Wy.length, delta);
         }
         else 

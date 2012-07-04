@@ -116,7 +116,6 @@ SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
             //------------------------------------------------------------------
             const double a = pw[0+2*i];
             const double b = pw[1+2*i];
-            Rprintf("[%g,%g]\n",a,b);
             
             //------------------------------------------------------------------
             // prepare the neurons windows
@@ -128,7 +127,6 @@ SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
             // compute the true coincidences
             //------------------------------------------------------------------
             const size_t true_coinc = wink::true_coincidences(N1, N2,delta,perm);
-            Rprintf("\ttrue_coinc=%u\n",unsigned(true_coinc));
             
             //------------------------------------------------------------------
             // make the bootstrap distribution
@@ -140,6 +138,8 @@ SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
             //------------------------------------------------------------------
             const double pvalue = wink::permutation_pvalue(true_coinc, Bcoinc, Bcount);
             //Rprintf("\tpvalue=%g\n",pvalue);
+            Rprintf("[%10.6f,%10.6f] : true_coinc= %6u : pvalue= %.8f\n",a,b,unsigned(true_coinc),pvalue);
+
             ans[i] = pvalue;
         }
         UNPROTECT(1);
