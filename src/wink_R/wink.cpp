@@ -9,9 +9,10 @@ extern "C"
 SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
 {
     wink::init_alea();
-
+	GetRNGstate();
+	
 #if 0
-    GetRNGstate();
+    
     for( size_t i=0; i < 10; ++i )
     {
         Rprintf("%g\n", unif_rand());
@@ -132,6 +133,7 @@ SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
             // make the bootstrap distribution
             //------------------------------------------------------------------
             wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, wink::alea );
+            //wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, unif_rand );
            
             //------------------------------------------------------------------
             // compute the pvalue
@@ -143,6 +145,7 @@ SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
             ans[i] = pvalue;
         }
         UNPROTECT(1);
+        PutRNGstate();
         return Rval;
     }
     catch(...)

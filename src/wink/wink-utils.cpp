@@ -24,7 +24,7 @@ namespace wink
     {
         assert(uniform_generator);
         size_t ans = 0;
-        for( size_t i=0; i < sizeof(size_t); ++i )
+        for( size_t i=0; i < sizeof(size_t)*8; ++i )
         {
             ans <<= 1;
             ans |= (uniform_generator()>0.5?1:0);
