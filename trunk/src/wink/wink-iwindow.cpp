@@ -21,29 +21,27 @@ namespace wink
     
     
     size_t coincidences(const double   *X, 
-                        const iwindow  *Wx,
+                        const iwindow  &Wx,
                         const double   *Y,
-                        const iwindow  *Wy,
+                        const iwindow  &Wy,
                         const double    delta)
     {
         assert(X!=NULL);
         assert(Y!=NULL);
-        assert(Wx!=NULL);
-        assert(Wy!=NULL);
-        if( Wx->length>0 && Wy->length>0 )
+        if( Wx.length>0 && Wy.length>0 )
         {
             const size_t Nx = size_t(X[0]);
-            assert( Wx->indexA>0 );
-            assert( Wx->indexB>0 );
-            assert( Wx->indexA <= Nx );
-            assert( Wx->indexB <= Nx );
+            assert( Wx.indexA>0 );
+            assert( Wx.indexB>0 );
+            assert( Wx.indexA <= Nx );
+            assert( Wx.indexB <= Nx );
             
             const size_t Ny = size_t(Y[0]);
-            assert( Wy->indexA>0 );
-            assert( Wy->indexB>0 );
-            assert( Wy->indexA <= Ny );
-            assert( Wy->indexB <= Ny );
-            return coincidences(X+Wx->indexA, Wx->length, Y+Wy->indexA, Wy->length, delta);
+            assert( Wy.indexA>0 );
+            assert( Wy.indexB>0 );
+            assert( Wy.indexA <= Ny );
+            assert( Wy.indexB <= Ny );
+            return coincidences(X+Wx.indexA, Wx.length, Y+Wy.indexA, Wy.length, delta);
         }
         else 
         {

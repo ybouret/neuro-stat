@@ -92,9 +92,9 @@ namespace wink
      \return the number of coincidences within lag delta
      */
     size_t coincidences(const double   *X, 
-                        const iwindow  *Wx,
+                        const iwindow  &Wx,
                         const double   *Y,
-                        const iwindow  *Wy,
+                        const iwindow  &Wy,
                         const double    delta);
     
     //! build a random permutation
@@ -109,6 +109,35 @@ namespace wink
     void build_identity( size_t *indices, size_t num );
     
     
+    class neuro_trials
+    {
+    public:
+        neuro_trials( const double *data, const size_t nr, const size_t nc );
+        ~neuro_trials() throw();
+        
+        class record
+        {
+        public:
+            const double *X; //!< one trial X[0]=NX, X[1..Nx]
+            iwindow       W; //!< associated window
+            record() throw();
+            ~record() throw();
+            
+        private:
+            record( const record & );
+            record &operator=(const record & );
+        };
+        
+        const size_t num;  //!< #num records = nr
+        const size_t top;  //!< max valid index: nc-1 
+        record      *rec;  //!< array of num records
+        
+        void prepare_windows( double a, double b ) throw();
+        
+    private:
+        neuro_trials( const neuro_trials & );
+        neuro_trials&operator=(const neuro_trials & );
+    };
     
     
     
