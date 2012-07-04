@@ -76,6 +76,15 @@ namespace wink
         void   initialize( double a, double b, const double *X );
     };
     
+    //! build a random permutation
+    /**
+     \param indices will contained the permutted indices
+     \param num indices[0..num]
+     \param uniform_generator in [0:1]
+     */
+    void build_permutation( size_t *indices, size_t num, double (*uniform_generator)() = wink::alea );
+    
+    
 }
 
 #endif

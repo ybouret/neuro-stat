@@ -1,4 +1,11 @@
-ADD_LIBRARY(wink STATIC wink.hpp wink.cpp)
+ADD_LIBRARY(wink STATIC wink.hpp 
+			wink.cpp
+			wink-utils.cpp
+			wink-coincidence.cpp
+			wink-lookup.cpp
+			wink-iwindow.cpp
+			wink-permutation.cpp
+			)
 
 ADD_EXECUTABLE(test_coincidence test_coincidence.cpp)
 TARGET_LINK_LIBRARIES(test_coincidence wink)
