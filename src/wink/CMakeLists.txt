@@ -4,6 +4,7 @@ ADD_LIBRARY(wink STATIC wink.hpp
 			wink-lookup.cpp
 			wink-iwindow.cpp
 			wink-permutation.cpp
+			wink-neuro-trials.cpp
 			)
 
 ADD_SUBDIRECTORY(tests)
