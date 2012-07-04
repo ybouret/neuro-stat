@@ -35,6 +35,17 @@ namespace wink
     }
     
     
+    void   fill_alea_array( double *x, size_t n, double a, double b )
+    {
+        assert(!(x==NULL&&n>0));
+        const double l = b-a;
+        for( size_t i=0; i < n; ++i )
+        {
+            x[i] = a + alea() * l;
+        }
+        sort_array(x,n);
+    }
+    
     size_t coincidences(const double *X,
                         const size_t  Nx, 
                         const double *Y, 
@@ -225,15 +236,16 @@ namespace wink
         
     }
     
-    void IWindow:: initialize( double a, double b, const double *X )
+    void iwindow:: initialize( double a, double b, const double *X )
     {
         assert(a<=b);
         length = 0;
         const bool foundA = find_index_after(a,  X, indexA);
         const bool foundB = find_index_before(b, X, indexB);
-        if( foundA && foundB )
+        if( foundA && foundB && (indexA <= indexB) )
         {
-            assert(indexA<=indexB);
+            //std::cerr << "a=" << a << " <= X[" << indexA << "]=" << X[indexA] << std::endl;
+            //::cerr << "b=" << b << " >= X[" << indexB << "]=" << X[indexB] << std::endl;
             length = indexB - indexA + 1;
         }
     }

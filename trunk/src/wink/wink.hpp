@@ -1,6 +1,9 @@
 //! file
-#ifndef COINCIDENCE_INCLUDED
-#define COINCIDENCE_INCLUDED 1
+/**
+ Wink Is a NeuroStats Kernel.
+ */
+#ifndef WINK_INCLUDED
+#define WINK_INCLUDED 1
 
 #include <cstdlib>
 
@@ -19,6 +22,8 @@ namespace wink
      */
     void   sort_array( double *x, size_t n );
     
+    //! fill array with alea value
+    void   fill_alea_array( double *x, size_t n, double a, double b );
     
     //! detect coincidences
     /**
@@ -55,11 +60,19 @@ namespace wink
     bool find_index_before( double b, const double *X, size_t &i );
     
     //! location of data
-    struct IWindow
+    struct iwindow
     {
         size_t indexA; //!< first index
         size_t indexB; //!< last  index
         size_t length; //!< indexB - indexA  +1, 0 is no valid data
+        
+        //! get indices from data
+        /**
+         for length to be >0, find_index_after(a,X,indexA) must succeed
+         and find_index_before(b,X,indexB) must succeed as weel.
+         if( indexA > indexB ), this means that [a,b] is
+         between two consecutive X, so the window is empty.
+         */
         void   initialize( double a, double b, const double *X );
     };
     
