@@ -1,12 +1,6 @@
 #include "../wink.hpp"
 #include <iostream>
 
-static inline
-void fill_array( double *x, size_t n )
-{
-    for( size_t i=0; i < n; ++i ) x[i] = wink::alea();
-    wink::sort_array(x,n);
-}
 
 
 int main( int argc, char *argv[] )
@@ -33,6 +27,8 @@ int main( int argc, char *argv[] )
                 wink::iwindow w;
                 w.initialize(a, b, X);
             }
+            
+            delete []X;
         }
         return 0;
     }

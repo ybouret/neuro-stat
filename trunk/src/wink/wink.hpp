@@ -84,6 +84,9 @@ namespace wink
      */
     void build_permutation( size_t *indices, size_t num, double (*uniform_generator)() = wink::alea );
     
+    //! build an identity vector
+    void build_identity( size_t *indices, size_t num );
+    
     
 }
 
