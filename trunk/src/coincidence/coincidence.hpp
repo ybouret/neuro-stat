@@ -11,6 +11,10 @@ void   init_alea();
 double alea();
 
 //! sort by increasing order
+/**
+ \param x an array of reals
+ \param n x[0..n-1]
+ */
 void   sort_array( double *x, size_t n );
 
 
@@ -29,6 +33,15 @@ size_t coincidences(const double *X,
                     const size_t  Ny, 
                     const double  delta);
 
+
+//! find index such that X[i] >= a
+/**
+ \param a any real
+ \param X a record X[0] = Nx, X[1..Nx] are the ORDERED data
+ \param i the index
+ \return true if this is possible and i is the answer, false otherwise and i=0
+ */
+bool find_index_greater_than( double a, const double *X, size_t &i );
 
 
 #endif
