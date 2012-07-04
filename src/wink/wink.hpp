@@ -145,9 +145,10 @@ namespace wink
         ~c_matrix() throw();
         const size_t nrow;
         const size_t ncol;
-        const size_t nobj;
         double      *data;
         
+        //! load a column major R matrix
+        void loadR( const double *Rdata ) throw();
         
     private:
         c_matrix(const c_matrix &);
