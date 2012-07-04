@@ -1,6 +1,6 @@
 #include "../wink.hpp"
 #include <iostream>
-
+#include <cstdio>
 
 
 int main( int argc, char *argv[] )
@@ -17,7 +17,7 @@ int main( int argc, char *argv[] )
             throw;
         }
         
-        for( size_t iter = 1; iter <= 1024; ++iter )
+        for( size_t iter = 1; iter <= 16; ++iter )
         {
             const size_t   n       = 10 + size_t( wink::alea() * 10 );
             size_t        *indices = new size_t[ n ];

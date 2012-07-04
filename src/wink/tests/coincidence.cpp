@@ -1,5 +1,6 @@
 #include "../wink.hpp"
 #include <iostream>
+#include <cstdio>
 
 static inline
 void fill_array( double *x, size_t n )
@@ -42,6 +43,7 @@ int main( int argc, char *argv[] )
         const size_t nc = wink::coincidences(X, Nx, Y, Ny, 0.01);
         std::cerr << "NC=" << nc << std::endl;
         
+        delete []M;
         return 0;
     }
     catch(...)
