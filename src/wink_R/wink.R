@@ -10,7 +10,7 @@ neurons <- simulPP(0,2,50,40);
 #windows[1,2]=0.1; windows[2,2]=0.2;
 #windows[1,3]=0.2; windows[2,3]=0.3;
 
-a=seq(0,1.9,by=0.01)
+a=seq(0,1.9,by=0.005)
 b=a+0.1
 windows=t(matrix(c(a,b),ncol=2))
 
@@ -57,8 +57,14 @@ bootstrap_pvalue_par <- function(N1,N2,windows,delta,B,num_threads)
 	#return: the pvalues associated to the windows
 }
 
+stamp = proc.time();
 bootstrap_pvalue_ser(neurons[[1]],neurons[[2]],windows,0.01,10000);
-bootstrap_pvalue_par(neurons[[1]],neurons[[2]],windows,0.01,10000,4);
+ser_tmx = proc.time() - stamp;
+ser_tmx;
 
+stamp = proc.time();
+bootstrap_pvalue_par(neurons[[1]],neurons[[2]],windows,0.01,10000,4);
+par_tmx = proc.time() - stamp;
+par_tmx;
 
 
