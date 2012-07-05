@@ -80,7 +80,7 @@ namespace wink
         const size_t  ntrials=N1.num;
         for( size_t i=0; i < ntrials; ++i )
         {
-            const size_t j = perm.indices[i];
+            const size_t j = perm.indx[i];
             assert(j<ntrials);
             const neuro_trials::record &r1 = N1.rec[i];
             const neuro_trials::record &r2 = N2.rec[j];
@@ -104,7 +104,7 @@ namespace wink
                                   permutation       &perm,
                                   double            (*uniform_generator)()) throw()
     {
-        perm.rebuild(uniform_generator);
+        //perm.rebuild(uniform_generator);
         return total_coincidences(N1, N2, delta, perm);
     }
     

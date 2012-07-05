@@ -1,10 +1,10 @@
-#include "wink.hpp"
+#include "wink-lookup.hpp"
 #include <cassert>
 
 namespace wink
 {
     
-    bool find_index_after( double a, const double *X, size_t &i )
+    bool lookup:: index_after( double a, const double *X, size_t &i )
     {
         assert(X!=NULL);
         const size_t Nx = size_t(X[0]);
@@ -74,7 +74,7 @@ namespace wink
     }
     
     
-    bool find_index_before( double b, const double *X, size_t &i )
+    bool lookup:: index_before( double b, const double *X, size_t &i )
     {
         
         assert(X!=NULL);
