@@ -1,7 +1,7 @@
 #include "../wink-iwindow.hpp"
 #include "../wink-rand32.hpp"
 #include <iostream>
-
+#include <time.h>
 
 
 int main( int argc, char *argv[] )
