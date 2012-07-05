@@ -1,11 +1,6 @@
 #include "wink-mutex.hpp"
 
-#if defined(WINK_BSD)
-#include <cerrno>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-#endif
+
 
 namespace wink 
 {
@@ -21,17 +16,7 @@ namespace wink
         host.unlock();
     }
     
-#if defined(WINK_BSD)
-    static inline
-    void critical_error( int err, const char *txt )
-    {
-        fprintf(stderr,"*** critical error!!!\n");
-        fprintf(stderr,"*** %s\n", txt);
-        fprintf(stderr,"*** %s\n", strerror(err) );
-        fprintf(stderr,"*** aborting !!");
-        exit(1);
-    }
-#endif
+
     
     Mutex:: Mutex() throw() :
     mutex_()

@@ -85,6 +85,7 @@ typedef __int64 int64_t;
 namespace wink
 {
     const char *platform_name() throw();
+    void        critical_error(int,const char*) throw();
 }
 
 
