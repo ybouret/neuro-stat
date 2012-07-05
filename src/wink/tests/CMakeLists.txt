@@ -27,9 +27,10 @@ ADD_TEST(Rand32       t_rand32)
 ADD_CUSTOM_TARGET(check1 ALL 
 	COMMAND ${CMAKE_CTEST_COMMAND} 
 	DEPENDS t_coincidence 
-			t_lookup 
-			t_windows 
-			t_permutation 
-			t_neuro_trials)
+		t_lookup 
+		t_windows 
+		t_permutation 
+		t_neuro_trials
+		t_rand32)
 
 
