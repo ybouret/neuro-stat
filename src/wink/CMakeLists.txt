@@ -16,6 +16,8 @@ ADD_LIBRARY(wink STATIC wink.hpp
 			wink-neuro-trials.hpp
 			wink-neuro-trials.cpp
 			wink.cpp
+			wink-os.hpp
+			wink-os.cpp
 			)
 
 ADD_SUBDIRECTORY(tests)
