@@ -12,10 +12,9 @@ SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
 {
     wink::rand32_kiss g;
     g.seed(time(NULL));
-	GetRNGstate();
 	
 #if 0
-    
+    GetRNGstate();
     for( size_t i=0; i < 10; ++i )
     {
         Rprintf("%g\n", unif_rand());
@@ -136,19 +135,18 @@ SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
             // make the bootstrap distribution
             //------------------------------------------------------------------
             wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, g );
-            //wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, unif_rand );
            
             //------------------------------------------------------------------
             // compute the pvalue
             //------------------------------------------------------------------
             const double pvalue = wink::permutation_pvalue(true_coinc, Bcoinc, Bcount);
-            //Rprintf("\tpvalue=%g\n",pvalue);
+
             Rprintf("[%10.6f,%10.6f] : true_coinc= %6u : pvalue= %.8f\n",a,b,unsigned(true_coinc),pvalue);
 
             ans[i] = pvalue;
         }
         UNPROTECT(1);
-        PutRNGstate();
+
         return Rval;
     }
     catch(...)
