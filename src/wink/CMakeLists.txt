@@ -16,6 +16,8 @@ ADD_LIBRARY(wink STATIC wink.hpp
 			wink-neuro-trials.hpp
 			wink-neuro-trials.cpp
 			wink.cpp
+			wink-neuro-pair.hpp
+			wink-neuro-pair.cpp
 			wink-os.hpp
 			wink-os.cpp
 			wink-mutex.hpp

@@ -2,8 +2,7 @@
 #include <Rmath.h>
 #include <Rinternals.h>
 
-#include "../wink/wink.hpp"
-#include "../wink/wink-c-matrix.hpp"
+#include "../wink/wink-neuro-pair.hpp"
 
 #include <iostream>
 
@@ -13,6 +12,7 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
     wink::rand32_kiss g;
     g.seed(time(NULL));
 	
+      
 #if 0
     GetRNGstate();
     for( size_t i=0; i < 10; ++i )
@@ -61,7 +61,7 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
         Rprintf("*** Error: invalid #windows\n");
         return R_NilValue;
     }
-
+    
     //==========================================================================
     // Get delta value
     //==========================================================================
@@ -92,20 +92,9 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
         M2.loadR( REAL(data2) );
         
         //======================================================================
-        // make C++ neuro_trials
+        // make C++ neuro_pair
         //======================================================================
-        wink::neuro_trials N1(M1.data,nrow1,ncol1);
-        wink::neuro_trials N2(M2.data,nrow2,ncol2);
-        N1.display();
-        N2.display();
-        
-        //======================================================================
-        // auxiliary data
-        //======================================================================
-        wink::permutation perm(nrow1); // to store the permutation
-        wink::permutation boot(B);     // to store the bootstrap samples
-        size_t           *Bcoinc = boot.indx;
-        const size_t      Bcount = boot.size;
+        wink::neuro_pair   NP(M1,M2,B);
         
         //======================================================================
         // create the return vector
@@ -126,32 +115,15 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
             const double b = pw[1+2*i];
             
             //------------------------------------------------------------------
-            // prepare the neurons windows
+            // call the integrated function
             //------------------------------------------------------------------
-            N1.prepare_windows(a,b);
-            N2.prepare_windows(a,b);
+            const double pvalue = NP.pvalue(a,b,delta);
+            //Rprintf("[%10.6f,%10.6f] :  true_coinc=%6u : pvalue= %.8f\n",a,b,unsigned(NP.true_coinc),pvalue);
             
-            //------------------------------------------------------------------
-            // compute the true coincidences
-            //------------------------------------------------------------------
-            const size_t true_coinc = wink::true_coincidences(N1, N2,delta,perm);
-            
-            //------------------------------------------------------------------
-            // make the bootstrap distribution
-            //------------------------------------------------------------------
-            wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, g );
-           
-            //------------------------------------------------------------------
-            // compute the pvalue
-            //------------------------------------------------------------------
-            const double pvalue = wink::permutation_pvalue(true_coinc, Bcoinc, Bcount);
-
-            Rprintf("[%10.6f,%10.6f] : true_coinc= %6u : pvalue= %.8f\n",a,b,unsigned(true_coinc),pvalue);
-
             ans[i] = pvalue;
         }
         UNPROTECT(1);
-
+        
         return Rval;
     }
     catch(...)
