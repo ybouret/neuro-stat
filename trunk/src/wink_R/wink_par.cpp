@@ -2,59 +2,192 @@
 #include <Rmath.h>
 #include <Rinternals.h>
 
-#include "../wink/wink.hpp"
-#include "../wink/wink-c-matrix.hpp"
+#include "../wink/wink-neuro-pair.hpp"
 #include "../wink/wink-thread.hpp"
 
 #include <iostream>
+#include <time.h>
 
 namespace 
 {
-    class ThreadData
+    
+    //! portion of work to do
+    struct Slice
+    {
+        size_t        offset;
+        size_t        length;
+        const double *r_windows;
+        double       *r_pvalues;
+        uint32_t      seed;
+    };
+    
+    //! compute and holds slices 
+    class Slices
     {
     public:
-        explicit ThreadData( wink::Mutex &synchro,
-                            const size_t  ntrials,
-                            const double *data1,
-                            const size_t  ncol1,
-                            const double *data2,
-                            const size_t  ncol2,
-                            const size_t  B) :
-        mutex(synchro),
-        N1( data1, ntrials, ncol1 ),
-        N2( data2, ntrials, ncol2 ),
-        perm(ntrials),
-        boot(B),
-        Bcoinc(boot.indx),
-        Bcount(boot.size),
+        Slices(size_t        num_threads, 
+               size_t        num_windows,
+               const double *r_windows,
+               double       *r_pvalues) :
+        count(num_threads),
+        slice( new Slice[count] )
+        {
+            assert(num_threads>0);
+            assert(num_threads<=num_windows);
+            assert(r_windows!=NULL);
+            assert(r_pvalues!=NULL);
+            size_t offset = 0;
+            size_t remain = num_windows;
+            for( size_t i=0; i < count; ++i )
+            {
+                Slice &s = slice[i];
+                const size_t todo = remain / (count-i);
+                s.offset = offset;
+                s.length = todo;
+                s.r_windows = r_windows;
+                s.r_pvalues = r_pvalues;
+                s.seed      = wink::rand32::ih32(wink::rand32::ih32(time(NULL)) + i);
+                remain -= todo;
+                offset += todo;
+            }
+        }
+        
+        ~Slices() throw()
+        {
+            delete []slice;
+        }
+        
+        const size_t count; 
+        Slice       *slice;
+        
+    private:
+        Slices( const Slices & );
+        Slices&operator=(const Slices & );
+    };
+    
+    class Worker : public wink::neuro_pair
+    {
+    public:
+        wink::Mutex &mutex;
+        const Slice &slice;
+        const double delta;
+        wink::thread thr;
+        
+        Worker(wink::Mutex          &synchro,
+               const wink::c_matrix &M1, 
+               const wink::c_matrix &M2, 
+               const size_t          B,
+               const Slice          &S,
+               const double          lag) :
+        wink::neuro_pair(M1,M2,B),
+        mutex( synchro ),
+        slice(S),
+        delta(lag),
         thr( Engine, this )
         {
             
         }
         
-        wink::Mutex       &mutex;
-        wink::neuro_trials N1;
-        wink::neuro_trials N2;
-        wink::permutation  perm;
-        wink::permutation  boot;
-        size_t            *Bcoinc;
-        const size_t      &Bcount;
+        virtual ~Worker() throw() {}
         
-        wink::thread       thr;
-        
-    private:
-        ThreadData( const ThreadData & );
-        ThreadData&operator=(const ThreadData &);
-        static 
-        void Engine( void *args ) throw()
+        void run() throw()
         {
-            ThreadData &data = *(ThreadData *)args;
+            const double *w = slice.r_windows;
+            double       *p = slice.r_pvalues;
+            
+            size_t i = slice.offset;
+            for(size_t j=slice.length;j>0;--j,++i)
             {
-                wink::ScopeLock access_to( data.mutex );
-                std::cerr << "Starting Engine!"<< std::endl;
+                const double a = w[0+i*2];
+                const double b = w[1+i*2];
+                p[i] = pvalue(a,b,delta);
+                //wink::ScopeLock access( mutex );
+                //Rprintf("[%10.6f,%10.6f] :  true_coinc=%6u : pvalue= %.8f\n",a,b,true_coinc,p[i]);
             }
         }
+        
+    private:
+        Worker(const Worker & );
+        Worker&operator=(const Worker & );
+        static void Engine( void *args ) throw()
+        {
+            assert( args != NULL );
+            Worker &w = *(Worker *)args;
+            //------------------------------------------------------------------
+            // post-init
+            //------------------------------------------------------------------
+            w.g.seed( w.slice.seed );
+            if(false)
+            {
+                wink::ScopeLock access( w.mutex );
+                Rprintf("Starting engine!\n");
+                std::cerr << "\t\tWorker will do " << w.slice.offset << "+" << w.slice.length << " : seed=" << w.slice.seed << std::endl;
+            }
+            //------------------------------------------------------------------
+            // just run...
+            //------------------------------------------------------------------
+            w.run();
+        }
     };
+    
+    class Workers
+    {
+    public:
+        const size_t maxi;   //!< reserved count
+        size_t       size;   //!< actually online
+        Worker      *worker; //!< memory
+        
+        Workers(const size_t          num_threads,
+                wink::Mutex          &synchro,
+                const wink::c_matrix &M1, 
+                const wink::c_matrix &M2, 
+                const size_t          B,
+                const Slices         &S,
+                const double          delta) :
+        maxi(num_threads),
+        size(0),
+        worker( (Worker *) calloc( maxi, sizeof(Worker) ) )
+        {
+            assert( S.count == num_threads );
+            std::cerr << "\tCreating Crew" << std::endl;
+            if( !worker )
+                throw "no memory for parallel Worker";
+            try
+            {
+                while(size<maxi)
+                {
+                    Worker *w = new (&worker[size]) Worker(synchro,M1,M2,B,S.slice[size],delta);
+                    ++size;
+                }
+            }
+            catch(...)
+            {
+                for(size_t i=0; i < size; ++i ) worker[i].thr.join();
+                kill();
+                throw;
+            }
+        }
+        
+        ~Workers() throw()
+        {
+            std::cerr << "\tDeleting Crew" << std::endl;
+            kill();
+        }
+        
+    private:
+        inline void kill() throw()
+        {
+            while( size> 0 )
+            {
+                Worker *w = &worker[--size];
+                w->~Worker();
+            }
+            free(worker);
+        }
+        Workers( const Workers & );
+        Workers&operator=(const Workers & );
+    };
+    
 }
 
 extern "C"
@@ -92,10 +225,10 @@ SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP 
     {
         Rprintf("*** Error: windows must have 2 rows");
     }
-    const size_t  nw = INTEGER(RdimW)[1];
-    const double *pw = REAL(windows);
-    Rprintf("\t#### number of windows=%u\n",unsigned(nw));
-    if( nw <= 0 )
+    const size_t  nwindows = INTEGER(RdimW)[1];
+    const double *pwindows = REAL(windows);
+    Rprintf("\t#### number of windows=%u\n",unsigned(nwindows));
+    if( nwindows <= 0 )
     {
         Rprintf("*** Error: invalid #windows\n");
         return R_NilValue;
@@ -127,8 +260,8 @@ SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP 
     Rprintf("\t#### num_threads=%u\n",unsigned(num_threads));
     if(num_threads<=0)
         num_threads = 1;
-    if(num_threads>nw)
-        num_threads = nw;
+    if(num_threads>nwindows)
+        num_threads = nwindows;
     
     
     try
@@ -143,54 +276,26 @@ SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP 
         M2.loadR( REAL(data2) );
         
         //======================================================================
-        // Create Thread Data/Threads
+        // create the return vector
+        //======================================================================
+        SEXP Rval;
+        PROTECT(Rval = allocVector(REALSXP,nwindows) );
+        double *pvalues = REAL(Rval);
+        //memset(pvalues,0,nwindows*sizeof(double));
+        
+        //======================================================================
+        // Create the Crew
         //======================================================================
         wink::Mutex  mutex;
-        ThreadData **ppThreadData = new ThreadData * [num_threads];
-        size_t       num_active   = 0;
-        try
-        {
-            for( num_active=0; num_active < num_threads; ++num_active )
-            {
-                ppThreadData[num_active] = new ThreadData(mutex,
-                                                          nrow1,
-                                                          M1.data,
-                                                          ncol1,
-                                                          M2.data,
-                                                          ncol2,
-                                                          B);
-            }
-        }
-        catch(...)
-        {
-            //==================================================================
-            // delete previously created 
-            //==================================================================
-            while(num_active>0)
-            {
-                ThreadData *pThreadData = ppThreadData[--num_active];
-                assert(pThreadData!=NULL);
-                pThreadData->thr.join();
-                delete pThreadData;
-            }
-            delete [] ppThreadData;
-            throw;
-        }
+        Slices       slices( num_threads, nwindows, pwindows,pvalues);
+        Workers      crew( num_threads,mutex,M1,M2,B,slices,delta);
         
-        //======================================================================
-        // Ok, everything is fine, wait for threads
-        // TODO: Factorize code
-        //======================================================================
-        while(num_active>0)
+        for( size_t i=0; i < num_threads; ++i ) 
         {
-            ThreadData *pThreadData = ppThreadData[--num_active];
-            assert(pThreadData!=NULL);
-            pThreadData->thr.join();
-            delete pThreadData;
+            crew.worker[i].thr.join();
         }
-        delete [] ppThreadData;
-        
-        return R_NilValue;
+        UNPROTECT(1);
+        return Rval;
     }
     catch(...)
     {

@@ -62,6 +62,7 @@ namespace wink
             return (0.5f+float(u))/4294967296.0f;
         }
         
+        static uint32_t ih32( uint32_t ) throw();
         
         //! should print 7 '0'
         void test() throw(); 

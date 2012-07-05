@@ -70,6 +70,11 @@ namespace wink
         return a;
     }
     
+    uint32_t rand32::ih32( uint32_t a) throw()
+    {
+        return __ih32(a);
+    }
+    
     void rand32:: reset( uint32_t s ) throw()
     {
         uint32_t iv[6];

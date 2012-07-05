@@ -10,7 +10,7 @@ neurons <- simulPP(0,2,50,40);
 #windows[1,2]=0.1; windows[2,2]=0.2;
 #windows[1,3]=0.2; windows[2,3]=0.3;
 
-a=seq(0,1.9,by=0.1)
+a=seq(0,1.9,by=0.01)
 b=a+0.1
 windows=t(matrix(c(a,b),ncol=2))
 
@@ -34,25 +34,6 @@ bootstrap_pvalue_ser <- function(N1,N2,windows,delta,B)
 	#return: the pvalues associated to the windows
 }
 
-bootstrap_pvalue_ser <- function(N1,N2,windows,delta,B)
-{
-	## check arguments in R
-	if (!is.matrix(N1))
-		stop("N1 must be a matrix")
-	if (!is.matrix(N2))
-		stop("N2 must be a matrix")
-	if( !is.matrix(windows) )
-		stop("windows must be a matrix")
-	if( !is.real(delta) )
-		stop("delta must be a real")
-		
-	if( !is.real(B) )
-		stop("B must be a real/integer")
-	
-	
-	.Call("wink_ser", N1, N2,windows,delta,B );
-	#return: the pvalues associated to the windows
-}
 
 bootstrap_pvalue_par <- function(N1,N2,windows,delta,B,num_threads)
 {
@@ -77,7 +58,7 @@ bootstrap_pvalue_par <- function(N1,N2,windows,delta,B,num_threads)
 }
 
 bootstrap_pvalue_ser(neurons[[1]],neurons[[2]],windows,0.01,10000);
-bootstrap_pvalue_par(neurons[[1]],neurons[[2]],windows,0.01,10000,2);
+bootstrap_pvalue_par(neurons[[1]],neurons[[2]],windows,0.01,10000,4);
 
 
 
