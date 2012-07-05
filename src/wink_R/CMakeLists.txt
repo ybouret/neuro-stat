@@ -20,5 +20,12 @@ ADD_CUSTOM_TARGET(wink_ser ALL
 	COMMENT "Building .Call serial interface"
 	DEPENDS wink
 	SOURCES wink_ser.cpp)
+	
+ADD_CUSTOM_TARGET(wink_par ALL
+	COMMAND ${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/wink_par.so ${CMAKE_CURRENT_SOURCE_DIR}/wink_par.cpp "${winkLib}"
+	COMMENT "Building .Call parallel interface"
+	DEPENDS wink
+	SOURCES wink_par.cpp)
+	
 ENDIF()
 

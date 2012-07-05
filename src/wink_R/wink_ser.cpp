@@ -8,7 +8,7 @@
 #include <iostream>
 
 extern "C"
-SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
+SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
 {
     wink::rand32_kiss g;
     g.seed(time(NULL));
@@ -56,7 +56,12 @@ SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
     const size_t  nw = INTEGER(RdimW)[1];
     const double *pw = REAL(windows);
     Rprintf("\t#### number of windows=%u\n",unsigned(nw));
-    
+    if( nw <= 0 )
+    {
+        Rprintf("*** Error: invalid #windows\n");
+        return R_NilValue;
+    }
+
     //==========================================================================
     // Get delta value
     //==========================================================================
