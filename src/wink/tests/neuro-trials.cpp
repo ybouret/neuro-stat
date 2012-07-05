@@ -16,7 +16,7 @@ int main( int argc, char *argv[] )
         size_t      *Bcoinc = new size_t[ Bcount ];
         
         const double L = 10.0;
-        for( size_t iter = 1; iter <= 1; ++iter )
+        for( size_t iter = 1; iter <= 16; ++iter )
         {
             const size_t ntrials = 5  + g.less_than(30);
             const size_t ntop    = 50 + g.less_than(100);
@@ -48,32 +48,42 @@ int main( int argc, char *argv[] )
             const double step  = 0.05;
             const double w0    = 0.5;
             const double delta = 0.1;
+			
+			#if defined(SAVE_DATA)
             FILE *fp = fopen("pvalue.dat","wb");
-            if(!fp)
-                throw "can't open pvalue.dat";
-            
+            if(!fp) throw "can't open pvalue.dat";
+            #endif
+			
             for( double a = -step; a <= L + step; a += step )
             {
                 const double b = a + w0 + w0 * g.alea();
                 N1.prepare_windows(a, b);
                 N2.prepare_windows(a, b);
-                
                 const size_t true_coinc = wink::true_coincidences(N1, N2,delta,perm);
-                std::cerr << "true_coinc [" << a << "," << b <<"]=" << true_coinc << std::endl;
+                //std::cerr << "true_coinc [" << a << "," << b <<"]=" << true_coinc << std::endl;
                 wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, g );
                 const double pvalue = wink::permutation_pvalue(true_coinc, Bcoinc, Bcount);
-                std::cerr << "pvalue=" << pvalue << std::endl;
+                //std::cerr << "pvalue=" << pvalue << std::endl;
+				(void)pvalue;
+				#if defined(SAVE_DATA)
                 fprintf(fp, "%g %g %g\n", a,b,pvalue);
-                
+                #endif
             }
+			std::cerr << std::endl << "all done" << std::endl;
+			#if defined(SAVE_DATA)
             fclose(fp);
-            
+            #endif
+			
             delete []data;
         }
-    
+		
         delete []Bcoinc;
         return 0;
     }
+	catch( const char *txt )
+	{
+		std::cerr << "Error: " << txt << std::endl;
+	}
     catch(...)
     {
         std::cerr << "Error detected" << std::endl;

@@ -147,7 +147,7 @@ namespace wink
         const double l = b-a;
         for( size_t i=0; i < n; ++i )
         {
-            x[i] = a + get<double>() * l;
+            x[i] = a + alea() * l;
         }
         sort_array(x,n);
     }
