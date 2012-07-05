@@ -1,13 +1,10 @@
-#include "../wink.hpp"
+#include "../wink-rand32.hpp"
+#include "../wink-coincidence.hpp"
+
 #include <iostream>
 #include <cstdio>
 
-static inline
-void fill_array( double *x, size_t n )
-{
-    for( size_t i=0; i < n; ++i ) x[i] = wink::alea();
-    wink::sort_array(x,n);
-}
+
 
 static inline void save_array( double *x, size_t n, const char *filename )
 {
@@ -30,16 +27,17 @@ int main( int argc, char *argv[] )
     
     try
     {
-        wink::init_alea();
-        const size_t Nx = 10 + size_t( wink::alea() * 20 );
-        const size_t Ny = 10 + size_t( wink::alea() * 20 );
+        wink::rand32_kiss g;
+        g.seed( time(NULL) );
+        const size_t Nx = 10 + g.less_than(20);
+        const size_t Ny = 10 + g.less_than(20);
         
         double *M = new double [Nx+Ny];
         double *X = M;
         double *Y = M + Nx;
         
-        fill_array(X,Nx); save_array(X, Nx, "x.dat");
-        fill_array(Y,Ny); save_array(Y, Ny, "y.dat");
+        g.fill_array(0,1,X,Nx); save_array(X, Nx, "x.dat");
+        g.fill_array(0,1,Y,Ny); save_array(Y, Ny, "y.dat");
         const size_t nc = wink::coincidences(X, Nx, Y, Ny, 0.01);
         std::cerr << "NC=" << nc << std::endl;
         

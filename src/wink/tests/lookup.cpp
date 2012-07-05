@@ -2,7 +2,7 @@
 #include "../wink-rand32.hpp"
 #include <iostream>
 #include <cstdio>
-
+#include <time.h>
 
 
 static inline void save_array( double *x, size_t n, const char *filename )
@@ -27,10 +27,11 @@ int main( int argc, char *argv[] )
     try
     {
         wink::rand32_kiss g;
+        g.seed( time(NULL) );
+        
         for( size_t iter=1; iter <= 1024; ++iter )
         {
             const size_t Nx = 10 + g.less_than(100);
-            //std::cerr << "Nx=" << Nx << std::endl;
             
             double *X = new double[Nx+1];
             X[0] = Nx;

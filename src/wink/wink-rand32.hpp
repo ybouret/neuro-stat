@@ -91,6 +91,11 @@ namespace wink
         
         template <typename T> T get() throw(); //!< valid for uin32_t, float, double
         
+        inline double alea() throw()
+        {
+            return rand32::to_double(next());
+        }
+        
         template <typename T>
         inline T full() throw()
         {
