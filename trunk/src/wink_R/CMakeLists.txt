@@ -16,9 +16,9 @@ GET_TARGET_PROPERTY(winkLib wink LOCATION )
 MESSAGE( STATUS "winkLib=${winkLib}" )
 
 ADD_CUSTOM_TARGET(wink_ser ALL
-	COMMAND ${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/wink_ser.so ${CMAKE_CURRENT_SOURCE_DIR}/wink.cpp "${winkLib}"
+	COMMAND ${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/wink_ser.so ${CMAKE_CURRENT_SOURCE_DIR}/wink_ser.cpp "${winkLib}"
 	COMMENT "Building .Call serial interface"
 	DEPENDS wink
-	SOURCES wink.cpp)
+	SOURCES wink_ser.cpp)
 ENDIF()
 
