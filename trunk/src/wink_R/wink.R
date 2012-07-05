@@ -12,7 +12,7 @@ a=seq(0,1.9,by=0.01)
 b=a+0.1
 windows=t(matrix(c(a,b),ncol=2))
 
-process <- function(N1,N2,windows,delta,B)
+bootstrap_pvalue <- function(N1,N2,windows,delta,B)
 {
 	## check arguments in R
 	if (!is.matrix(N1))
@@ -32,7 +32,7 @@ process <- function(N1,N2,windows,delta,B)
 	#return: the pvalues associated to the windows
 }
 
-process(neurons[[1]],neurons[[2]],windows,0.01,10000);
+bootstrap_pvalue(neurons[[1]],neurons[[2]],windows,0.01,10000);
 
 
 
