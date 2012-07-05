@@ -1,126 +1,16 @@
-//! file
+//! \file
 /**
- Wink Is a NeuroStats Kernel.
+ \brief Wink Is a NeuroStats Kernel.
  */
 #ifndef WINK_INCLUDED
 #define WINK_INCLUDED 1
 
-#include "wink-utils.hpp"
+#include "wink-neuro-trials.hpp"
 #include "wink-permutation.hpp"
 
 namespace wink
 {
-       
-    //! detect coincidences
-    /**
-     \param X an array of ordered time values
-     \param Nx X[0..Nx-1]
-     \param Y an array of ordered time values
-     \param Ny Y[0..Ny-1]
-     \param delta the time lag for detection
-     \return the number of |X_i-Y_j| <= delta
-     */
-    size_t coincidences(const double *X, 
-                        const size_t  Nx, 
-                        const double *Y, 
-                        const size_t  Ny, 
-                        const double  delta);
-    
-    
         
-    //! location of data
-    class iwindow
-    {
-    public:
-        iwindow() throw();
-        ~iwindow() throw();
-        size_t indexA; //!< first index
-        size_t indexB; //!< last  index
-        size_t length; //!< indexB - indexA  +1, 0 is no valid data
-        
-        //! get indices from data
-        /**
-         for length to be >0, find_index_after(a,X,indexA) must succeed
-         and find_index_before(b,X,indexB) must succeed as weel.
-         if( indexA > indexB ), this means that [a,b] is
-         between two consecutive X, so the window is empty.
-         */
-        void   initialize( double a, double b, const double *X );
-    private:
-        iwindow( const iwindow & );
-        iwindow & operator=( const iwindow & );
-    };
-    
-    
-    //! detect coincidences
-    /**
-     \param X a record X[0] = Nx, X[1..Nx] are the ORDERED data
-     \param Wx a valid window associated to X
-     \param Y a record Y[0] = Ny, Y[1..Ny] are the ORDERED data
-     \param Wy a valid window associated to Y
-     \return the number of coincidences within lag delta
-     */
-    size_t coincidences(const double   *X, 
-                        const iwindow  &Wx,
-                        const double   *Y,
-                        const iwindow  &Wy,
-                        const double    delta);
-    
-       
-    
-        
-    //! used to convert R matrix into C matrix
-    class c_matrix
-    {
-    public:
-        c_matrix( size_t nr, size_t ncol );
-        ~c_matrix() throw();
-        const size_t nrow;
-        const size_t ncol;
-        double      *data;
-        
-        //! load a column major R matrix
-        void loadR( const double *Rdata ) throw();
-        
-    private:
-        c_matrix(const c_matrix &);
-        c_matrix&operator=(const c_matrix & );
-    };
-    
-    class neuro_trials
-    {
-    public:
-        neuro_trials( const double *data, const size_t nr, const size_t nc );
-        ~neuro_trials() throw();
-        
-        class record
-        {
-        public:
-            const double *X; //!< one trial X[0]=NX, X[1..Nx]
-            iwindow       W; //!< associated window
-            record() throw();
-            ~record() throw();
-            
-        private:
-            record( const record & );
-            record &operator=(const record & );
-        };
-        
-        const size_t num;  //!< #num records = nr
-        const size_t top;  //!< max valid index: nc-1 
-        record      *rec;  //!< array of num records
-        
-        void prepare_windows( double a, double b ) throw();
-        
-        
-        void display() const;
-        
-    private:
-        neuro_trials( const neuro_trials & );
-        neuro_trials&operator=(const neuro_trials & );
-    };
-    
-    
     //! total coincidences on a prepared window.
     /**
      The windows must have been prepared before: 
@@ -144,14 +34,14 @@ namespace wink
     
     //! bootstrap coincidences on a prepared window
     /**
-     call perm.rebuild(uniform_generator)
+     call perm.rebuild(g)
      and total_coincidences(N1,N2,perm,delta);
      */
     size_t bootstrap_coincidences(const neuro_trials &N1, 
                                   const neuro_trials &N2, 
                                   const double       delta,
                                   permutation       &perm,
-                                  double            (*uniform_generator)()) throw();
+                                  urand32           &g) throw();
     
     //! create a bootstrap sample
     /**
@@ -164,7 +54,7 @@ namespace wink
                                const neuro_trials &N2, 
                                const double       delta,
                                permutation       &perm,
-                               double            (*uniform_generator)()) throw();
+                               urand32           &g) throw();
     
     //! find the pvalue from a sample and a true coincidence
     double permutation_pvalue( const size_t true_coinc, const size_t *Bcoinc, const size_t Bcount ) throw();

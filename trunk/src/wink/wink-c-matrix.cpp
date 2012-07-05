@@ -1,4 +1,4 @@
-#include "wink.hpp"
+#include "wink-c-matrix.hpp"
 #include <cassert>
 
 namespace wink

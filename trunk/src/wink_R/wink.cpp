@@ -3,12 +3,15 @@
 #include <Rinternals.h>
 
 #include "../wink/wink.hpp"
+#include "../wink/wink-c-matrix.hpp"
+
 #include <iostream>
 
 extern "C"
 SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
 {
-    wink::init_alea();
+    wink::rand32_kiss g;
+    g.seed(time(NULL));
 	GetRNGstate();
 	
 #if 0
@@ -97,7 +100,7 @@ SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
         //======================================================================
         wink::permutation perm(nrow1); // to store the permutation
         wink::permutation boot(B);     // to store the bootstrap samples
-        size_t           *Bcoinc = boot.indices;
+        size_t           *Bcoinc = boot.indx;
         const size_t      Bcount = boot.size;
         
         //======================================================================
@@ -132,7 +135,7 @@ SEXP demo( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
             //------------------------------------------------------------------
             // make the bootstrap distribution
             //------------------------------------------------------------------
-            wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, wink::alea );
+            wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, g );
             //wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, unif_rand );
            
             //------------------------------------------------------------------

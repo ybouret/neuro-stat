@@ -1,4 +1,5 @@
-#include "../wink.hpp"
+#include "../wink-iwindow.hpp"
+#include "../wink-rand32.hpp"
 #include <iostream>
 
 
@@ -8,22 +9,23 @@ int main( int argc, char *argv[] )
     
     try
     {
-        wink::init_alea();
+        wink::rand32_kiss g;
+        g.seed( time(NULL) );
         const double L = 10.0;
         const double Lo = -1;
         const double Hi = L+Lo;
         const double Width = Hi-Lo;
         for( size_t iter=1; iter <= 1024; ++iter )
         {
-            const size_t Nx = 10 + size_t( wink::alea() * 500.0 );            
+            const size_t Nx = 10 + g.less_than(500);           
             double *X = new double[Nx+1];
             X[0] = Nx;
-            wink::fill_alea_array(X+1,Nx,0,L); 
+            g.fill_array(0,L,X+1,Nx); 
                         
             for( size_t num=1; num <= 1024; ++num )
             {
-                const double a = Lo + Width * wink::alea();
-                const double b = a  + Width * wink::alea();
+                const double a = Lo + Width * g.alea();
+                const double b = a  + Width * g.alea();
                 wink::iwindow w;
                 w.initialize(a, b, X);
             }

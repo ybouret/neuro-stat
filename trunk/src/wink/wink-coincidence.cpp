@@ -1,4 +1,4 @@
-#include "wink.hpp"
+#include "wink-coincidence.hpp"
 #include <cassert>
 
 namespace wink
@@ -8,7 +8,7 @@ namespace wink
                         const size_t  Nx, 
                         const double *Y, 
                         const size_t  Ny,
-                        const double  delta)
+                        const double  delta) throw()
     {
         assert(Nx>0);
         assert(Ny>0);

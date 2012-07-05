@@ -10,18 +10,6 @@
 
 namespace wink 
 {
-#if 0
-    //! build a random permutation
-    /**
-     \param indices will contained the permutted indices
-     \param num indices[0..num]
-     \param uniform_generator in [0:1]
-     */
-    void build_permutation( size_t *indices, size_t num, double (*uniform_generator)() );
-    
-    //! build an identity vector
-    void build_identity( size_t *indices, size_t num );
-#endif
     
     //! holds memory for a permutation
     class permutation
@@ -33,7 +21,10 @@ namespace wink
         const size_t size;
         size_t      *indx;
         
+        //! build the identity permutation
         void identity() throw();
+        
+        //! build a random permutation
         void generate( urand32 &g ) throw();
         
     private:

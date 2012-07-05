@@ -1,5 +1,6 @@
-#include "wink.hpp"
+#include "wink-iwindow.hpp"
 #include "wink-lookup.hpp"
+#include "wink-coincidence.hpp"
 #include <cassert>
 
 namespace wink
@@ -26,7 +27,7 @@ namespace wink
                         const iwindow  &Wx,
                         const double   *Y,
                         const iwindow  &Wy,
-                        const double    delta)
+                        const double    delta) throw()
     {
         assert(X!=NULL);
         assert(Y!=NULL);
@@ -48,6 +49,6 @@ namespace wink
             return 0; //! no data in at least one window
         }
     }
-
+    
 }
 
