@@ -28,7 +28,7 @@ ADD_TEST(NeuroTrials  t_neuro_trials)
 ADD_TEST(Rand32       t_rand32)
 ADD_TEST(Thread       t_thread)
 
-ADD_CUSTOM_TARGET(check1 ALL 
+ADD_CUSTOM_TARGET(check1  
 	COMMAND ${CMAKE_CTEST_COMMAND} 
 	DEPENDS t_coincidence 
 		t_lookup 
