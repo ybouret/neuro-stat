@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cassert>
 #include <cmath>
+#include <cstdio>
 
 namespace 
 {
@@ -26,6 +27,7 @@ namespace
             {
                 wink::ScopeLock access_to(mutex);
                 fprintf( stderr, "In Thread with Tag=%u: iter=%d\n", param.tag, iter);
+				fflush(stderr);
             }
             const size_t nops = 500000 + g.less_than(500000);
             for( size_t j=0; j <nops; ++j )
