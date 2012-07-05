@@ -66,7 +66,7 @@ int main( int argc, char *argv[] )
                 fprintf(fp, "%g %g %g\n", a,b,pvalue);
                 
             }
-            
+            fclose(fp);
             
             delete []data;
         }
