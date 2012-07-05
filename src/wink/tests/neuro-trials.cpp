@@ -27,7 +27,8 @@ int main( int argc, char *argv[] )
             for( size_t i=0; i < nr; ++i )
             {
                 double      *X  = data + (i*nc);
-                const size_t Nx = g.less_than(ntop);
+                const size_t Nx = g.less_than(ntop); //0--ntop
+                assert(Nx<=ntop);
                 X[0] = Nx;
                 g.fill_array(0,L,X+1, Nx);
             }
@@ -58,9 +59,10 @@ int main( int argc, char *argv[] )
                 N2.prepare_windows(a, b);
                 
                 const size_t true_coinc = wink::true_coincidences(N1, N2,delta,perm);
-                //std::cerr << "true_coinc [" << a << "," << b <<"]=" << true_coinc << std::endl;
+                std::cerr << "true_coinc [" << a << "," << b <<"]=" << true_coinc << std::endl;
                 wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, g );
                 const double pvalue = wink::permutation_pvalue(true_coinc, Bcoinc, Bcount);
+                std::cerr << "pvalue=" << pvalue << std::endl;
                 fprintf(fp, "%g %g %g\n", a,b,pvalue);
                 
             }
