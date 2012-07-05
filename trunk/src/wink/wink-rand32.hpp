@@ -116,7 +116,7 @@ namespace wink
             {
                 for( size_t i=n-1;i>0;--i)
                 {
-                    const size_t j   = less_than(i);
+                    const size_t j   = less_than(i); assert(j<=i);
                     const T tmp(a[i]);
                     a[i] = a[j];
                     a[j] = tmp;

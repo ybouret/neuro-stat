@@ -29,7 +29,7 @@ namespace wink
     void   sort_indices( size_t *x, size_t n )
     {
         assert(!(x==NULL&&n>0));
-        qsort(x, n, sizeof(double), compare_indices);
+        qsort(x, n, sizeof(size_t), compare_indices);
     }
 
     
