@@ -1,6 +1,8 @@
 #include "../wink.hpp"
 #include <iostream>
 #include <cstdio>
+#include <time.h>
+
 
 int main( int argc, char *argv[] )
 {
