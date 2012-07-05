@@ -1,6 +1,7 @@
 #include "wink.hpp"
 #include <time.h>
-#include <cassert>
+#include <assert.h>
+#include <stdlib.h>
 
 namespace wink
 {
