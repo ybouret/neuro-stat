@@ -1,5 +1,6 @@
 #include "wink-thread.hpp"
 #include <assert.h>
+#include <cerrno>
 
 namespace wink
 {
@@ -43,7 +44,6 @@ namespace wink
 #endif
         
 #if defined(WINK_WIN)
-        WINK_GIANT_LOCK();
         handle_ = ::CreateThread(0 ,
                                  0 ,
                                  thread::launch,
