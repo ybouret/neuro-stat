@@ -1,5 +1,5 @@
 
-dyn.load("wink.so")
+dyn.load("wink_ser.so")
 source("simulationPP.R")
 neurons <- simulPP(0,2,50,40);
 
