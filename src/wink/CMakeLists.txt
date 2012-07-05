@@ -18,6 +18,8 @@ ADD_LIBRARY(wink STATIC wink.hpp
 			wink.cpp
 			wink-os.hpp
 			wink-os.cpp
+			wink-mutex.hpp
+			wink-mutex.cpp
 			)
 
 ADD_SUBDIRECTORY(tests)
