@@ -5,37 +5,12 @@
 #ifndef WINK_INCLUDED
 #define WINK_INCLUDED 1
 
-#include <cstdlib>
+#include "wink-utils.hpp"
+#include "wink-permutation.hpp"
 
 namespace wink
 {
-    //! init a built in uniform random number generator in ]0:1[
-    void   init_alea();
-    
-    //! returns a uniform random number generator in ]0:1[
-    double alea();
-    
-    size_t random_index( double (*uniform_generator)() = wink::alea );
-    
-    //! sort by increasing order
-    /**
-     \param x an array of reals
-     \param n x[0..n-1]
-     */
-    void   sort_array( double *x, size_t n );
-   
-    //! sort by increasing order
-    /**
-     \param x an array of indices
-     \param n x[0..n-1]
-     */
-    void   sort_indices( size_t *x, size_t n );
-
-    
-    
-    //! fill array with alea value
-    void   fill_alea_array( double *x, size_t n, double a, double b );
-    
+       
     //! detect coincidences
     /**
      \param X an array of ordered time values
@@ -52,24 +27,7 @@ namespace wink
                         const double  delta);
     
     
-    //! find index such that  X[i-1] < a <= X[i]
-    /**
-     \param a any real
-     \param X a record X[0] = Nx, X[1..Nx] are the ORDERED data
-     \param i the index
-     \return true if this is possible and i is the answer, false otherwise and i=0
-     */
-    bool find_index_after( double a, const double *X, size_t &i );
-    
-    //! find index such that  X[i] <= b < X[i+1]
-    /**
-     \param b any real
-     \param X a record X[0] = Nx, X[1..Nx] are the ORDERED data
-     \param i the index
-     \return true if this is possible and i is the answer, false otherwise and i=0
-     */
-    bool find_index_before( double b, const double *X, size_t &i );
-    
+        
     //! location of data
     class iwindow
     {
@@ -108,35 +66,7 @@ namespace wink
                         const iwindow  &Wy,
                         const double    delta);
     
-    //! build a random permutation
-    /**
-     \param indices will contained the permutted indices
-     \param num indices[0..num]
-     \param uniform_generator in [0:1]
-     */
-    void build_permutation( size_t *indices, size_t num, double (*uniform_generator)() );
-    
-    //! build an identity vector
-    void build_identity( size_t *indices, size_t num );
-    
-    //! holds memory for a permutation
-    class permutation
-    {
-    public:
-        permutation( size_t n );
-        ~permutation() throw();
-        
-        const size_t size;
-        size_t      *indices;
-        
-        void identity() throw();
-        void rebuild( double (*uniform_generator)() ) throw();
-        
-    private:
-        permutation( const permutation & );
-        permutation&operator=(const permutation & );
-    };
-    
+       
     
         
     //! used to convert R matrix into C matrix

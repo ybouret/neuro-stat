@@ -1,4 +1,5 @@
 #include "wink.hpp"
+#include "wink-lookup.hpp"
 #include <cassert>
 
 namespace wink
@@ -12,8 +13,8 @@ namespace wink
         assert(a<=b);
         assert(X!=NULL);
         length = 0;
-        const bool foundA = find_index_after(a,  X, indexA);
-        const bool foundB = find_index_before(b, X, indexB);
+        const bool foundA = lookup::index_after(a,  X, indexA);
+        const bool foundB = lookup::index_before(b, X, indexB);
         if( foundA && foundB && (indexA <= indexB) )
         {
             length = indexB - indexA + 1;
