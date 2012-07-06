@@ -1,6 +1,6 @@
-//! \file
 /**
- \brief some utility functions.
+ \file
+ \brief Some utility functions.
  */
 
 #ifndef WINK_UTILS_INCLUDED

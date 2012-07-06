@@ -1,5 +1,5 @@
-//! \file
 /**
+ \file 
  \brief Wink Is a NeuroStats Kernel.
  */
 #ifndef WINK_INCLUDED

@@ -1,6 +1,6 @@
-//! \file
 /**
- \brief indices window
+ \file
+ \brief Indices windows.
  */
 #ifndef WINK_IWINDOW_INCLUDED
 #define WINK_IWINDOW_INCLUDED 1

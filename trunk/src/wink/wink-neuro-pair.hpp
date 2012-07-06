@@ -1,5 +1,5 @@
-//! \file
 /**
+ \file
  \brief to work on a pair of neurons
  */
 
@@ -14,6 +14,7 @@
 namespace wink 
 {
     
+    //! a pair of neuro_trials
     class neuro_pair
     {
     public:

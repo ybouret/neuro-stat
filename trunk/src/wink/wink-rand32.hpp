@@ -1,7 +1,7 @@
-//! \file
 /**
+ \file
  \brief fast RNG
- random number generators for fast permutations,
+ Random number generators for fast permutations,
  possibly in parallel
  */
 

@@ -1,6 +1,6 @@
-//! \file
 /**
- \brief  lookup indices for windows construction
+ \file 
+ \brief Lookup indices for windows construction
  */
 
 #ifndef YOCTO_WINK_LOOKUP_INCLUDED
@@ -11,6 +11,7 @@
 namespace wink
 {
     
+    //! Algorithms to find the proper indices
     struct lookup
     {
         //! find index such that  X[i-1] < a <= X[i]

@@ -1,6 +1,6 @@
-//! \file
 /**
- \brief memory and algorithm for permutation
+ \file
+ \brief Memory and Algorithm for permutation
  */
 #ifndef WINK_PERMUTATION_INCLUDED
 #define WINK_PERMUTATION_INCLUDED 1
@@ -18,8 +18,8 @@ namespace wink
         permutation( size_t n );
         ~permutation() throw();
         
-        const size_t size;
-        size_t      *indx;
+        const size_t size; //!< #indices
+        size_t      *indx; //!< the indices
         
         //! build the identity permutation
         void identity() throw();
