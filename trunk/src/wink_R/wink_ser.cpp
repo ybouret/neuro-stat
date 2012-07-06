@@ -5,6 +5,7 @@
 #include "../wink/wink-neuro-pair.hpp"
 
 #include <iostream>
+#include <ctime>
 
 extern "C"
 SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
