@@ -60,11 +60,11 @@ bootstrap_pvalue_par <- function(N1,N2,windows,delta,B,num_threads)
 stamp = proc.time();
 bootstrap_pvalue_ser(neurons[[1]],neurons[[2]],windows,0.01,10000);
 ser_tmx = proc.time() - stamp;
-ser_tmx;
+ser_tmx[3];
 
 stamp = proc.time();
 bootstrap_pvalue_par(neurons[[1]],neurons[[2]],windows,0.01,10000,4);
 par_tmx = proc.time() - stamp;
-par_tmx;
+par_tmx[3];
 
 
