@@ -2,6 +2,7 @@
 #include <new>
 #include <cstdlib>
 #include <iostream>
+#include <cstdio>
 
 namespace wink
 {
@@ -58,7 +59,27 @@ namespace wink
     {
         {
             scope_lock guard( access );
-            std::cerr << "worker @" << offset << " +" << length << std::endl;
+            fprintf(stderr, "worker @%4u +%4u : seed = 0x%08x\n", unsigned(offset), unsigned(length), seed);
+            fflush(stderr);
+        }
+        
+        //----------------------------------------------------------------------
+        // Post-Init
+        //----------------------------------------------------------------------
+        g.seed( seed );
+        
+        //----------------------------------------------------------------------
+        // process
+        //----------------------------------------------------------------------
+        size_t i = offset;
+        for( size_t j=length;j>0;--j,++i)
+        {
+            const size_t i2 = i*2;
+            const double a = windows[ 0 + i2 ];
+            const double b = windows[ 1 + i2 ];
+            //fprintf(stderr, "[%10.4f,%10.4f]\n", a, b );
+            
+            pvalues[i] = pvalue(a, b, delta);
         }
     }
     
@@ -94,7 +115,7 @@ namespace wink
                 const uint32_t s32  = rand32::ih32( r32 + rand32::ih32(size) );
                 
                 new( &crew[size] ) worker(M1, M2, B, offset, todo, ab, p, lag, s32, access);
-                
+                ++size;
                 offset += todo;
                 length -= todo;
             }

@@ -18,8 +18,13 @@ TARGET_LINK_LIBRARIES(t_rand32 wink)
 
 ADD_EXECUTABLE(t_thread thread.cpp)
 TARGET_LINK_LIBRARIES(t_thread wink)
+
+ADD_EXECUTABLE(t_workers workers.cpp)
+TARGET_LINK_LIBRARIES(t_workers wink)
+
 IF( YOCTO_LINUX )
-	TARGET_LINK_LIBRARIES(t_thread pthread)
+	TARGET_LINK_LIBRARIES(t_thread  pthread)
+	TARGET_LINK_LIBRARIES(t_workers pthread)
 ENDIF()
 
 ENABLE_TESTING()
