@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "../wink-rand32.hpp"
 #include "../wink-coincidence.hpp"
 
@@ -29,7 +30,7 @@ int main( int argc, char *argv[] )
     try
     {
         wink::rand32_kiss g;
-        g.seed( time(NULL) );
+        g.seed( uint32_t(time(NULL)) );
         const size_t Nx = 10 + g.less_than(20);
         const size_t Ny = 10 + g.less_than(20);
         

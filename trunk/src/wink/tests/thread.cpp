@@ -32,7 +32,7 @@ namespace
             const size_t nops = 500000 + g.less_than(500000);
             for( size_t j=0; j <nops; ++j )
             {
-                param.sum += cos(j);
+                param.sum += cos(double(j));
             }
             
         }

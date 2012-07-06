@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "../wink-lookup.hpp"
 #include "../wink-rand32.hpp"
 #include <iostream>
@@ -27,7 +28,7 @@ int main( int argc, char *argv[] )
     try
     {
         wink::rand32_kiss g;
-        g.seed( time(NULL) );
+        g.seed( uint32_t(time(NULL)) );
         
         for( size_t iter=1; iter <= 1024; ++iter )
         {

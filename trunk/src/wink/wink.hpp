@@ -47,6 +47,7 @@ namespace wink
     /**
      \param Bcoinc coincidences
      \param Bcount Bcoinc[0..Bcount-1]
+	 \warning values are NOT sorted: call sort_indices(Bcoinc,Bcount)
      */
     void permutation_bootstrap(size_t             *Bcoinc, 
                                const size_t        Bcount, 
