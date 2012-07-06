@@ -90,7 +90,7 @@ namespace
         
         virtual ~Worker() throw() {}
         
-        void run() throw()
+        inline void run() throw()
         {
             const double *w = slice.r_windows;
             double       *p = slice.r_pvalues;
