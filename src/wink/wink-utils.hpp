@@ -1,3 +1,8 @@
+//! \file
+/**
+ \brief some utility functions.
+ */
+
 #ifndef WINK_UTILS_INCLUDED
 #define WINK_UTILS_INCLUDED 1
 

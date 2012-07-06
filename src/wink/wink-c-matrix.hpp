@@ -1,7 +1,6 @@
 //! \file
 /**
  \brief C-style matrices
- Prepare data in row-major matrices.
  */
 
 #ifndef WINK_C_MATRIX_INCLUDED

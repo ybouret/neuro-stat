@@ -20,18 +20,18 @@
 namespace wink 
 {
     
-    class Mutex
+    class mutex
     {
     public:
-        explicit Mutex() throw();
-        virtual ~Mutex() throw();
+        explicit mutex() throw();
+        virtual ~mutex() throw();
         
         void lock() throw();
         void unlock() throw();
         
     private:
-        Mutex(const Mutex&);
-        Mutex&operator=(const Mutex & );
+        mutex(const mutex&);
+        mutex&operator=(const mutex & );
         
 #if	defined(WINK_BSD)
         pthread_mutex_t mutex_;
@@ -43,16 +43,16 @@ namespace wink
 
     };
  
-    class ScopeLock
+    class scope_lock
     {
     public:
-        ScopeLock( Mutex &mutex ) throw();
-        ~ScopeLock() throw();
+        scope_lock( mutex &m ) throw();
+        ~scope_lock() throw();
         
     private:
-        Mutex &host;
-        ScopeLock(const ScopeLock & );
-        ScopeLock &operator=( const ScopeLock & );
+        mutex &host;
+        scope_lock(const scope_lock & );
+        scope_lock &operator=( const scope_lock & );
     };
     
     

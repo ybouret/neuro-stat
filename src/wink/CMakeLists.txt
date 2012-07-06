@@ -1,8 +1,11 @@
 SET(PAR_SRCS	par/wink-mutex.hpp
-				par/wink-mutex.cpp
-				par/wink-thread.hpp
-				par/wink-thread.cpp
+		par/wink-mutex.cpp
+		par/wink-thread.hpp
+		par/wink-thread.cpp
+		par/wink-worker.hpp
+		par/wink-worker.cpp
 				)
+
 SOURCE_GROUP(par FILES ${PAR_SRCS})
 
 ADD_LIBRARY(wink STATIC wink.hpp 
