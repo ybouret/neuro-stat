@@ -1,4 +1,4 @@
-#include "../wink-thread.hpp"
+#include "../par/wink-thread.hpp"
 #include "../wink-rand32.hpp"
 #include <iostream>
 #include <cassert>

@@ -1,1 +1,1 @@
-R --no-save --quiet < wink.R 
+R --slave --no-save --quiet < wink.R 
