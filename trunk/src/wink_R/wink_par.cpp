@@ -156,7 +156,7 @@ namespace
             {
                 while(size<maxi)
                 {
-                    Worker *w = new (&worker[size]) Worker(synchro,M1,M2,B,S.slice[size],delta);
+                    new (&worker[size]) Worker(synchro,M1,M2,B,S.slice[size],delta);
                     ++size;
                 }
             }
