@@ -32,7 +32,7 @@ int main( int argc, char *argv[] )
     try
     {
         wink::rand32_kiss g;
-        g.seed(time(NULL));
+        g.seed( uint32_t(time(NULL)) );
         
         
         const size_t ntrials = 5  + g.less_than(30);

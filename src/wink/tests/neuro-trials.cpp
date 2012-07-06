@@ -11,7 +11,7 @@ int main( int argc, char *argv[] )
     {
         
         wink::rand32_kiss g;
-        g.seed( time(NULL) );
+        g.seed( uint32_t(time(NULL)) );
         const size_t Bcount = 500;
         size_t      *Bcoinc = new size_t[ Bcount ];
         

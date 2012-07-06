@@ -57,7 +57,7 @@ namespace wink
         {
             Bcoinc[i] = bootstrap_coincidences(N1,N2,delta,perm,g);
         }
-        sort_indices(Bcoinc,Bcount);
+        //sort_indices(Bcoinc,Bcount);
     }
     
     double permutation_pvalue( const size_t true_coinc, const size_t *Bcoinc, const size_t Bcount ) throw()

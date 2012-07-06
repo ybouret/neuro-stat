@@ -20,7 +20,7 @@ namespace wink
     
     void permutation::identity() throw() 
     {
-        assert(indx!=NULL);
+        assert(indx!=0);
         assert(size>0);
         for( size_t i=0; i < size; ++i ) indx[i] = i;
         

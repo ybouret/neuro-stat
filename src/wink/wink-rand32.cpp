@@ -33,6 +33,11 @@ namespace wink
 #define VNI   ((long) KISS)*4.656613e-10 
 #define UC    (uint8_t)  /*a cast operation*/ 
     
+#if defined(_MSC_VER)
+	// initialisation of t
+#pragma warning ( disable : 4351 )
+#endif
+
     rand32:: rand32() throw() :
     z(362436069),
     w(521288629),

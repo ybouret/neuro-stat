@@ -1,7 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "../wink-permutation.hpp"
 #include <iostream>
 #include <cstdio>
-#include <time.h>
+#include <ctime>
 
 int main( int argc, char *argv[] )
 {
@@ -10,7 +11,7 @@ int main( int argc, char *argv[] )
     {
         static const size_t COUNT = 2048;
         wink::rand32_kiss g;
-        g.seed( time(NULL) );
+        g.seed( uint32_t(time(NULL)) );
         FILE *fp = fopen("perm.dat","wb");
         if( !fp )
         {

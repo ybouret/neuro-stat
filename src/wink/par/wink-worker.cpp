@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstdio>
+#include <ctime>
 
 namespace wink
 {
@@ -29,7 +30,11 @@ namespace wink
     }
     
     
-    
+#if defined(_MSC_VER)
+	// this in constructor
+#pragma warning ( disable : 4355 )
+#endif
+
     worker:: worker(const c_matrix &M1,
                     const c_matrix &M2, 
                     const size_t    B,
@@ -106,7 +111,7 @@ namespace wink
         
         try 
         {
-            const uint32_t r32 = rand32::ih32( time(NULL) );
+            const uint32_t r32 = rand32::ih32( uint32_t(time(NULL)) );
             size_t offset = 0;
             size_t length = num_windows;
             while(size<maxi)
