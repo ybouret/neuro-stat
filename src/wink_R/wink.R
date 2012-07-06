@@ -1,6 +1,9 @@
 
-dyn.load("wink_ser.so")
-dyn.load("wink_par.so");
+wink_ser_dll <- paste("wink_ser", .Platform$dynlib.ext, sep="")
+wink_par_dll <- paste("wink_par", .Platform$dynlib.ext, sep="")
+
+dyn.load(wink_ser_dll)
+dyn.load(wink_par_dll);
 
 source("simulationPP.R")
 neurons <- simulPP(0,2,50,40);
