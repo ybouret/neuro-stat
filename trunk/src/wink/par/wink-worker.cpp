@@ -64,7 +64,7 @@ namespace wink
     {
         {
             scope_lock guard( access );
-            fprintf(stderr, "worker @%4u +%4u : seed = 0x%08x\n", unsigned(offset), unsigned(length), seed);
+            fprintf(stderr, "\t\tworker @%4u +%4u : seed = 0x%08x\n", unsigned(offset), unsigned(length), seed);
             fflush(stderr);
         }
         
