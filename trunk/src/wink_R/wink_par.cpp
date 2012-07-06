@@ -68,19 +68,19 @@ namespace
     class Worker : public wink::neuro_pair
     {
     public:
-        wink::Mutex &mutex;
+        wink::mutex &guard;
         const Slice &slice;
         const double delta;
         wink::thread thr;
         
-        Worker(wink::Mutex          &synchro,
+        Worker(wink::mutex         &synchro,
                const wink::c_matrix &M1, 
                const wink::c_matrix &M2, 
                const size_t          B,
                const Slice          &S,
                const double          lag) :
         wink::neuro_pair(M1,M2,B),
-        mutex( synchro ),
+        guard( synchro ),
         slice(S),
         delta(lag),
         thr( Engine, this )
@@ -119,7 +119,7 @@ namespace
             w.g.seed( w.slice.seed );
             if(false)
             {
-                wink::ScopeLock access( w.mutex );
+                wink::scope_lock access( w.guard );
                 Rprintf("Starting engine!\n");
                 std::cerr << "\t\tWorker will do " << w.slice.offset << "+" << w.slice.length << " : seed=" << w.slice.seed << std::endl;
             }
@@ -138,7 +138,7 @@ namespace
         Worker      *worker; //!< memory
         
         Workers(const size_t          num_threads,
-                wink::Mutex          &synchro,
+                wink::mutex          &synchro,
                 const wink::c_matrix &M1, 
                 const wink::c_matrix &M2, 
                 const size_t          B,
@@ -286,9 +286,9 @@ SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP 
         //======================================================================
         // Create the Crew
         //======================================================================
-        wink::Mutex  mutex;
+        wink::mutex  guard;
         Slices       slices( num_threads, nwindows, pwindows,pvalues);
-        Workers      crew( num_threads,mutex,M1,M2,B,slices,delta);
+        Workers      crew( num_threads,guard,M1,M2,B,slices,delta);
         
         for( size_t i=0; i < num_threads; ++i ) 
         {

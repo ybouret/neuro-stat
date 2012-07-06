@@ -1,3 +1,8 @@
+//! \file
+/**
+ \brief to work on a pair of neurons
+ */
+
 #ifndef WINK_NEURO_PAIR_INCLUDED
 #define WINK_NEURO_PAIR_INCLUDED
 

@@ -5,20 +5,20 @@
 namespace wink 
 {
     
-    ScopeLock:: ScopeLock( Mutex &mutex ) throw() :
-    host( mutex )
+    scope_lock:: scope_lock( mutex &m ) throw() :
+    host( m )
     {
         host.lock();
     }
     
-    ScopeLock:: ~ScopeLock() throw()
+    scope_lock:: ~scope_lock() throw()
     {
         host.unlock();
     }
     
 
     
-    Mutex:: Mutex() throw() :
+    mutex:: mutex() throw() :
     mutex_()
     {
         //-- initialize the mutex
@@ -49,7 +49,7 @@ namespace wink
 #endif        
     }
     
-    Mutex:: ~Mutex() throw()
+    mutex:: ~mutex() throw()
     {
 #if defined(WINK_WIN)
         ::DeleteCriticalSection( & mutex_ );
@@ -64,7 +64,7 @@ namespace wink
 #endif
     }
     
-    void Mutex:: lock() throw()
+    void mutex:: lock() throw()
     {
 #if defined(WINK_WIN)
         ::EnterCriticalSection(  & mutex_  );
@@ -79,7 +79,7 @@ namespace wink
     }
     
     
-    void Mutex:: unlock() throw()
+    void mutex:: unlock() throw()
     {
 #if defined(WINK_WIN)
         ::LeaveCriticalSection( &mutex_  );

@@ -9,7 +9,7 @@ namespace
 {
     struct ThreadParam
     {
-        wink::Mutex *mutex;
+        wink::mutex *m;
         int          tag;
         double       sum;
     };
@@ -20,12 +20,12 @@ namespace
         assert(args);
         wink::rand32_kiss g;
         ThreadParam &param = *(ThreadParam *)args;
-        assert(param.mutex);
-        wink::Mutex &mutex = *param.mutex;
+        assert(param.m);
+        wink::mutex &m = *param.m;
         for(int iter=1; iter <= 16; ++iter )
         {
             {
-                wink::ScopeLock access_to(mutex);
+                wink::scope_lock access_to(m);
                 fprintf( stderr, "In Thread with Tag=%u: iter=%d\n", param.tag, iter);
 				fflush(stderr);
             }
@@ -45,11 +45,11 @@ int main(int argc, char *argv[] )
     
     try 
     {
-        wink::Mutex mutex;
+        wink::mutex m;
         ThreadParam param[2];
         
-        param[0].mutex = &mutex;
-        param[1].mutex = &mutex;
+        param[0].m = &m;
+        param[1].m = &m;
         
         param[0].tag = 0;
         param[1].tag = 1;

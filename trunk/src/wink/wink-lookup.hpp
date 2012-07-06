@@ -1,3 +1,8 @@
+//! \file
+/**
+ \brief  lookup indices for windows construction
+ */
+
 #ifndef YOCTO_WINK_LOOKUP_INCLUDED
 #define YOCTO_WINK_LOOKUP_INCLUDED 1
 
