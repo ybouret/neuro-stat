@@ -3,7 +3,7 @@
 #ifndef WINK_MUTEX_INCLUDED
 #define WINK_MUTEX_INCLUDED 1
 
-#include "wink-os.hpp"
+#include "../wink-os.hpp"
 
 #if defined(WINK_BSD)
 #	if !defined(__USE_UNIX98)

@@ -1,3 +1,10 @@
+SET(PAR_SRCS	par/wink-mutex.hpp
+				par/wink-mutex.cpp
+				par/wink-thread.hpp
+				par/wink-thread.cpp
+				)
+SOURCE_GROUP(par FILES ${PAR_SRCS})
+
 ADD_LIBRARY(wink STATIC wink.hpp 
 			wink-rand32.hpp
 			wink-rand32.cpp
@@ -20,10 +27,7 @@ ADD_LIBRARY(wink STATIC wink.hpp
 			wink-neuro-pair.cpp
 			wink-os.hpp
 			wink-os.cpp
-			wink-mutex.hpp
-			wink-mutex.cpp
-			wink-thread.hpp
-			wink-thread.cpp
+			${PAR_SRCS}
 			)
 
 ADD_SUBDIRECTORY(tests)

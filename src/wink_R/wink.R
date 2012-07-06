@@ -67,4 +67,6 @@ bootstrap_pvalue_par(neurons[[1]],neurons[[2]],windows,0.01,10000,4);
 par_tmx = proc.time() - stamp;
 par_tmx[3];
 
+print("-------- SPEEDUP --------");
+ser_tmx[[3]]/par_tmx[[3]];
 

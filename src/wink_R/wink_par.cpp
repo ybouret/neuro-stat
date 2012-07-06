@@ -3,7 +3,7 @@
 #include <Rinternals.h>
 
 #include "../wink/wink-neuro-pair.hpp"
-#include "../wink/wink-thread.hpp"
+#include "../wink/par/wink-thread.hpp"
 
 #include <iostream>
 #include <time.h>
