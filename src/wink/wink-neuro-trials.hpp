@@ -1,6 +1,6 @@
-//! \file
 /**
- \brief info about a neurophys. trial
+ \file
+ \brief Info about a neurophys. trial
  */
 
 #ifndef WINK_NEURO_TRIALS_INCLUDED

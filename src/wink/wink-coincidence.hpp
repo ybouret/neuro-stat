@@ -1,6 +1,6 @@
-//! \file
 /**
- \brief coincidences detection
+ \file
+ \brief Coincidences detection.
  */
 #ifndef WINK_COINCIDENCE_INCLUDED 
 #define WINK_COINCIDENCE_INCLUDED 1

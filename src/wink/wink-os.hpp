@@ -1,5 +1,5 @@
-// \file
 /**
+ \file
  \brief detecting O/S
  */
 #ifndef WINK_OS_INCLUDED
