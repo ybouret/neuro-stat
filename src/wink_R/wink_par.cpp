@@ -1,13 +1,12 @@
-#include <R.h>
-#include <Rmath.h>
-#include <Rinternals.h>
-
 #include "../wink/wink-neuro-pair.hpp"
 #include "../wink/par/wink-worker.hpp"
 
 #include <iostream>
-#include <time.h>
+#include <ctime>
 
+#include <R.h>
+#include <Rmath.h>
+#include <Rinternals.h>
 
 extern "C"
 SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP Rnt) throw()

@@ -20,7 +20,7 @@ ser_tmx = proc.time() - stamp;
 ser_tmx[3];
 
 stamp = proc.time();
-p1 <- bootstrap_pvalues_par(neurons[[1]],neurons[[2]],intervals,delta,B,4);
+p1 <- bootstrap_pvalues_par(neurons[[1]],neurons[[2]],intervals,delta,B,2);
 par_tmx = proc.time() - stamp;
 par_tmx[3];
 
