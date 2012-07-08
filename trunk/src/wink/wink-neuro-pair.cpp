@@ -4,6 +4,8 @@
 namespace wink 
 {
     
+	uint32_t neuro_pair:: shared_seed  = 0;\
+	
     neuro_pair:: ~neuro_pair() throw()
     {
     }
@@ -27,7 +29,7 @@ g()
     perm( ntrials ),
     NEURO_PAIR_CTOR()
     {
-        
+        ++shared_seed;
     }
     
     static inline size_t __check_rows( size_t r1, size_t r2 )

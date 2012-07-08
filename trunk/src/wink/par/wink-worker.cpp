@@ -62,11 +62,13 @@ namespace wink
     
     void worker:: run() throw()
     {
+	#if 0
         {
             scope_lock guard( access );
             fprintf(stderr, "\t\tworker @%4u +%4u : seed = 0x%08x\n", unsigned(offset), unsigned(length), seed);
             fflush(stderr);
         }
+	#endif
         
         //----------------------------------------------------------------------
         // Post-Init
@@ -111,12 +113,12 @@ namespace wink
         
         try 
         {
-            const uint32_t r32 = rand32::ih32( uint32_t(time(NULL)) );
             size_t offset = 0;
             size_t length = num_windows;
             while(size<maxi)
             {
                 const size_t   todo = length / (maxi-size);
+				const uint32_t r32  = rand32::ih32( wink::neuro_pair::shared_seed + uint32_t(time(NULL)) );
                 const uint32_t s32  = rand32::ih32( r32 + rand32::ih32(size) );
                 
                 new( &crew[size] ) worker(M1, M2, B, offset, todo, ab, p, lag, s32, access);

@@ -11,8 +11,8 @@
 extern "C"
 SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
 {
-    wink::rand32_kiss g;
-    g.seed(time(NULL));
+    //wink::rand32_kiss g;
+    //g.seed(time(NULL));
 	
       
 #if 0
@@ -97,7 +97,7 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
         // make C++ neuro_pair
         //======================================================================
         wink::neuro_pair   NP(M1,M2,B);
-        
+        NP.g.seed( wink::neuro_pair::shared_seed + uint32_t(time(NULL)) );
         //======================================================================
         // create the return vector
         //======================================================================

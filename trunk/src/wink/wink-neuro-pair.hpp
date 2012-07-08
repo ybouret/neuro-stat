@@ -56,8 +56,7 @@ namespace wink
         //! evaluate the pvalue on [a,b] with lag delta
         double pvalue( double a, double b, double delta ) throw();
         
-        //! 
-        
+		static uint32_t shared_seed; //!< increased by constructor
         
     private:
         neuro_pair( const neuro_pair & );
