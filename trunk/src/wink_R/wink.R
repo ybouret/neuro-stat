@@ -4,14 +4,12 @@
 ##
 ########################################################################
 
-## build the DLL names
-wink_ser_dll <- paste("wink_ser", .Platform$dynlib.ext, sep="")
-wink_par_dll <- paste("wink_par", .Platform$dynlib.ext, sep="")
-print(c(paste("serial: ",wink_ser_dll,sep=""),paste("parallel: ",wink_par_dll,sep="")))
+## build the DLL name
+wink_dll <- paste("wink", .Platform$dynlib.ext, sep="")
+print(wink_dll)
 
-## load them
-dyn.load(wink_ser_dll)
-dyn.load(wink_par_dll)
+## load the dll
+dyn.load(wink_dll)
 
 ########################################################################
 ##

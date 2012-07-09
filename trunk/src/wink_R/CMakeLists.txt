@@ -27,5 +27,11 @@ ADD_CUSTOM_TARGET(wink_par ALL
 	DEPENDS wink
 	SOURCES wink_par.cpp)
 	
+ADD_CUSTOM_TARGET(wink_R ALL
+	COMMAND ${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/wink.so ${CMAKE_CURRENT_SOURCE_DIR}/wink.cpp "${winkLib}"
+	COMMENT "Building .Call wink module"
+	DEPENDS wink
+	SOURCES wink.cpp)
+	
 ENDIF()
 

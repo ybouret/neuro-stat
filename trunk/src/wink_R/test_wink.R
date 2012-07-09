@@ -7,7 +7,7 @@ source("simulationPP.R")
 neurons <- simulPP(0,2,50,40);
 
 
-a=seq(0,1.9,by=0.002)
+a=seq(0,1.9,by=0.05)
 b=a+0.1
 intervals=t(matrix(c(a,b),ncol=2))
 
