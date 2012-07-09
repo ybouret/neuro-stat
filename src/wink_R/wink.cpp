@@ -117,10 +117,12 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
         M2.loadR( REAL(data2) );
         
         //======================================================================
-        // make C++ neuro_pair
+        // make C++ neuro_pair, init random generator
         //======================================================================
         wink::neuro_pair   NP(M1,M2,param.B);
         NP.g.seed( wink::neuro_pair::shared_seed + uint32_t(time(NULL)) );
+       
+        
         //======================================================================
         // create the return vector
         //======================================================================

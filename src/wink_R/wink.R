@@ -4,11 +4,15 @@
 ##
 ########################################################################
 
+
 ## build the DLL name
 wink_dll <- paste("wink", .Platform$dynlib.ext, sep="")
 print(wink_dll)
 
-## load the dll
+## load the dll only once
+if( is.loaded("wink_ser") )
+	dyn.unload(wink_dll)
+	
 dyn.load(wink_dll)
 
 ########################################################################
@@ -39,6 +43,11 @@ wink_bootstrap_check_args <- function(N1,N2,intervals,delta,B)
 ##
 ## Define the sequential function
 ##
+## N1       : first Neuron
+## N2       : second Neuron
+## intervals: #intervals, 2 rows of a,b
+## delta    : time lag for coincidence
+## B        : bootstrap count
 ########################################################################
 bootstrap_pvalues_ser <- function(N1,N2,intervals,delta,B)
 {
@@ -50,7 +59,17 @@ bootstrap_pvalues_ser <- function(N1,N2,intervals,delta,B)
 	
 }
 
-
+########################################################################
+##
+## Define the parallel function
+##
+## N1       : first Neuron
+## N2       : second Neuron
+## intervals: #intervals, 2 rows of a,b
+## delta    : time lag for coincidence
+## B        : bootstrap count
+## num_threads: number of threads to dispatch intervals
+########################################################################
 bootstrap_pvalues_par <- function(N1,N2,intervals,delta,B,num_threads)
 {
 	
