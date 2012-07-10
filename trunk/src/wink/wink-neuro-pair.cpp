@@ -59,12 +59,18 @@ g()
         
         // get the true coincidences
         true_coinc = wink::true_coincidences(N1, N2, delta, perm);
-        
-        // compute the bootstraped distribution
-        permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm,g);
-        
-        // and evaluate the thingy
-        return permutation_pvalue(true_coinc, Bcoinc, Bcount);
+        if( true_coinc > 0 )
+        {
+            // compute the bootstraped distribution
+            permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm,g);
+            
+            // and evaluate the thingy
+            return permutation_pvalue(true_coinc, Bcoinc, Bcount);
+        }
+        else 
+        {
+            return 1.0;
+        }
     }
     
     
