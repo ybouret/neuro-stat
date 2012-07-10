@@ -26,6 +26,8 @@ namespace wink
     //! true coincidences on a prepared window
     /**
      call perm.identity() and total_coincidences(N1,N2,perm,delta);
+     if the result is zero, then it is not necessary to bootstrap:
+     the pvalue is 1 !
      */
     size_t true_coincidences(const neuro_trials &N1, 
                              const neuro_trials &N2, 
