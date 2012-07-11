@@ -211,17 +211,18 @@ SEXP wink_both_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) 
         for( size_t i=0; i < param.num_windows; ++i )
         {
             const size_t i2 = i*2;
+            const size_t i3 = i2+1;
             //------------------------------------------------------------------
             // get the boundaries
             //------------------------------------------------------------------
-            const double a = param.ptr_windows[0+i2];
-            const double b = param.ptr_windows[1+i2];
+            const double a = param.ptr_windows[i2];
+            const double b = param.ptr_windows[i3];
             
             //------------------------------------------------------------------
             // call the integrated function
             //------------------------------------------------------------------
-            double &pvalue_geq = ans[ 0 + i2 ];
-            double &pvalue_leq = ans[ 1 + i2 ];
+            double &pvalue_geq = ans[ i2 ];
+            double &pvalue_leq = ans[ i3 ];
             //Rprintf("[%10.6f,%10.6f] :  true_coinc=%6u : pvalue= %.8f\n",a,b,unsigned(NP.true_coinc),pvalue);
             NP.both_pvalues(pvalue_geq,pvalue_leq,a,b,param.delta);
         }
@@ -291,7 +292,8 @@ SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP 
                            param.num_windows,
                            param.ptr_windows,
                            pvalues,
-                           param.delta);
+                           param.delta,
+                           wink::compute_pvalues_geq);
         
         //======================================================================
         // wait for threads to complete
@@ -308,3 +310,70 @@ SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP 
     
     return R_NilValue;
 }
+
+extern "C"
+SEXP wink_both_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP Rnt) throw()
+{
+    
+    
+    parameters param;
+    if( !param.load(data1,data2,windows,Rdelta,RB) )
+        return R_NilValue;
+    
+    //==========================================================================
+    // Get num_threads
+    //==========================================================================
+    Rnt = coerceVector(Rnt,INTSXP);
+    size_t num_threads = INTEGER(Rnt)[0];
+    Rprintf("\t#### num_threads=%u\n",unsigned(num_threads));
+    if(num_threads<=0)
+        num_threads = 1;
+    
+    
+    try
+    {
+        //======================================================================
+        // transform R data intro C++ objects
+        //======================================================================
+        wink::c_matrix     M1(param.nrow1,param.ncol1);
+        wink::c_matrix     M2(param.nrow2,param.ncol2);
+        
+        M1.loadR( REAL(data1) );
+        M2.loadR( REAL(data2) );
+        
+        //======================================================================
+        // create the return vector
+        //======================================================================
+        SEXP Rval;
+        PROTECT(Rval = allocMatrix(REALSXP,2,param.num_windows) );
+        double *pvalues = REAL(Rval);
+        
+        //======================================================================
+        // create the team of threads, starting ASAP
+        //======================================================================
+        wink::workers team(M1,
+                           M2,
+                           param.B,
+                           num_threads,
+                           param.num_windows,
+                           param.ptr_windows,
+                           pvalues,
+                           param.delta,
+                           wink::compute_pvalues_both);
+        
+        //======================================================================
+        // wait for threads to complete
+        //======================================================================
+        team.wait();
+        
+        UNPROTECT(1);
+        return Rval;
+    }
+    catch(...)
+    {
+        Rprintf("Exception in code");
+    }
+    
+    return R_NilValue;
+}
+

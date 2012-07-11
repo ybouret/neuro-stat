@@ -78,8 +78,9 @@ namespace wink
         size_t count_leq = 0;
         for( size_t i=0; i < Bcount; ++i )
         {
-            if(Bcoinc[i]>=true_coinc) ++count_geq;
-            if(Bcoinc[i]<=true_coinc) ++count_leq;
+            const size_t B_i = Bcoinc[i];
+            if(B_i>=true_coinc) ++count_geq;
+            if(B_i<=true_coinc) ++count_leq;
         }
         pvalue_geq = double(count_geq) / Bcount;
         pvalue_leq = double(count_leq) / Bcount;

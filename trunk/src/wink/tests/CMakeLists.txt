@@ -35,6 +35,7 @@ ADD_TEST(Permutations t_permutation)
 ADD_TEST(NeuroTrials  t_neuro_trials)
 ADD_TEST(Rand32       t_rand32)
 ADD_TEST(Thread       t_thread)
+ADD_TEST(Workers      t_workers)
 
 ADD_CUSTOM_TARGET(check1  
 	COMMAND ${CMAKE_CTEST_COMMAND} 
@@ -45,6 +46,7 @@ ADD_CUSTOM_TARGET(check1
 		t_neuro_trials
 		t_rand32
 		t_thread
+		t_workers
 )
 
 

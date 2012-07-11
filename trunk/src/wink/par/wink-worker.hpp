@@ -25,10 +25,16 @@ namespace wink
         double        *pvalues;
         const double   delta;
         const uint32_t seed;
-        
+    
     private:
         slice( const slice &);
         slice&operator=(const slice & );
+    };
+    
+    enum compute_pvalues
+    {
+        compute_pvalues_geq,
+        compute_pvalues_both
     };
     
     //! one neuro pair to act on a slice of windows
@@ -44,13 +50,15 @@ namespace wink
                         double         *p,
                         const double    lag,
                         const uint32_t  s32,
-                        wink::mutex    &synchro
+                        wink::mutex    &synchro,
+                        compute_pvalues pvalues_kind
                         );
         
         virtual ~worker() throw();
         
-        mutex &access;
-        thread thr;
+        mutex                &access; //!< to synchronize is necessary
+        const compute_pvalues which;  //!< single/both
+        thread                thr;    //!< thread in which the computation is carried out
         
     private:
         worker( const worker & );
@@ -71,7 +79,8 @@ namespace wink
                          const size_t    num_windows,
                          const double   *ab,
                          double         *p,
-                         const double    lag);
+                         const double    lag,
+                         compute_pvalues pvalues_kind);
         
         virtual ~workers() throw();
         

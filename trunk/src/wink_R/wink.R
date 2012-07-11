@@ -86,6 +86,8 @@ bootstrap_both_pvalues_ser <- function(N1,N2,intervals,delta,B)
 
 
 
+
+
 ########################################################################
 ##
 ## Define the parallel function
@@ -96,6 +98,8 @@ bootstrap_both_pvalues_ser <- function(N1,N2,intervals,delta,B)
 ## delta    : time lag for coincidence
 ## B        : bootstrap count
 ## num_threads: number of threads to dispatch intervals
+##
+## return: the vector of pvalues(Bootstrap>=true_coincidences)
 ########################################################################
 bootstrap_pvalues_par <- function(N1,N2,intervals,delta,B,num_threads)
 {
@@ -109,4 +113,32 @@ bootstrap_pvalues_par <- function(N1,N2,intervals,delta,B,num_threads)
 		
 	#return: the pvalues associated to the windows
 	.Call("wink_par", N1, N2,intervals,delta,B,num_threads);
+}
+
+########################################################################
+##
+## Define the parallel function
+##
+## N1       : first Neuron
+## N2       : second Neuron
+## intervals: #intervals, 2 rows of a,b
+## delta    : time lag for coincidence
+## B        : bootstrap count
+## num_threads: number of threads to dispatch intervals
+##
+## return   : a MATRIX: first  row: pvalues(Bootstrap>=true_coincidences)
+##                      second row: pvalues(Bootstrap<=true_coincidences)
+########################################################################
+bootstrap_both_pvalues_par <- function(N1,N2,intervals,delta,B,num_threads)
+{
+	
+	# common arguments check
+	wink_bootstrap_check_args(N1,N2,intervals,delta,B);
+	
+	# num threads check
+	if( !is.real(num_threads) )
+		stop("num_threads must be a real/integer")
+		
+	#return: the pvalues associated to the windows
+	.Call("wink_both_par", N1, N2,intervals,delta,B,num_threads);
 }
