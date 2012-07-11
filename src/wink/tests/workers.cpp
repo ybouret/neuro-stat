@@ -46,8 +46,8 @@ int main( int argc, char *argv[] )
         const double   delta = 0.005;
         
         const size_t   num_windows = 500 + g.less_than(500);
-        double        *pvalues     = new double[3*num_windows];
-        double        *windows     = pvalues + num_windows;
+        double        *pvalues     = new double[4*num_windows];
+        double        *windows     = pvalues + 2*num_windows;
         
         std::cerr << "num windows=" << num_windows << std::endl;
         
@@ -60,11 +60,15 @@ int main( int argc, char *argv[] )
             b = ((i+1)*L)*fac;
         }
         
+        
         try
         {
-            wink::workers team(M1,M2,B,num_threads,num_windows,windows,pvalues,delta);
             
-            team.wait();
+            std::cerr << "-- Compute pvalues geq" << std::endl;
+            {
+                wink::workers team(M1,M2,B,num_threads,num_windows,windows,pvalues,delta,wink::compute_pvalues_geq);
+                team.wait();
+            }
             
         }
         catch(...)
