@@ -53,8 +53,12 @@ namespace wink
         size_t        true_coinc; //!< last true_coinc
         rand32_kiss   g;          //!< own generator, to be seeded
 
-        //! evaluate the pvalue on [a,b] with lag delta
-        double pvalue( double a, double b, double delta ) throw();
+        //! evaluate the >= pvalue on [a,b] with lag delta
+        double pvalue_geq( double a, double b, double delta ) throw();
+        
+        //! evaluate bot pvalues  on [a,b] with lag delta
+        void   both_pvalues( double &pvalue_geq, double &pvalue_leq, double a, double b, double delta ) throw();
+        
         
 		static uint32_t shared_seed; //!< increased by constructor
         

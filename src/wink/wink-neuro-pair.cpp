@@ -50,28 +50,66 @@ g()
     
     
     
-    double neuro_pair:: pvalue( double a, double b, double delta ) throw()
+    double neuro_pair:: pvalue_geq( double a, double b, double delta ) throw()
     {
         assert(a<=b);
+        
+        //----------------------------------------------------------------------
         // prepare the windows
+        //----------------------------------------------------------------------
         N1.prepare_windows(a,b);
         N2.prepare_windows(a,b);
         
+        //----------------------------------------------------------------------
         // get the true coincidences
+        //----------------------------------------------------------------------
         true_coinc = wink::true_coincidences(N1, N2, delta, perm);
         if( true_coinc > 0 )
         {
+            //------------------------------------------------------------------
             // compute the bootstraped distribution
+            //------------------------------------------------------------------
             permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm,g);
             
+            //------------------------------------------------------------------
             // and evaluate the thingy
-            return permutation_pvalue(true_coinc, Bcoinc, Bcount);
+            //------------------------------------------------------------------
+            return permutation_pvalue_geq(true_coinc, Bcoinc, Bcount);
         }
         else 
         {
+            //------------------------------------------------------------------
+            // no coincidence on any trial !
+            //------------------------------------------------------------------
             return 1.0;
         }
     }
+    
+    void  neuro_pair:: both_pvalues( double &pvalue_geq, double &pvalue_leq, double a, double b, double delta ) throw()
+    {
+        assert(a<=b);
+        //----------------------------------------------------------------------
+        // prepare the windows
+        //----------------------------------------------------------------------
+        N1.prepare_windows(a,b);
+        N2.prepare_windows(a,b);
+        
+        //----------------------------------------------------------------------
+        // get the true coincidences
+        //----------------------------------------------------------------------
+        true_coinc = wink::true_coincidences(N1, N2, delta, perm);
+        
+        //----------------------------------------------------------------------
+        // compute the bootstraped distribution
+        //----------------------------------------------------------------------
+        permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm,g);
+        
+        //------------------------------------------------------------------
+        // and evaluate the pvalues
+        //------------------------------------------------------------------
+        permutation_pvalues(pvalue_geq, pvalue_leq, true_coinc, Bcoinc, Bcount);
+    }
+
     
     
 }

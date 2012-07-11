@@ -11,6 +11,11 @@
 namespace 
 {
     
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // common parameters for functions
+    //
+    ////////////////////////////////////////////////////////////////////////////
     struct parameters
     {
         size_t nrow1;
@@ -34,7 +39,7 @@ namespace
             SEXP Rdim1 = getAttrib(data1, R_DimSymbol);
             nrow1      = INTEGER(Rdim1)[0];
             ncol1      = INTEGER(Rdim1)[1];
-            Rprintf("\t#### N1: nrow=%u, ncol=%u\n", unsigned(nrow1), unsigned(ncol1) );
+            Rprintf("\t[WINK] N1: nrow=%u, ncol=%u\n", unsigned(nrow1), unsigned(ncol1) );
             
             //==================================================================
             // extract parameters from data2
@@ -42,7 +47,7 @@ namespace
             SEXP Rdim2 = getAttrib(data2, R_DimSymbol);
             nrow2 = INTEGER(Rdim2)[0];
             ncol2 = INTEGER(Rdim2)[1];
-            Rprintf("\t#### N2: nrow=%u, ncol=%u\n", unsigned(nrow2), unsigned(ncol2) );
+            Rprintf("\t[WINK] N2: nrow=%u, ncol=%u\n", unsigned(nrow2), unsigned(ncol2) );
             
             
             if( nrow1 != nrow2 )
@@ -63,7 +68,7 @@ namespace
             
             num_windows = INTEGER(RdimW)[1];
             ptr_windows = REAL(windows);
-            Rprintf("\t#### number of windows=%u\n",unsigned(num_windows));
+            Rprintf("\t[WINK] number of windows=%u\n",unsigned(num_windows));
             if( num_windows <= 0 )
             {
                 Rprintf("*** Error: invalid #windows\n");
@@ -75,14 +80,14 @@ namespace
             //==========================================================================
             Rdelta = coerceVector(Rdelta,REALSXP);
             delta  = REAL(Rdelta)[0];
-            Rprintf("\t#### delta=%g\n",delta);
+            Rprintf("\t[WINK] delta=%g\n",delta);
             
             //==========================================================================
             // Get B Count
             //==========================================================================
             RB = coerceVector(RB, INTSXP);
             B  = INTEGER(RB)[0];
-            Rprintf("\t#### B=%u\n",unsigned(B));
+            Rprintf("\t[WINK] B=%u\n",unsigned(B));
             if( B <= 0 )
             {
                 Rprintf("*** Error: invalid B<=0\n");
@@ -97,6 +102,12 @@ namespace
     
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// SERIAL CODE
+//
+////////////////////////////////////////////////////////////////////////////////
 extern "C"
 SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
 {
@@ -144,7 +155,7 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
             //------------------------------------------------------------------
             // call the integrated function
             //------------------------------------------------------------------
-            const double pvalue = NP.pvalue(a,b,param.delta);
+            const double pvalue = NP.pvalue_geq(a,b,param.delta);
             //Rprintf("[%10.6f,%10.6f] :  true_coinc=%6u : pvalue= %.8f\n",a,b,unsigned(NP.true_coinc),pvalue);
             
             ans[i] = pvalue;
@@ -161,7 +172,78 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
     
 }
 
+extern "C"
+SEXP wink_both_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw()
+{
+    
+    parameters param;
+    if( !param.load(data1,data2,windows,Rdelta,RB) )
+        return R_NilValue;
+    
+    try 
+    {
+        //======================================================================
+        // transform R data intro C++ objects
+        //======================================================================
+        wink::c_matrix     M1(param.nrow1,param.ncol1);
+        wink::c_matrix     M2(param.nrow2,param.ncol2);
+        
+        M1.loadR( REAL(data1) );
+        M2.loadR( REAL(data2) );
+        
+        //======================================================================
+        // make C++ neuro_pair, init random generator
+        //======================================================================
+        wink::neuro_pair   NP(M1,M2,param.B);
+        NP.g.seed( wink::neuro_pair::shared_seed + uint32_t(time(NULL)) );
+        
+        
+        //======================================================================
+        // create the return matrix
+        //======================================================================
+        SEXP Rval;
+        PROTECT(Rval = allocMatrix(REALSXP,2,param.num_windows) );
+        double *ans = REAL(Rval);
+        
+        //======================================================================
+        // outer loop on windows
+        //======================================================================
+        for( size_t i=0; i < param.num_windows; ++i )
+        {
+            const size_t i2 = i*2;
+            //------------------------------------------------------------------
+            // get the boundaries
+            //------------------------------------------------------------------
+            const double a = param.ptr_windows[0+i2];
+            const double b = param.ptr_windows[1+i2];
+            
+            //------------------------------------------------------------------
+            // call the integrated function
+            //------------------------------------------------------------------
+            double &pvalue_geq = ans[ 0 + i2 ];
+            double &pvalue_leq = ans[ 1 + i2 ];
+            //Rprintf("[%10.6f,%10.6f] :  true_coinc=%6u : pvalue= %.8f\n",a,b,unsigned(NP.true_coinc),pvalue);
+            NP.both_pvalues(pvalue_geq,pvalue_leq,a,b,param.delta);
+        }
+        UNPROTECT(1);
+        
+        return Rval;
+    }
+    catch(...)
+    {
+        Rprintf("Exception in code");
+    }
+    return R_NilValue;
+    
+}
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// PARALLEL CODE
+//
+////////////////////////////////////////////////////////////////////////////////
 extern "C"
 SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP Rnt) throw()
 {
