@@ -10,7 +10,7 @@
 
 namespace wink
 {
-        
+    
     //! total coincidences on a prepared window.
     /**
      The windows must have been prepared before: 
@@ -59,8 +59,24 @@ namespace wink
                                permutation       &perm,
                                urand32           &g) throw();
     
-    //! find the pvalue from a sample and a true coincidence
-    double permutation_pvalue( const size_t true_coinc, const size_t *Bcoinc, const size_t Bcount ) throw();
+    //! find the >= pvalue from a sample and a true coincidence
+    /**
+     \param true_coinc total true coincidences
+     \param Bcoinc coincidences
+     \param Bcount Bcoinc[0..Bcount-1]
+     \return sum(Bcoinc[i]>=true_coinc) / Bcount
+     */
+    double permutation_pvalue_geq( const size_t true_coinc, const size_t *Bcoinc, const size_t Bcount ) throw();
+    
+    //! find the >= pvalue and the <= pvalue from a sample and a true coincidence
+    /**
+     \param true_coinc total true coincidences
+     \param Bcoinc coincidences
+     \param Bcount Bcoinc[0..Bcount-1]
+     \param pvalue_geq =sum(Bcoinc[i]>=true_coinc) / Bcount
+     \param pvalue_leq =sum(Bcoinc[i]<=true_coinc) / Bcount
+     */
+    void permutation_pvalues( double &pvalue_geq, double &pvalue_leq, const size_t true_coinc, const size_t *Bcoinc, const size_t Bcount ) throw();
     
 }
 

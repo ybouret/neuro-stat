@@ -86,7 +86,7 @@ namespace wink
             const double b = windows[ 1 + i2 ];
             //fprintf(stderr, "[%10.4f,%10.4f]\n", a, b );
             
-            pvalues[i] = pvalue(a, b, delta);
+            pvalues[i] = pvalue_geq(a, b, delta);
         }
     }
     

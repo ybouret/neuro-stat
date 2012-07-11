@@ -62,7 +62,7 @@ int main( int argc, char *argv[] )
                 const size_t true_coinc = wink::true_coincidences(N1, N2,delta,perm);
                 //std::cerr << "true_coinc [" << a << "," << b <<"]=" << true_coinc << std::endl;
                 wink::permutation_bootstrap(Bcoinc, Bcount, N1, N2, delta, perm, g );
-                const double pvalue = wink::permutation_pvalue(true_coinc, Bcoinc, Bcount);
+                const double pvalue = wink::permutation_pvalue_geq(true_coinc, Bcoinc, Bcount);
                 //std::cerr << "pvalue=" << pvalue << std::endl;
 				(void)pvalue;
 				#if defined(SAVE_DATA)

@@ -48,6 +48,8 @@ wink_bootstrap_check_args <- function(N1,N2,intervals,delta,B)
 ## intervals: #intervals, 2 rows of a,b
 ## delta    : time lag for coincidence
 ## B        : bootstrap count
+##
+## return: the vector of pvalues(Bootstrap>=true_coincidences)
 ########################################################################
 bootstrap_pvalues_ser <- function(N1,N2,intervals,delta,B)
 {
@@ -58,6 +60,31 @@ bootstrap_pvalues_ser <- function(N1,N2,intervals,delta,B)
 	.Call("wink_ser", N1, N2,intervals,delta,B );
 	
 }
+
+########################################################################
+##
+## Define the sequential function
+##
+## N1       : first Neuron
+## N2       : second Neuron
+## intervals: #intervals, 2 rows of a,b
+## delta    : time lag for coincidence
+## B        : bootstrap count
+##
+## return   : a MATRIX: first  row: pvalues(Bootstrap>=true_coincidences)
+##                      second row: pvalues(Bootstrap<=true_coincidences)
+########################################################################
+bootstrap_both_pvalues_ser <- function(N1,N2,intervals,delta,B)
+{
+	# common arguments check
+	wink_bootstrap_check_args(N1,N2,intervals,delta,B);
+		
+	#return: the pvalues associated to each interval
+	.Call("wink_both_ser", N1, N2,intervals,delta,B );
+	
+}
+
+
 
 ########################################################################
 ##

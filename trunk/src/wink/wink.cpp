@@ -60,7 +60,7 @@ namespace wink
         //sort_indices(Bcoinc,Bcount);
     }
     
-    double permutation_pvalue( const size_t true_coinc, const size_t *Bcoinc, const size_t Bcount ) throw()
+    double permutation_pvalue_geq( const size_t true_coinc, const size_t *Bcoinc, const size_t Bcount ) throw()
     {
         assert(!(Bcoinc==NULL&&Bcount>0));
         size_t count = 0;
@@ -70,5 +70,20 @@ namespace wink
         }
         return double(count)/Bcount;
     }
+    
+    void permutation_pvalues( double &pvalue_geq, double &pvalue_leq, const size_t true_coinc, const size_t *Bcoinc, const size_t Bcount ) throw()
+    {
+        assert(!(Bcoinc==NULL&&Bcount>0));
+        size_t count_geq = 0;
+        size_t count_leq = 0;
+        for( size_t i=0; i < Bcount; ++i )
+        {
+            if(Bcoinc[i]>=true_coinc) ++count_geq;
+            if(Bcoinc[i]<=true_coinc) ++count_leq;
+        }
+        pvalue_geq = double(count_geq) / Bcount;
+        pvalue_leq = double(count_leq) / Bcount;
+    }
+
     
 }
