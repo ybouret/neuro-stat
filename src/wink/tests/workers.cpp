@@ -66,7 +66,7 @@ int main( int argc, char *argv[] )
             
             std::cerr << "-- Compute pvalues geq" << std::endl;
             {
-                wink::workers team(M1,M2,B,num_threads,num_windows,windows,pvalues,delta,wink::compute_pvalues_geq);
+                wink::workers team(M1,M2,B,num_threads,num_windows,windows,pvalues,delta, &wink::worker::compute_pvalues_geq);
                 team.wait();
             }
             

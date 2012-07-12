@@ -31,16 +31,14 @@ namespace wink
         slice&operator=(const slice & );
     };
     
-    enum compute_pvalues
-    {
-        compute_pvalues_geq,
-        compute_pvalues_both
-    };
+ 
     
     //! one neuro pair to act on a slice of windows
     class worker : public neuro_pair, public slice
     {
     public:
+        typedef void (worker::*task)();
+        
         explicit worker(const c_matrix &M1,
                         const c_matrix &M2, 
                         const size_t    B,
@@ -51,20 +49,27 @@ namespace wink
                         const double    lag,
                         const uint32_t  s32,
                         wink::mutex    &synchro,
-                        compute_pvalues pvalues_kind
+                        task            todo
                         );
         
         virtual ~worker() throw();
         
         mutex                &access; //!< to synchronize is necessary
-        const compute_pvalues which;  //!< single/both
+        task                  job;    //!< compute method
         thread                thr;    //!< thread in which the computation is carried out
         
+        void initialize() throw();    //!< in thread, init RNG
+        void compute_pvalues_geq() throw();
+        void compute_pvalues_both() throw();
+        
     private:
+        
         worker( const worker & );
         worker&operator=( const worker & );
         static void engine( void * ) throw();
-        void run() throw();
+        
+        
+        
         
     };
     
@@ -80,7 +85,7 @@ namespace wink
                          const double   *ab,
                          double         *p,
                          const double    lag,
-                         compute_pvalues pvalues_kind);
+                         worker::task    todo);
         
         virtual ~workers() throw();
         

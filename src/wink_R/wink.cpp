@@ -132,7 +132,7 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
         //======================================================================
         wink::neuro_pair   NP(M1,M2,param.B);
         NP.g.seed( wink::neuro_pair::shared_seed + uint32_t(time(NULL)) );
-       
+        
         
         //======================================================================
         // create the return vector
@@ -259,7 +259,7 @@ SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP 
     //==========================================================================
     Rnt = coerceVector(Rnt,INTSXP);
     size_t num_threads = INTEGER(Rnt)[0];
-    Rprintf("\t#### num_threads=%u\n",unsigned(num_threads));
+    Rprintf("\t[WINK] num_threads=%u\n",unsigned(num_threads));
     if(num_threads<=0)
         num_threads = 1;
     
@@ -293,7 +293,7 @@ SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP 
                            param.ptr_windows,
                            pvalues,
                            param.delta,
-                           wink::compute_pvalues_geq);
+                           &wink::worker::compute_pvalues_geq);
         
         //======================================================================
         // wait for threads to complete
@@ -305,7 +305,7 @@ SEXP wink_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, SEXP 
     }
     catch(...)
     {
-        Rprintf("Exception in code");
+        Rprintf("Exception in wink_par");
     }
     
     return R_NilValue;
@@ -359,7 +359,7 @@ SEXP wink_both_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, 
                            param.ptr_windows,
                            pvalues,
                            param.delta,
-                           wink::compute_pvalues_both);
+                           &wink::worker::compute_pvalues_both);
         
         //======================================================================
         // wait for threads to complete
@@ -371,7 +371,7 @@ SEXP wink_both_par( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB, 
     }
     catch(...)
     {
-        Rprintf("Exception in code");
+        Rprintf("Exception in wink_both_par");
     }
     
     return R_NilValue;
