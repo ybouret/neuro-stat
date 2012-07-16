@@ -20,6 +20,8 @@
 namespace wink 
 {
     
+    
+    //! O/S thread MUTual EXclusion
     class mutex
     {
     public:
@@ -43,6 +45,7 @@ namespace wink
 
     };
  
+    //! lock a mutex for the current scope
     class scope_lock
     {
     public:

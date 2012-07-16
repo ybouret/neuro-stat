@@ -53,6 +53,9 @@ namespace wink
         size_t        true_coinc; //!< last true_coinc
         rand32_kiss   g;          //!< own generator, to be seeded
 
+        //! to debug
+        size_t true_coincidences_on( double a, double b, double delta ) throw();
+        
         //! evaluate the >= pvalue on [a,b] with lag delta
         double pvalue_geq( double a, double b, double delta ) throw();
         

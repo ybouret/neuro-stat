@@ -85,6 +85,21 @@ g()
         }
     }
     
+    size_t neuro_pair:: true_coincidences_on( double a, double b, double delta ) throw()
+    {
+        assert(a<=b);
+        //----------------------------------------------------------------------
+        // prepare the windows
+        //----------------------------------------------------------------------
+        N1.prepare_windows(a,b);
+        N2.prepare_windows(a,b);
+        
+        //----------------------------------------------------------------------
+        // return the true coincidences
+        //----------------------------------------------------------------------
+        return  wink::true_coincidences(N1, N2, delta, perm);
+    }
+    
     void  neuro_pair:: both_pvalues( double &pvalue_geq, double &pvalue_leq, double a, double b, double delta ) throw()
     {
         assert(a<=b);
