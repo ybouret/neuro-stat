@@ -24,6 +24,19 @@ dyn.load(wink_dll)
 
 ########################################################################
 ##
+## permutation of 1..n
+##
+## return a random permutation of 1..n as a VECTOR
+##
+########################################################################
+
+wink_perm <- function(n)
+{
+	.Call("wink_perm", as.integer(n) );
+}
+
+########################################################################
+##
 ## Number of total true coincidences
 ##
 ## N1       : first Neuron
