@@ -8,8 +8,61 @@
 #include <Rmath.h>
 #include <Rinternals.h>
 
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// test code: generate permutation
+//
+////////////////////////////////////////////////////////////////////////////////
+namespace  
+{
+    static wink::rand32_kiss __perm_g;
+}
+
+
+
+
+extern "C"
+SEXP wink_perm( SEXP RN )
+{
+    static bool init = true;
+    if( init )
+    {
+        __perm_g.seed( uint32_t(time(NULL)) );
+        init = false;
+    }
+    
+    RN           = coerceVector(RN, INTSXP);
+    const int N  = INTEGER(RN)[0];
+    if(N<=0)
+        return R_NilValue;
+    
+    //==========================================================================
+    // create the return vector
+    //==========================================================================
+    SEXP Rval;
+    PROTECT(Rval = allocVector(INTSXP,N) );
+    int *ans = INTEGER(Rval);
+    
+    try 
+    {
+        for( int i=0; i < N; ++i ) 
+            ans[i] = i+1;
+        
+        __perm_g.shuffle<int>(ans,N);
+        UNPROTECT(1);
+        return Rval;
+    }
+    catch(...)
+    {
+        Rprintf("Exception in wink_perm");
+    }
+    return R_NilValue;
+}
+
 namespace 
 {
+    
     
     ////////////////////////////////////////////////////////////////////////////
     //
@@ -101,6 +154,8 @@ namespace
                     return false;
                 }
             }
+            else
+                B = 1; //-- unused
             
             return true;
         }
@@ -111,7 +166,7 @@ namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-// test code
+// test code: true coincidences
 //
 ////////////////////////////////////////////////////////////////////////////////
 extern "C"
@@ -120,6 +175,14 @@ SEXP wink_true_coincidences( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta )
     parameters param;
     if( !param.load(data1,data2,windows,Rdelta,NULL,false) )
         return R_NilValue;
+    
+    //==========================================================================
+    // create the return vector
+    //==========================================================================
+    SEXP Rval;
+    PROTECT(Rval = allocVector(INTSXP,param.num_windows) );
+    int *ans = INTEGER(Rval);
+
     try 
     {
         //======================================================================
@@ -136,13 +199,7 @@ SEXP wink_true_coincidences( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta )
         //======================================================================
         wink::neuro_pair   NP(M1,M2,param.B);
         
-        //======================================================================
-        // create the return vector
-        //======================================================================
-        SEXP Rval;
-        PROTECT(Rval = allocVector(REALSXP,param.num_windows) );
-        double *ans = REAL(Rval);
-        
+                
         //======================================================================
         // outer loop on windows
         //======================================================================
@@ -163,7 +220,7 @@ SEXP wink_true_coincidences( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta )
         UNPROTECT(1);
         
         return Rval;
-
+        
     }
     catch(...)
     {
@@ -186,6 +243,12 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
     if( !param.load(data1,data2,windows,Rdelta,RB) )
         return R_NilValue;
     
+    //==========================================================================
+    // create the return vector
+    //==========================================================================
+    SEXP Rval;
+    PROTECT(Rval = allocVector(REALSXP,param.num_windows) );
+    double *ans = REAL(Rval);
     try 
     {
         //======================================================================
@@ -204,12 +267,7 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
         NP.g.seed( wink::neuro_pair::shared_seed + uint32_t(time(NULL)) );
         
         
-        //======================================================================
-        // create the return vector
-        //======================================================================
-        SEXP Rval;
-        PROTECT(Rval = allocVector(REALSXP,param.num_windows) );
-        double *ans = REAL(Rval);
+              
         
         //======================================================================
         // outer loop on windows
@@ -250,6 +308,13 @@ SEXP wink_both_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) 
     if( !param.load(data1,data2,windows,Rdelta,RB) )
         return R_NilValue;
     
+    //==========================================================================
+    // create the return matrix
+    //==========================================================================
+    SEXP Rval;
+    PROTECT(Rval = allocMatrix(REALSXP,2,param.num_windows) );
+    double *ans = REAL(Rval);
+
     try 
     {
         //======================================================================
@@ -268,13 +333,7 @@ SEXP wink_both_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) 
         NP.g.seed( wink::neuro_pair::shared_seed + uint32_t(time(NULL)) );
         
         
-        //======================================================================
-        // create the return matrix
-        //======================================================================
-        SEXP Rval;
-        PROTECT(Rval = allocMatrix(REALSXP,2,param.num_windows) );
-        double *ans = REAL(Rval);
-        
+               
         //======================================================================
         // outer loop on windows
         //======================================================================
