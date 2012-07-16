@@ -31,7 +31,12 @@ namespace
         
         double        delta;
         
-        bool load( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB ) throw()
+        bool load(SEXP data1, 
+                  SEXP data2, 
+                  SEXP windows, 
+                  SEXP Rdelta, 
+                  SEXP RB,
+                  bool parseB = true ) throw()
         {
             //==================================================================
             // extract parameters from data1
@@ -85,21 +90,86 @@ namespace
             //==========================================================================
             // Get B Count
             //==========================================================================
-            RB = coerceVector(RB, INTSXP);
-            B  = INTEGER(RB)[0];
-            Rprintf("\t[WINK] B=%u\n",unsigned(B));
-            if( B <= 0 )
+            if( parseB )
             {
-                Rprintf("*** Error: invalid B<=0\n");
-                return false;
+                RB = coerceVector(RB, INTSXP);
+                B  = INTEGER(RB)[0];
+                Rprintf("\t[WINK] B=%u\n",unsigned(B));
+                if( B <= 0 )
+                {
+                    Rprintf("*** Error: invalid B<=0\n");
+                    return false;
+                }
             }
-            
             
             return true;
         }
         
     };
     
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// test code
+//
+////////////////////////////////////////////////////////////////////////////////
+extern "C"
+SEXP wink_true_coincidences( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta )
+{
+    parameters param;
+    if( !param.load(data1,data2,windows,Rdelta,NULL,false) )
+        return R_NilValue;
+    try 
+    {
+        //======================================================================
+        // transform R data intro C++ objects
+        //======================================================================
+        wink::c_matrix     M1(param.nrow1,param.ncol1);
+        wink::c_matrix     M2(param.nrow2,param.ncol2);
+        
+        M1.loadR( REAL(data1) );
+        M2.loadR( REAL(data2) );
+        
+        //======================================================================
+        // make C++ neuro_pair, init random generator
+        //======================================================================
+        wink::neuro_pair   NP(M1,M2,param.B);
+        
+        //======================================================================
+        // create the return vector
+        //======================================================================
+        SEXP Rval;
+        PROTECT(Rval = allocVector(REALSXP,param.num_windows) );
+        double *ans = REAL(Rval);
+        
+        //======================================================================
+        // outer loop on windows
+        //======================================================================
+        for( size_t i=0; i < param.num_windows; ++i )
+        {
+            //------------------------------------------------------------------
+            // get the boundaries
+            //------------------------------------------------------------------
+            const double a = param.ptr_windows[0+2*i];
+            const double b = param.ptr_windows[1+2*i];
+            
+            //------------------------------------------------------------------
+            // call the integrated function
+            //------------------------------------------------------------------
+            const size_t true_coinc = NP.true_coincidences_on(a,b,param.delta);            
+            ans[i] = true_coinc;
+        }
+        UNPROTECT(1);
+        
+        return Rval;
+
+    }
+    catch(...)
+    {
+        Rprintf("Exception in wink_true_coincidences");
+    }
+    return R_NilValue;
 }
 
 
@@ -166,7 +236,7 @@ SEXP wink_ser( SEXP data1, SEXP data2, SEXP windows, SEXP Rdelta, SEXP RB) throw
     }
     catch(...)
     {
-        Rprintf("Exception in code");
+        Rprintf("Exception in wink_ser()");
     }
     return R_NilValue;
     
