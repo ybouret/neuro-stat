@@ -146,7 +146,10 @@ namespace wink
             size_t length = num_windows;
             while(size<maxi)
             {
+                //-- compute the work load for this worker
                 const size_t   number = length / (maxi-size);
+                
+                //-- compute a dedicated random seed
 				const uint32_t r32    = rand32::ih32( wink::neuro_pair::shared_seed + uint32_t(time(NULL)) );
                 const uint32_t s32    = rand32::ih32( r32 + rand32::ih32(size) );
                 

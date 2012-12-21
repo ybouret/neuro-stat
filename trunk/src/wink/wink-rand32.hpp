@@ -62,6 +62,7 @@ namespace wink
             return (0.5f+float(u))/4294967296.0f;
         }
         
+        //! integer hash, 32 bits
         static uint32_t ih32( uint32_t ) throw();
         
         //! should print 7 '0'
@@ -103,12 +104,14 @@ namespace wink
             return __full<T>( int2type<(sizeof(T)>sizeof(uint32_t))>() ); 
         }
         
+        //! return random index in 0..n
         inline size_t less_than( size_t n ) throw() 
         {
             return full<size_t>() % (++n);
         }
         
         
+        //! card desk shuffling algorithm
         template <typename T>
         inline void shuffle( T *a, size_t n ) throw()
         {

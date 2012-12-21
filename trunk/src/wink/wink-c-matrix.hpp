@@ -17,9 +17,9 @@ namespace wink
     public:
         c_matrix( size_t nr, size_t ncol );
         ~c_matrix() throw();
-        const size_t nrow;
-        const size_t ncol;
-        double      *data;
+        const size_t nrow; //! #rows
+        const size_t ncol; //! #columns
+        double      *data; //! row-major data[ nrow*ncol ]
         
         //! load a column major R matrix
         void loadR( const double *Rdata ) throw();

@@ -15,6 +15,12 @@ namespace wink
     class neuro_trials
     {
     public:
+        //! constructor: allocate memory from a raw experiment
+        /**
+         \param data
+         \param nr number of records => num
+         \param nc number of columns => top = nc-1 (first column=count)
+         */
         neuro_trials( const double *data, const size_t nr, const size_t nc );
         ~neuro_trials() throw();
         
@@ -37,6 +43,7 @@ namespace wink
         const size_t top;  //!< max valid index: nc-1 
         record      *rec;  //!< array of num records
         
+        //! prepare the windows for all the records
         void prepare_windows( double a, double b ) throw();
         
         
