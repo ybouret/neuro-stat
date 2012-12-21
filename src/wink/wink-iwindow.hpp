@@ -24,12 +24,9 @@ namespace wink
          for length to be >0, find_index_after(a,X,indexA) must succeed
          and find_index_before(b,X,indexB) must succeed as weel.
          if( indexA > indexB ), this means that [a,b] is
-         between two consecutive X, so the window is empty.
+         between two consecutive X, so that the window is empty.
          */
         void   initialize( double a, double b, const double *X );
-        
-                
-
         
     private:
         iwindow( const iwindow & );

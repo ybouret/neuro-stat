@@ -4,7 +4,7 @@
 namespace wink 
 {
     
-	uint32_t neuro_pair:: shared_seed  = 0;\
+	uint32_t neuro_pair:: shared_seed  = 0;
 	
     neuro_pair:: ~neuro_pair() throw()
     {

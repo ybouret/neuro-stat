@@ -28,9 +28,10 @@ int main( int argc, char *argv[] )
         if( num_threads <= 0 )
             num_threads = 1;
     }
-    
+    std::cerr << "-- Testing " << num_threads << " workers" << std::endl;
     try
     {
+        std::cerr << "-- Init random" << std::endl;
         wink::rand32_kiss g;
         g.seed( uint32_t(time(NULL)) );
         
@@ -49,7 +50,7 @@ int main( int argc, char *argv[] )
         double        *pvalues     = new double[4*num_windows];
         double        *windows     = pvalues + 2*num_windows;
         
-        std::cerr << "num windows=" << num_windows << std::endl;
+        std::cerr << "-- number of windows=" << num_windows << std::endl;
         
         const double fac = 1.0 / (num_windows);
         for( size_t i=0; i < num_windows; ++i )
