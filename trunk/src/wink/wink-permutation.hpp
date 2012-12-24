@@ -32,7 +32,7 @@ namespace wink
         //! build the identity permutation
         void identity() throw();
         
-        //! build a random permutation
+        //! build a drawing according to mode
         void generate( urand32 &g ) throw();
         
     private:
