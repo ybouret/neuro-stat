@@ -21,6 +21,8 @@ ADD_LIBRARY(wink STATIC wink.hpp
 			wink-iwindow.cpp
 			wink-permutation.hpp
 			wink-permutation.cpp
+			wink-drawing.hpp
+			wink-drawing.cpp
 			wink-c-matrix.hpp
 			wink-c-matrix.cpp
 			wink-neuro-trials.hpp
