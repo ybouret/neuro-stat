@@ -16,6 +16,10 @@ TARGET_LINK_LIBRARIES(t_neuro_trials wink)
 ADD_EXECUTABLE(t_rand32 rand32.cpp)
 TARGET_LINK_LIBRARIES(t_rand32 wink)
 
+ADD_EXECUTABLE(t_drawing drawing.cpp)
+TARGET_LINK_LIBRARIES(t_drawing wink)
+
+
 ADD_EXECUTABLE(t_thread thread.cpp)
 TARGET_LINK_LIBRARIES(t_thread wink)
 
@@ -36,6 +40,7 @@ ADD_TEST(NeuroTrials  t_neuro_trials)
 ADD_TEST(Rand32       t_rand32)
 ADD_TEST(Thread       t_thread)
 ADD_TEST(Workers      t_workers)
+ADD_TEST(Drawing      t_drawing)
 
 ADD_CUSTOM_TARGET(check1  
 	COMMAND ${CMAKE_CTEST_COMMAND} 
@@ -47,6 +52,7 @@ ADD_CUSTOM_TARGET(check1
 		t_rand32
 		t_thread
 		t_workers
+		t_drawing
 )
 
 
