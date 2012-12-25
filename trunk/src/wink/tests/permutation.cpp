@@ -97,6 +97,34 @@ int main( int argc, char *argv[] )
         
         wink::rand32_kiss g;
         g.seed( uint32_t(time(NULL)) );
+        
+        std::cerr << "-- Testing drawings" << std::endl;
+        {
+            wink::permutation perm(10);
+            perm.identity();
+            std::cerr << "id=" << perm << std::endl;
+            
+            std::cerr << std::endl;
+            for( size_t j=0; j < 4; ++j )
+            {
+                perm.mode = wink::permutation::do_shuffle;
+                perm.generate(g);
+                std::cerr << "sh=" << perm << std::endl;
+            }
+            
+            std::cerr << std::endl;
+            for( size_t j=0; j < 4; ++j )
+            {
+                perm.mode = wink::permutation::do_replace;
+                perm.generate(g);
+                std::cerr << "rp=" << perm << std::endl;
+            }
+
+            
+        }
+        return 0;
+        
+        std::cerr << "-- Testing properties" << std::endl;
         double AVE = 0.5;
         double SIG = 1.0/sqrt(12.0);
         perform(g, wink::permutation::do_shuffle, v1, v2, v3, COUNT, AVE, SIG, "perm-shuffle.dat");
@@ -104,7 +132,7 @@ int main( int argc, char *argv[] )
         AVE = 1;
         SIG = 1;
         perform(g, wink::permutation::do_replace, v1, v2, v3, COUNT, AVE, SIG, "perm-replace.dat");
-
+        
         
         fprintf(stderr,"\n");
         

@@ -7,6 +7,7 @@
 
 
 #include "wink-rand32.hpp"
+#include <iosfwd>
 
 namespace wink 
 {
@@ -34,6 +35,8 @@ namespace wink
         
         //! build a drawing according to mode
         void generate( urand32 &g ) throw();
+        
+        friend std::ostream & operator<<( std::ostream &, const permutation & );
         
     private:
         permutation( const permutation & );
