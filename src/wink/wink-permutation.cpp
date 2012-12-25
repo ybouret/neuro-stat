@@ -1,9 +1,18 @@
 #include "wink-permutation.hpp"
+#include <iostream>
 
 namespace wink
 {
     
-    
+    std::ostream & operator<<( std::ostream &os, const permutation &perm)
+    {
+        os << "[";
+        for(size_t i=0;i<perm.size;++i)
+            os << " " << perm.indx[i];
+        os << " ]";
+        return os;
+    }
+
     permutation:: ~permutation() throw()
     {
         delete []indx;
@@ -24,7 +33,6 @@ namespace wink
         assert(indx!=0);
         assert(size>0);
         for( size_t i=0; i < size; ++i ) indx[i] = i;
-        
     }
     
     void permutation::generate( urand32 &g ) throw()
