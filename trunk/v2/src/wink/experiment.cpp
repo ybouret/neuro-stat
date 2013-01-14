@@ -12,10 +12,11 @@ namespace wink
     records( num_trials  ),
     length( max_data ),
     stride( length+1 ),
-    workspace( new double [stride * num_trials] )
+    workspace( new double [stride * num_trials] ),
+    trials( records.size )
     {
         double *p = workspace;
-        for(size_t i=0; i < trials(); ++i, p+=stride )
+        for(size_t i=0; i < trials; ++i, p+=stride )
         {
             p[0] = double( length );
             new (&records[i]) record(p);
@@ -24,16 +25,31 @@ namespace wink
     
     const record & experiment:: operator[]( size_t indx ) const throw()
     {
-        assert(indx<trials());
+        assert(indx<trials);
         return records[indx];
     }
     
-    size_t experiment:: trials() const throw()
+        
+    void experiment:: loadR( const double *Rmat, size_t nrow, size_t ncol )
     {
-        return records.size;
+        // sanity check
+        if(!Rmat) throw        Exception("experiment: NULL R matrix");
+        if(nrow!=trials) throw Exception("experiment: R rows!= trials");
+        if(ncol>length)  throw Exception("experiment: R ncol>length");
+        
+        // load...
+        double *p = workspace;
+        for(size_t i=0; i < trials; ++i, p += stride )
+        {
+            assert( length == size_t(p[0]));
+            for( size_t j=0; j < ncol; ++j )
+            {
+                p[j+1] = Rmat[i+j*nrow];
+            }
+        }
+        
     }
-    
-    
+
     
     
 }

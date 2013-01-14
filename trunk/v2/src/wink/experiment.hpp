@@ -6,16 +6,23 @@
 
 namespace wink
 {
+    //! experiment: content #trials records
     class experiment
     {
     public:
         explicit experiment( size_t num_trials, size_t max_data );
         virtual ~experiment() throw();
         
-        size_t trials() const throw();
         
         const record & operator[]( size_t indx ) const throw();
         
+        //! load a column-major R matrix
+        /**
+         \param Rmat the data in column-major layout
+         \param nrow, must be equal to trials
+         \param ncolm must be lower than records size.
+         */
+        void loadR( const double *Rmat, size_t nrow, size_t ncol );
         
     private:
         C_Array<record> records;
@@ -25,7 +32,9 @@ namespace wink
         
         experiment(const experiment &);
         experiment&operator=(const experiment &);
-
+        
+    public:
+        const size_t &trials;
     };
 }
 
