@@ -15,7 +15,7 @@ namespace wink
          \warning data must be available, no memory is allocated !
          */
         explicit record( const double *data ) throw();
-        size_t size() const throw();
+        const size_t size;
         
         inline double operator[]( size_t indx ) const throw();
         
