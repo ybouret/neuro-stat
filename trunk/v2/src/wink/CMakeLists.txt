@@ -3,3 +3,6 @@ ADD_LIBRARY(wink STATIC
 	experiment.hpp	experiment.cpp
 )
 
+ADD_SUBDIRECTORY(tests)
+
+
