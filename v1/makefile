@@ -1,4 +1,4 @@
-CREATE=./share/create.sh
+CREATE=../share/create.sh
 
 all:
 
