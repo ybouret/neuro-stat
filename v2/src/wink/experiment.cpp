@@ -6,6 +6,7 @@ namespace wink
 {
     experiment:: ~experiment() throw()
     {
+	delete [] workspace;
     }
     
     experiment:: experiment( size_t num_trials, size_t max_data ) :
