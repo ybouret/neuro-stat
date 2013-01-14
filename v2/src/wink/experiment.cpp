@@ -29,6 +29,12 @@ namespace wink
         return records[indx];
     }
     
+    record & experiment:: operator[]( size_t indx )  throw()
+    {
+        assert(indx<trials);
+        return records[indx];
+    }
+    
         
     void experiment:: loadR( const double *Rmat, size_t nrow, size_t ncol )
     {
@@ -37,7 +43,7 @@ namespace wink
         if(nrow!=trials) throw Exception("experiment: R rows!= trials");
         if(ncol>length)  throw Exception("experiment: R ncol>length");
         
-        // load...
+        // load data
         double *p = workspace;
         for(size_t i=0; i < trials; ++i, p += stride )
         {

@@ -14,13 +14,14 @@ namespace wink
          \param   data data[0] = n, data[1..n]=tops
          \warning data must be available, no memory is allocated !
          */
-        explicit record( const double *data ) throw();
+        explicit record( double *data ) throw();
         const size_t size;
         
-        inline double operator[]( size_t indx ) const throw();
+        inline const double &operator[]( size_t indx ) const throw();
+        inline double       &operator[]( size_t indx ) throw();
         
     private:
-        const double *addr; //!< X[1..n]
+        double *addr; //!< X[1..n]
         record( const record & );
         record&operator=(const record&);
     };

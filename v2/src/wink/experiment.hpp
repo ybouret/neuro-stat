@@ -15,6 +15,8 @@ namespace wink
         
         
         const record & operator[]( size_t indx ) const throw();
+        record       & operator[]( size_t indx ) throw();
+        
         
         //! load a column-major R matrix
         /**
