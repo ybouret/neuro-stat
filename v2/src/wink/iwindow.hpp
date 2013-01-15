@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-namespace wink 
+namespace wink
 {
     //! location of data
     class iwindow
@@ -41,14 +41,14 @@ namespace wink
      \param Wy a valid window associated to Y
      \return the number of coincidences within lag delta
      */
-    size_t coincidences(const double   *X, 
-                        const iwindow  &Wx,
-                        const double   *Y,
-                        const iwindow  &Wy,
-                        const double    delta) throw();
+    size_t count_coincidences(const double   *X,
+                              const iwindow  &Wx,
+                              const double   *Y,
+                              const iwindow  &Wy,
+                              const double    delta) throw();
     
-
-
+    
+    
 }
 
 #endif

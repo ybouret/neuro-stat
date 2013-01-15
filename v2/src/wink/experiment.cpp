@@ -40,7 +40,7 @@ namespace wink
     void experiment:: loadR( const double *Rmat, size_t nrow, size_t ncol )
     {
         // sanity check
-        if(!Rmat) throw        Exception("experiment: NULL R matrix");
+        if(!Rmat)        throw Exception("experiment: NULL R matrix");
         if(nrow!=trials) throw Exception("experiment: R rows!= trials");
         if(ncol>length)  throw Exception("experiment: R ncol>length");
         
@@ -57,6 +57,11 @@ namespace wink
         
     }
 
+    void experiment:: prepare_windows( double a, double b ) throw()
+    {
+        for( size_t i=0; i < trials; ++i )
+            records[i].prepare(a,b);
+    }
     
     
 }

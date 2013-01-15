@@ -1,14 +1,14 @@
-#include "./coincidence.hpp"
+#include "./coincidences.hpp"
 #include <cassert>
 
 namespace wink
 {
     
-    size_t coincidences(const double *X,
-                        const size_t  Nx, 
-                        const double *Y, 
-                        const size_t  Ny,
-                        const double  delta) throw()
+    size_t coincidences::count(const double *X,
+                               const size_t  Nx,
+                               const double *Y,
+                               const size_t  Ny,
+                               const double  delta) throw()
     {
         assert(Nx>0);
         assert(Ny>0);
@@ -52,5 +52,5 @@ namespace wink
         
         return count;
     }
-
+    
 }

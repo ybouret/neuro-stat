@@ -26,6 +26,9 @@ namespace wink
          */
         void loadR( const double *Rmat, size_t nrow, size_t ncol );
         
+        //! prepare windows for all records
+        void prepare_windows( double a, double b ) throw();
+        
     private:
         C_Array<record> records;
         const size_t    length;      //!< max_data
@@ -36,7 +39,7 @@ namespace wink
         experiment&operator=(const experiment &);
         
     public:
-        const size_t &trials;
+        const size_t trials;
     };
 }
 
