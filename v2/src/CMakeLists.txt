@@ -4,7 +4,7 @@
 ##
 ########################################################################
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-PROJECT(neuro-stat)
+PROJECT(neuro-stat-v2)
 
 INCLUDE(../../share/rules.cmake)
 
