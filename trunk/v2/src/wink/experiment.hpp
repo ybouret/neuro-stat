@@ -7,7 +7,7 @@
 
 namespace wink
 {
-    //! experiment: content #trials records
+    //! experiment: content #trials records for ONE neuron
     class experiment
     {
     public:
