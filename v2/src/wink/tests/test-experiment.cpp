@@ -22,8 +22,10 @@ int main(int argc, char *argv[] )
         }
         
         const double delta = 0.2;
+        cFile fp("conc0.dat", cFile::Overwrite);
         for( double a=0;a<10; a += 0.1 )
         {
+            fp("%g",a);
             const double b = a + 1;
             xp.prepare_windows(a,b);
             for( size_t i=0; i < xp.trials; ++i )
@@ -31,11 +33,17 @@ int main(int argc, char *argv[] )
                 for( size_t j=i; j < xp.trials; ++j )
                 {
                     const size_t nc = xp[i].coincidences_with( xp[j], delta );
+                    fp(" %u", unsigned(nc) );
                 }
             }
+            fp("\n");
         }
         
         return 0;
+    }
+    catch( const std::exception &e )
+    {
+        std::cerr << "*** Exception: " << e.what() << std::endl;
     }
     catch(...)
     {
