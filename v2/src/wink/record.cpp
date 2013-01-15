@@ -5,7 +5,7 @@ namespace wink
 {
     
     record::record( double *data ) throw():
-    size( data[0] ),
+    size( size_t(data[0]) ),
     addr( data    )
     {
     }

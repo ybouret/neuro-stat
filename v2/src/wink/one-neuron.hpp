@@ -7,12 +7,12 @@
 
 namespace wink
 {
-    //! experiment: content #trials records for ONE neuron
-    class experiment
+    //! content #trials records for ONE neuron
+    class one_neuron
     {
     public:
-        explicit experiment( size_t num_trials, size_t max_data );
-        virtual ~experiment() throw();
+        explicit one_neuron( size_t num_trials, size_t max_data );
+        virtual ~one_neuron() throw();
         
         
         const record & operator[]( size_t indx ) const throw();
@@ -36,8 +36,8 @@ namespace wink
         const size_t    stride;
         double         *workspace;   //!< (max_data+1) * num_trials
         
-        experiment(const experiment &);
-        experiment&operator=(const experiment &);
+        one_neuron(const one_neuron &);
+        one_neuron&operator=(const one_neuron &);
         
     public:
         const size_t trials;
