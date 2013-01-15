@@ -1,6 +1,6 @@
 #include "./iwindow.hpp"
 #include "./lookup.hpp"
-//#include "wink-coincidence.hpp"
+#include "./coincidences.hpp"
 #include <cassert>
 
 namespace wink
@@ -22,12 +22,11 @@ namespace wink
         }
     }
     
-#if 0
-    size_t coincidences(const double   *X,
-                        const iwindow  &Wx,
-                        const double   *Y,
-                        const iwindow  &Wy,
-                        const double    delta) throw()
+    size_t count_coincidences(const double   *X,
+                              const iwindow  &Wx,
+                              const double   *Y,
+                              const iwindow  &Wy,
+                              const double    delta) throw()
     {
         assert(X!=NULL);
         assert(Y!=NULL);
@@ -42,14 +41,13 @@ namespace wink
             assert( Wy.indexB>0 );
             assert( Wy.indexA <= size_t(Y[0]) );
             assert( Wy.indexB <= size_t(Y[0]) );
-            return coincidences(X+Wx.indexA, Wx.length, Y+Wy.indexA, Wy.length, delta);
+            return coincidences::count(X+Wx.indexA, Wx.length, Y+Wy.indexA, Wy.length, delta);
         }
-        else 
+        else
         {
             return 0; //! no data in at least one window
         }
     }
-#endif
     
 }
 
