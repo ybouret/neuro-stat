@@ -3,6 +3,7 @@
 
 #include "./record.hpp"
 #include "../pyck/c_array.hpp"
+#include "../pyck/file.hpp"
 
 namespace wink
 {
