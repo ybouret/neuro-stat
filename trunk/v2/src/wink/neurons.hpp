@@ -1,7 +1,7 @@
 #ifndef WINK_NEURONS_INCLUDED
 #define WINK_NEURONS_INCLUDED 1
 
-#include "./one-neuron.hpp"
+#include "./neuron.hpp"
 #include "./drawing.hpp"
 
 namespace wink
