@@ -1,15 +1,15 @@
-#include "./one-neuron.hpp"
+#include "./neuron.hpp"
 #include "../pyck/exception.hpp"
 #include <new>
 
 namespace wink
 {
-    one_neuron:: ~one_neuron() throw()
+    neuron:: ~neuron() throw()
     {
-	delete [] workspace;
+        delete [] workspace;
     }
     
-    one_neuron:: one_neuron( size_t num_trials, size_t max_data ) :
+    neuron:: neuron( size_t num_trials, size_t max_data ) :
     records( num_trials  ),
     length( max_data ),
     stride( length+1 ),
@@ -24,20 +24,20 @@ namespace wink
         }
     }
     
-    const record & one_neuron:: operator[]( size_t indx ) const throw()
+    const record & neuron:: operator[]( size_t indx ) const throw()
     {
         assert(indx<trials);
         return records[indx];
     }
     
-    record & one_neuron:: operator[]( size_t indx )  throw()
+    record & neuron:: operator[]( size_t indx )  throw()
     {
         assert(indx<trials);
         return records[indx];
     }
     
-        
-    void one_neuron:: loadR( const double *Rmat, size_t nrow, size_t ncol )
+    
+    void neuron:: loadR( const double *Rmat, size_t nrow, size_t ncol )
     {
         // sanity check
         if(!Rmat)        throw Exception("experiment: NULL R matrix");
@@ -56,8 +56,8 @@ namespace wink
         }
         
     }
-
-    void one_neuron:: prepare_windows( double a, double b ) throw()
+    
+    void neuron:: prepare_windows( double a, double b ) throw()
     {
         for( size_t i=0; i < trials; ++i )
             records[i].prepare(a,b);

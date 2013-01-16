@@ -1,4 +1,4 @@
-#include "../one-neuron.hpp"
+#include "../neuron.hpp"
 #include "../../pyck/rand32.hpp"
 #include "../../pyck/wtime.hpp"
 
@@ -13,7 +13,7 @@ int main(int argc, char *argv[] )
         DefaultUniformGenerator ran;
         ran.seed( WallTime::Seed() );
         
-        one_neuron xp(5,100);
+        neuron xp(5,100);
         std::cerr << "Creating " << xp.trials << " trials..." << std::endl;
         for( size_t i=0; i < xp.trials; ++i )
         {
