@@ -45,11 +45,6 @@ int main(int argc, char *argv[] )
         std::cerr << "speed of perm=" << num_bs/ell_perm << " M/s" << std::endl;
         std::cerr << "speed of repl=" << num_bs/ell_repl << " M/s" << std::endl;
 
-        
-        
-        
-        
-        
         return 0;
     }
     catch( const std::exception &e )
