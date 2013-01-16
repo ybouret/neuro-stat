@@ -10,11 +10,18 @@ int main(int argc, char *argv[] )
 {
     try
     {
-    
+
+        DefaultUniformGenerator ran;
+        ran.seed( WallTime::Seed() );
         drawing drw;
         drw.reserve(1000);
         drw.identity(10);
-        
+        std::cerr << "drw=" << drw << std::endl;
+        for( size_t i=0; i < 10; ++i )
+        {
+            drw.permutation(10,ran);
+            std::cerr << "drw=" << drw << std::endl;
+        }
         return 0;
     }
     catch( const std::exception &e )
