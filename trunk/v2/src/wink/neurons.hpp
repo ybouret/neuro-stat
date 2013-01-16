@@ -13,7 +13,7 @@ namespace wink
         explicit neurons() throw();
         virtual ~neurons() throw();
         
-        DefaultUniformGenerator ran; //!< random number generator
+        DefaultUniformGenerator ran; //!< own random number generator
         
         //! sum coincidences for N1 and N2 for CURRENT drawing
         /**
@@ -21,13 +21,11 @@ namespace wink
          \param N2 a prepared neuron on window [a,b]
          \param delta time lag
          */
-        size_t total_coincidences( const neuron &N1, const neuron &N2, double delta ) const;
-        
+        size_t coincidences( const neuron &N1, const neuron &N2, double delta ) const;
         
         static Mutex    access; //!< shared access
-        static uint32_t seed32; //!< shared seed, for different random seeds
-        
-        
+        static uint32_t seed32; //!< shared seed, for different random seeds        
+                
     private:
         neurons(const neurons &);
         neurons&operator=(const neurons &);

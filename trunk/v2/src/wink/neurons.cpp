@@ -27,7 +27,7 @@ namespace wink
     }
  
    
-    size_t neurons:: total_coincidences( const neuron &N1, const neuron &N2, double delta ) const
+    size_t neurons:: coincidences( const neuron &N1, const neuron &N2, double delta ) const
     {
         size_t       count  = 0;
         for( const couple *c = head;c;c=c->next)
