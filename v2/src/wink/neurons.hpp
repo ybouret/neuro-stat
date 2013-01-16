@@ -7,6 +7,12 @@
 namespace wink
 {
     
+    enum bootstrap_method
+    {
+        bootstrap_perm,
+        bootstrap_repl
+    };
+    
     class neurons : public drawing
     {
     public:
@@ -23,9 +29,21 @@ namespace wink
          */
         size_t coincidences( const neuron &N1, const neuron &N2, double delta ) const;
         
+        //! initialize neurons and drawing=id, then call coincidences
+        size_t true_coincidences(  neuron &N1, neuron &N2, const double a, const double b, const double delta);
+        
+        //! bootstrap
+        /**
+         \param N1 a prepared neuron on window [a,b]
+         \param N2 a prepared neuron on window [a,b]
+         */
+        void bootstrap( C_Array<size_t> &Bcoinc, bootstrap_method Bkind, const neuron &N1, const neuron &N2, double delta );
+        
         static Mutex    access; //!< shared access
-        static uint32_t seed32; //!< shared seed, for different random seeds        
-                
+        static uint32_t seed32; //!< shared seed, for different random seeds
+        
+        
+        
     private:
         neurons(const neurons &);
         neurons&operator=(const neurons &);

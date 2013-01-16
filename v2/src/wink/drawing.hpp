@@ -31,15 +31,18 @@ namespace wink
         void clear() throw();
         
         void reserve( size_t n );
+        
+        //!identity drawing
         void identity( size_t n );
-        //!< drawing without replacement
+        
+        //! drawing without replacement
         /**
          couple->first  = [0..n-1]
          couple->second = perm([0..n-1])
          */
         void permutation( size_t n, UniformGenerator &ran );
         
-        //!< drawing with replacement
+        //! drawing with replacement
         /**
          couple->first  = [0..n-1]
          couple->second = random([0..n-1])

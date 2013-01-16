@@ -41,5 +41,49 @@ namespace wink
         return count;
     }
     
+    size_t neurons:: true_coincidences(  neuron &N1, neuron &N2, const double a, const double b, const double delta)
+    {
+        const size_t trials = N1.trials;
+        if( N2.trials != trials )
+            throw Exception("#trials mismatch for true_coincidences");
+        
+        //! preparing the windows
+        N1.prepare_windows(a, b);
+        N2.prepare_windows(a, b);
+        
+        //! setting identity drawing
+        identity(trials);
+        
+        //! evaluate coincidences
+        return coincidences(N1, N2, delta);
+    }
+    
+    void neurons:: bootstrap( C_Array<size_t> &Bcoinc, bootstrap_method Bkind, const neuron &N1, const neuron &N2, double delta )
+    {
+        const size_t nb = Bcoinc.size;
+        const size_t n1 = N1.trials;
+        const size_t n2 = N2.trials;
+        switch( Bkind )
+        {
+            case bootstrap_perm:
+                if(n1!=n2) throw Exception("#trials mismatch for bootstrap/permutations");
+                for( size_t i=0; i < nb; ++i )
+                {
+                    permutation(n1, ran);
+                    Bcoinc[i] = coincidences(N1, N2, delta);
+                }
+                break;
+                
+            case bootstrap_repl:
+                if(n1!=n2) throw Exception("#trials mismatch for bootstrap/permutations");
+                for( size_t i=0; i < nb; ++i )
+                {
+                    replacement(n1, ran);
+                    Bcoinc[i] = coincidences(N1, N2, delta);
+                }
+                break;
+        }
+    }
+
 
 }
