@@ -5,6 +5,7 @@ ADD_LIBRARY(wink STATIC
 	iwindow.hpp		iwindow.cpp
 	coincidences.hpp	coincidences.cpp
 	drawing.hpp		drawing.cpp
+	neurons.hpp		neurons.cpp
 )
 
 ADD_SUBDIRECTORY(tests)
