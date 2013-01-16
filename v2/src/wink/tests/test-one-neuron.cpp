@@ -14,6 +14,7 @@ int main(int argc, char *argv[] )
         ran.seed( WallTime::Seed() );
         
         one_neuron xp(5,100);
+        std::cerr << "Creating " << xp.trials << " trials..." << std::endl;
         for( size_t i=0; i < xp.trials; ++i )
         {
             record &rec = xp[i];

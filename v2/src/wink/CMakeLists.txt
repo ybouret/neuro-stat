@@ -4,6 +4,7 @@ ADD_LIBRARY(wink STATIC
 	lookup.hpp      	lookup.cpp
 	iwindow.hpp		iwindow.cpp
 	coincidences.hpp	coincidences.cpp
+	drawing.hpp		drawing.cpp
 )
 
 ADD_SUBDIRECTORY(tests)
