@@ -32,7 +32,19 @@ namespace wink
         
         void reserve( size_t n );
         void identity( size_t n );
+        //!< drawing without replacement
+        /**
+         couple->first  = [0..n-1]
+         couple->second = perm([0..n-1])
+         */
         void permutation( size_t n, UniformGenerator &ran );
+        
+        //!< drawing with replacement
+        /**
+         couple->first  = [0..n-1]
+         couple->second = random([0..n-1])
+         */
+        void replacement( size_t n, UniformGenerator &ran ); 
         
         friend std::ostream & operator<<( std::ostream &, const drawing & );
         

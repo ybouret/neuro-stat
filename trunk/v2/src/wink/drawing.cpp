@@ -78,8 +78,23 @@ namespace wink
                 push_back(cpl);
             }
         }
+        assert(size==n);
         
     }
+    
+    void drawing:: replacement( size_t n, UniformGenerator &ran )
+    {
+        clear();
+        for( size_t i=0; i < n; ++i)
+        {
+            couple *cpl = query();
+            cpl->first  = i;
+            cpl->second = ran.lt(n);
+            push_back(cpl);
+        }
+        assert(size==n);
+    }
+
     
     std::ostream & operator<<( std::ostream &os, const drawing &d)
     {
