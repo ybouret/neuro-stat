@@ -23,7 +23,7 @@ int main(int argc, char *argv[] )
         }
         
         const double delta = 0.2;
-        cFile fp("conc0.dat", cFile::Overwrite);
+        cFile fp("coinc0.dat", cFile::Overwrite);
         for( double a=0;a<10; a += 0.1 )
         {
             fp("%g",a);
