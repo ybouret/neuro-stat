@@ -16,34 +16,38 @@ namespace wink
         pool.delete_with( couple::kill );
         self.delete_with( couple::kill );
     }
-    
-    drawing:: drawing() throw() : couple::list()
+
+    drawing:: drawing() throw() :
+    couple::list(),
+    pool()
     {
-        
+
     }
- 
+
     void drawing:: clear() throw()
     {
         while( size ) pool.store( pop_back() );
         assert( 0 == size );
     }
 
-    
+
     couple *drawing:: query()
     {
         couple *cpl = pool.size ? pool.query() : new couple;
         memset(cpl,0,sizeof(couple));
         return cpl;
     }
-    
+
     void drawing:: reserve( size_t n )
     {
         for(size_t i=0; i<n; ++i)
         {
-            pool.store( new couple );
+            couple *cpl = new couple;
+            memset(cpl,0,sizeof(couple));
+            pool.store( cpl );
         }
     }
-    
+
     void drawing:: identity( size_t n )
     {
         clear();
@@ -56,5 +60,5 @@ namespace wink
         assert(n==size);
     }
 
-    
+
 }
