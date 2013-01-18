@@ -20,8 +20,8 @@ int main(int argc, char *argv[] )
         
         for(size_t i=0; i < trials; ++i )
         {
-            xp.ran.fill_array(0, 10, &N1[i][1], N1[i].size);
-            xp.ran.fill_array(0, 10, &N2[i][1], N2[i].size);
+            xp.ran.fill_array(0, 10, &N1[i][1], N1[i].size());
+            xp.ran.fill_array(0, 10, &N2[i][1], N2[i].size());
         }
         
         C_Array<size_t> Bcoinc(8192);

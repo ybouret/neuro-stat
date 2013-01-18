@@ -47,13 +47,13 @@ namespace wink
         
         // load data
         double *p = workspace;
-        const size_t top = ncol-1;
+        
         for(size_t i=0; i < trials; ++i, p += stride )
         {
             assert( length == size_t(p[0]));
-            for( size_t j=0; j < top; ++j )
+            for( size_t j=0; j < ncol; ++j )
             {
-                p[j+1] = Rmat[i+j*nrow];
+                p[j] = Rmat[i+j*nrow];
             }
         }
         

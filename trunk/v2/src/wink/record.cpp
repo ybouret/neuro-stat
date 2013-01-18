@@ -5,25 +5,28 @@ namespace wink
 {
 
     record::record( double *data ) throw():
-    size( size_t(data[0]) ),
     iwin(),
-    addr( data    )
+    addr( data  )
     {
     }
 
-
+    size_t record:: size() const throw()
+    {
+        const size_t ans = size_t(addr[0]);
+        return ans;
+    }
 
     const double &record:: operator[]( size_t indx ) const throw()
     {
         assert( indx > 0 );
-        assert( indx <= size );
+        assert( indx <= size() );
         return addr[indx];
     }
 
     double & record:: operator[]( size_t indx )  throw()
     {
         assert( indx > 0 );
-        assert( indx <= size );
+        assert( indx <= size() );
         return addr[indx];
     }
 

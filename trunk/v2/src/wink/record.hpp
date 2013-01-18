@@ -20,8 +20,7 @@ namespace wink
         const double &operator[]( size_t indx ) const throw();
         double       &operator[]( size_t indx ) throw();
         
-        
-        const size_t size; //!< keep a copy of data[0]
+        size_t size() const throw();
         iwindow      iwin; //!< for computation
         void         prepare(double a,double b) throw();
         
@@ -29,7 +28,7 @@ namespace wink
         size_t coincidences_with( const record &other, const double delta ) const throw();
         
     private:
-        double *addr; //!< X[1..n]
+        double *addr; //!< addr[1..n] are the tops value
         record( const record & );
         record&operator=(const record&);
     };

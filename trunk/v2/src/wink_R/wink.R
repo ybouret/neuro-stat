@@ -31,17 +31,15 @@ wink_perm <- function(n)
 
 ########################################################################
 ##
-## Number of total true coincidences
+## Check Common arguments, level-0
 ##
 ## N1       : first Neuron
 ## N2       : second Neuron
 ## intervals: #intervals, 2 rows of a,b
 ## delta    : time lag for coincidence
 ##
-## return: the vector of true_coincidences for each interval
-##
 ########################################################################
-wink_true_coincidences <-function(N1,N2,intervals,delta)
+wink_check_common0 <- function(N1,N2,intervals,delta)
 {
 	## check arguments in R
 	if (!is.matrix(N1))
@@ -55,7 +53,46 @@ wink_true_coincidences <-function(N1,N2,intervals,delta)
 		
 	if( !is.real(delta) )
 		stop("delta must be a real")
-		
+}
+
+########################################################################
+##
+## Number of total true coincidences
+##
+## return: the VECTOR of true_coincidences for each interval
+##
+########################################################################
+wink_true_coincidences <-function(N1,N2,intervals,delta)
+{
+	wink_check_common0(N1,N2,intervals,delta);
 	## call the C++ code
 	.Call("wink_true_coincidences",N1,N2,intervals,delta)
 }
+
+########################################################################
+##
+## Check Common Arguments, level-1
+##
+## N1       : first Neuron
+## N2       : second Neuron
+## intervals: #intervals, 2 rows of a,b
+## delta    : time lag for coincidence
+## B        : bootstraps count
+##
+########################################################################
+wink_check_common1 <- function(N1,N2,intervals,delta,B)
+{
+	wink_check_common0(N1,N2,intervals,delta);
+	if( !is.real(B) )
+		stop("delta must be a real")	
+}
+
+wink_bootstrap <- function(N1,N2,intervals,delta,B,option)
+{
+	wink_check_common1(N1,N2,intervals,delta,B);
+	if( !is.character(option) )
+		stop("option is not a string");
+	.Call("wink_bootstrap",N1,N2,intervals,delta,B,option);
+}
+
+

@@ -18,8 +18,8 @@ int main(int argc, char *argv[] )
         for( size_t i=0; i < xp.trials; ++i )
         {
             record &rec = xp[i];
-            std::cerr << "rec.size=" << rec.size << std::endl;
-            ran.fill_array(0, 10, &rec[1], rec.size);
+            std::cerr << "rec.size=" << rec.size() << std::endl;
+            ran.fill_array(0, 10, &rec[1], rec.size());
         }
         
         const double delta = 0.2;
