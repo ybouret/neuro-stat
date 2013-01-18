@@ -67,7 +67,7 @@ namespace wink
         clear();
         if(n>0)
         {
-            C_Array<double> arr(n);
+            C_Array<size_t> arr(n);
             for(size_t i=0; i <n; ++i) arr[i] = i;
             ran.shuffle(&arr[0],n);
             for( size_t i=0; i < n; ++i )
