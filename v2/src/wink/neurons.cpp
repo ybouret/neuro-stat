@@ -25,8 +25,8 @@ namespace wink
         std::cerr << "s32=" << s32 << std::endl;
         ran.seed(s32);
     }
- 
-   
+    
+    
     size_t neurons:: coincidences( const neuron &N1, const neuron &N2, double delta ) const
     {
         size_t       count  = 0;
@@ -84,6 +84,34 @@ namespace wink
                 break;
         }
     }
-
-
+    
+    void neurons:: compute_pvalues_T(double                &alpha_plus,
+                                     double                &alpha_minus,
+                                     const C_Array<size_t> &Bcoinc,
+                                     const size_t           Tcoinc) const throw()
+    {
+        const size_t nb          = Bcoinc.size;
+        size_t       count_plus  = 1;
+        size_t       count_minus = 1;
+        for( size_t i=0; i < nb; ++i )
+        {
+            const size_t bvalue = Bcoinc[i];
+            if( bvalue >= Tcoinc)
+            {
+                ++count_plus;
+            }
+            else
+            {
+                if(bvalue<=Tcoinc)
+                    ++count_minus;
+            }
+        }
+        
+        const size_t den = 1+nb;
+        alpha_plus       = double(count_plus)/den;
+        alpha_minus      = double(count_minus)/den;
+        
+    }
+    
+    
 }

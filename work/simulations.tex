@@ -1,0 +1,364 @@
+
+
+          % -------------------------------------------------- %
+          %                                                    %
+          %                    Simulations                     %
+          %                                                    %
+          % -------------------------------------------------- %
+
+
+\documentclass[a4paper,oneside,10pt]{article}
+
+\usepackage[T1]{fontenc}             % pour les cesures ;
+\usepackage[french]{babel}           %
+\usepackage[utf8]{inputenc}        % pour les accents ;
+\usepackage{amsmath,amssymb,dsfont}  % pour le mode mathematique ;
+\usepackage{textcomp}                % pour les accents sur les majuscules ;
+\usepackage{listings,multicol}       % pour la mise en page ;
+\usepackage{graphicx,color}          % pour inserer des images ; et afficher directement des graphes ;
+\usepackage{wrapfig}                 % pour habiller une image ;
+\usepackage[rightcaption]{sidecap}   % pour mettre les legendes des figures a droite des images (avec SCfigure)
+\usepackage{fullpage}                % mise en page plus grande ;
+%\usepackage{a4wide}                 % mise en page plus grande ;
+%\usepackage{mytheorem}               % pour creer des environnements theoremes ;
+\usepackage{amsthm}
+\usepackage{ulem}                    % pour personnaliser les soulignements
+\usepackage{fancyhdr}                % pour personnaliser les entetes et pieds de pages ;
+
+%\usepackage{wasysym}                % Pour des symboles bizarres (attention)
+%\usepackage{MarVoSym}               % Pour des symboles bizarres (attention)
+
+
+\setlength{\parindent}{10pt}      % taille de l'alinea quand on saute une ligne
+\newcommand{\al}{\hspace{17,5pt}} % alinea dans les environnements df, thm...
+
+     % Entetes et pieds de page :
+
+\pagestyle{fancy} % pour personnaliser la mise en page ;
+\lhead{}          % entete gauche ;
+\rhead{}          % entete droite ;
+\lfoot{}          % pied de page gauche ;
+\rfoot{}          % pied de page droit ;
+\renewcommand{\headrulewidth}{0cm} % trait de separation entete / texte
+\renewcommand{\footrulewidth}{1pt} % trait de separation pied de page / texte
+
+
+     % Mise en page : 
+
+\textwidth 17cm     % largeur du texte ;
+\textheight 24cm    % hauteur du texte ;
+\topmargin 0cm      % marge du haut ;
+\oddsidemargin -1cm % marge des pages impaires ;
+\evensidemargin 0cm % marge des pages paires ;
+
+
+     % Nouvelles commandes :
+
+%\newmytheorem[b]{definition}{}[onebar]{df}{\underline{D\'efinition}}      % definition numerotee ;
+%\newmytheoremn[b]{definition}{}[onebar]{dfn}{\underline{D\'efinition}}    % definition non numerotee ;
+%\newmytheorem[b]{theoreme}{}[twobar]{thm}{\underline{Th\'eor\`eme}}         % theoreme numerote ;
+%\newmytheorem[b]{theoreme}{}[twobar]{cor}{\underline{Corollaire}}       % theoreme corollaire ;
+%\newmytheorem[b]{lemme}{}[twobar]{lm}{\underline{Lemme}}                % lemme numerote ;
+%\newmytheorem[b]{proposition}{}[twobar]{ppt}{\underline{Propri\'et\'e}}     % propriete numerotee ;
+%\newmytheorem[b]{proposition}{}[twobar]{prop}{\underline{Proposition}}  % proposition numerotee ;
+%\newmytheoremn[b]{exemple}{}[twobar]{tst}{\underline{Principe du Test}} % principe du test (statistiques) ;
+%\newmytheoremn[b]{exemple}{}[onebar]{ex}{\underline{Exemple}}
+
+\newtheorem{thm}{Theorem}[subsection]
+\newtheorem{prop}{Proposition}[subsection]
+\newtheorem{lm}{Lemma}[section]
+
+\newenvironment{dem}{\noindent{\bf Proof :}}{\hfill             % demonstration ;
+  $\square$\par \noindent}
+
+\newenvironment{preuve}{\noindent{\bf Preuve :}}{\hfill                 % preuve ;
+  $\square$\par \noindent}
+
+\newcommand{\rmq}{\underline{\textit{Remarque}} : }                     % remarque ;
+
+
+     % Raccourcis :
+
+\newcommand{\pa}[1]{\ensuremath{\left( #1 \right)}}
+\newcommand{\ac}[1]{\ensuremath{\left\{ #1 \right\}}}
+
+
+\newcommand{\Down}[1]{\textsubscript{#1}}
+\newcommand{\Up}[1]{\textsuperscript{#1}}
+
+ % Symboles :
+
+\newcommand{\bl}{\ $\bullet$ \ }
+\newcommand{\st}{\ $\star$ \ }
+\newcommand{\tr}{\ $\triangleright$ \ }
+
+ % Fonctions :
+
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+\newcommand{\pen}{\operatorname{pen}}
+\newcommand{\crit}{\operatorname{crit}}
+
+\newcommand{\Nbc}{\operatorname{Nbc}}
+
+ % Abreviations :
+
+\newcommand{\fct}[4]{\ensuremath{\left( \begin{array}{ccc}
+                                 #1 & \longrightarrow & #2 \\
+                                 #3 &   \longmapsto   & #4 \\
+                               \end{array} \right) }}
+
+\newcommand{\ie}{\underline{\textit{ie}} } 
+\newcommand{\ssi}{\ \underline{\textit{ssi}} \ }
+\newcommand{\tq}{\ /\ }
+
+\newcommand{\K}{\ensuremath{\mathds{K}}}
+\newcommand{\N}{\ensuremath{\mathds{N}}}
+\newcommand{\Z}{\ensuremath{\mathds{Z}}}
+\newcommand{\Q}{\ensuremath{\mathds{Q}}}
+\newcommand{\R}{\ensuremath{\mathds{R}}}
+\newcommand{\C}{\ensuremath{\mathds{C}}}
+\newcommand{\X}{\ensuremath{\mathds{X}}}
+
+\newcommand{\ine}[2]{\ensuremath{\in \text{ \textlbrackdbl} #1 ; #2 \text{\textrbrackdbl }}}
+
+
+ % Polices speciales : 
+
+\newcommand{\ds}[1]{\ensuremath{\mathds{#1}}}
+\newcommand{\mc}[1]{\ensuremath{\mathcal{#1}}}          % majuscules rondes en mode mathematique.
+\newcommand{\eus}[1]{{\usefont{U}{eus}{m}{n} #1}}       % majuscules mathematiques rondes ; (!!! Pas en mode mathematique !!!)
+
+ % Probabilites :
+
+\newcommand{\proba}[1]{\ensuremath{\mathds{P}(#1)}}     % probabilite ;
+\newcommand{\esp}[1]{\ensuremath{\mathds{E}[ \ #1 \ ]}} % esperance ;
+\newcommand{\esps}[2]{\ensuremath{\mathds{E}_{#1}[ \ #2 \ ]}} % esperance sous qqch;
+\newcommand{\1}[1]{\ensuremath{\mathds{1}_{\{ #1 \}}}}  % fonction caracteristique d'un ensemble ;
+
+\newcommand{\Nm}{\ensuremath{\mc{N}(0,1)}}              % pour la loi normale ;
+
+\newcommand{\norm}[1]{\| #1 \|}
+\newcommand{\I}{\lambda}                                % densite du processus de Poisson ;
+
+
+\bibliographystyle{plain}
+
+\normalem % pour que le package ulem ne modifie pas les \emph...
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\dbox}[1]{\ensuremath{\begin{array}{|c|}\hline #1\\\hline\end{array}}}
+\newcommand{\indep}{\ensuremath{\perp\!\!\!\perp}}
+\newcommand{\Sn}[1]{\ensuremath{\mathfrak{S}_{#1}}}
+
+
+     % Details du document :
+
+\title{Simulations}     % Titre du document ;
+\author{Melisande ALBERT}    % Auteurs du document ;
+
+
+% -------------------------------------------------------------------------------------------------------------------------------- %
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+The aim of the two tests described below is to detect the ruptures of independence between two neurons on a time period $[0,2]$. 
+
+\subsection{The data: description and notations}
+
+
+The data is obtained during $n$ experiments which last about two seconds and are supposed to be carried out in similar conditions.
+Each experiment $i$ provides the recordings of the spikes occurrence times for each of the two considered neurons. Such recordings are usually modeled as point processes, that we denote for each $i$, $N^1_i$ for neuron1, and $N^2_i$ for neuron 2. 
+We assume that the $(N^1_i,N^2_i)$'s are independent.
+
+\paragraph{Simulations.}
+In the programs, let $\texttt{ntrial}=n$ be the number of experiments.
+The matrix \texttt{N1} (respectively \texttt{N2}) contains \texttt{ntrial} rows in which we can read the number of spikes of the neuron 1 (respectively 2) in the first column, and then the \emph{sorted} occurrence times completed by zeroes.
+
+The functions introduced in the document \texttt{simulationPP.R} return a list of the two matrices obtained by simulations of the data according to Poisson processes (homogeneous or not) or Hawkes processes.
+
+
+\subsection{Multiple testing: subdividing time}
+
+The data are recorded within the window $[0,2]$, and we want to detect when the neurons synchronize their action on this window. 
+To do this, we divide the interval $[0,2]$ in several sub-intervals $[a_i,b_i]$ (which may recover) on which we apply simultaneously a single test of independence. 
+The limits $(a_i,b_i)$ of the sub-intervals are given in a matrix \texttt{intervals} containing the $a_i$'s on the first row, and the $b_i$'s in the second row.
+
+\section{Single tests of independence on a window $[a,b]$}
+
+\subsection{Permutation tests of independence}
+
+\subsubsection{Number of coincidences}
+
+Given a fixed  \texttt{delta}, we say there is a coincidence on $[a,b]$ between neuron 1 and neuron 2 during the trial $i$ if the distance between a spike of $(N^1_i)\cap [a,b]$ and a spike of $(N^2_i)\cap[a,b]$ is smaller than \texttt{delta}.
+The number of coincidences between neuron 1 and neuron 2 for trial $ i$ is thus defined by:
+$$\Nbc(N^1_i,N^2_i)=\sum_{x\in N^1_i}\sum_{y\in N^2_i} \1{|x-y|\leq \texttt{delta}}.$$
+
+\subsubsection{Basic permutation tests}
+
+Denoting by $X_i=(N^1_i,N^2_i)$ and $\X=(X_1,\ldots,X_n)$, the first test statistic that we deal with counts the total number of coincidences between neurons 1 and 2 on the window $[a,b]$ that is:
+$$T(\X)=\sum_{i=1}^n \Nbc(N^1_i,N^2_i).$$
+
+\paragraph{Simulations.} The function which computes this quantity has been implemented in \texttt{C++} under the name of \texttt{wink\_true\_coincidences}.\\
+
+
+Intuitively, too many or too less coincidences may be due to some dependencies between the neurons. Thus, we consider two unilateral tests:
+\begin{enumerate}
+\item A first test rejects the independence hypothesis when $T(\X)$ is larger than a well-chosen critical value.
+\item A second test rejects the independence hypothsesis when $T(\X)$ is smaller than another well-chosen critical value.
+\end{enumerate}
+
+Ideally, if the distribution function $F_0$ of $T( \X)$ under the independence hypothesis was known, we would of course choose  the $(1-\alpha)$ and $\alpha$ quantiles $F_0^{-1}(1-\alpha)$ and $F_0^{-1}(\alpha)$ for the critical values of the first and second test respectively.
+Since the distribution of $T(\X)$ under the independence hypothesis is not exactly known in our general context, we propose to choose some critical values obtained through  permutations among the trials of neuron 2.
+
+Let $\Pi_n$ be the set of all possible permutations of $\{1,\ldots,n\}$.
+We now introduce  a sample  $\pa{\sigma_1,\ldots,\sigma_B}$ of $B$  i.i.d. random variables uniformly distributed on $\Pi_n$: 
+for each $b$, $\sigma_b$ denotes a random permutation of  $\{1,\ldots,n\}$, and the $\sigma_b$'s are independent. 
+
+Let for $b=1\ldots B$, $\X^{\star b}=(X_1^{\star b},\ldots,X_n^{\star b})$, with $X_i^{\star b}=(N_i^1,N_{\sigma_b(i)}^2)$. We introduce $T^{\star b}=T(\X^{\star b})$ for every $b=1\ldots B$, and denote by $T^{\star (B+1)}$ the statistic computed on the original data, that is $T^{\star (B+1)}=T(\X)$.
+
+Considering $F_{T,B+1}$ the empirical cumulative distribution function (CDF) associated with the sample $\pa{T^{\star 1},\ldots,T^{\star (B+1)}}$, we can define the following test functions:
+
+\begin{enumerate}
+\item $\Phi_{T,\textrm{perm},\alpha,B}^{+}(\X)=\1{T(\X)>F_{T,B+1}^{(-1)}(1-\alpha)},$
+\item $\Phi_{T,\textrm{perm},\alpha,B}^{-}(\X)=\1{T(\X)>F_{T,B+1}^{(-1)}(\alpha)} ?????$
+\end{enumerate}
+
+In order to use the above tests in a multiple testing scheme, we need to consider the corresponding $p$-values, which are here defined by:
+$$\hat{\alpha}^+_{T,perm,B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{T^{\star b} \geq T(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{T^{\star b}\geq T(\X)}},$$
+and 
+$$\hat{\alpha}^-_{T,perm,B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{T^{\star b}\leq T(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{T^{\star b}\leq T(\X)}}.$$
+
+\begin{thm}
+The test which rejects $(H_0)$ when $\hat{\alpha}^+_{T,perm,B}\leq \alpha$ is equivalent to the test $\Phi_{T,perm,\alpha,B}^+$, and both are of level $\alpha$.
+
+In the same way, the test which rejects $(H_0)$ when $\hat{\alpha}^-_{T,perm,B}\leq \alpha$ is equivalent to the test $ \Phi_{T,perm,\alpha,B}^-$, and both are also of level $\alpha$.
+\end{thm}
+
+\begin{dem}
+Proof of Mélisande... To come later.
+\end{dem}
+
+
+\paragraph{Simulations.}
+Computation of the $p$-values.
+\begin{enumerate}
+\item Compute the number of coincidences of the original data: 
+$$T=\sum_{i=1}^{\texttt{ntrial}} \Nbc(N^1_i,N^2_{i}),$$
+with the \texttt{C++} function named \texttt{wink\_true\_coincidences}
+\item Randomly (uniformly) pick up an i.i.d. sample $\pa{\sigma_b}_{1\leq b\leq B}$ of permutations of the set $\{1,\ldots,\texttt{ntrial}\}$
+\item For every $1\leq b\leq B$, permute the trials of neuron 2 according to $\sigma_b$ and compute the number of coincidences of the new data:
+$$T^{\star b}=\sum_{i=1}^{\texttt{ntrial}} \Nbc(N^1_i,N^2_{\sigma_b(i)})$$
+\item Count the number of $T^{\star b}$'s which are larger ($\geq$) than $T$, that is
+$$\texttt{count}^+=\sum_{b=1}^B \1{T^{\star b}\geq T}$$
+\item Count the number of $T^{\star b}$'s which are smaller ($\leq$) than $T$, that is
+$$\texttt{count}^-=\sum_{b=1}^B \1{T^{\star b}\leq T}$$
+\item Return $$\texttt{pvalue}^+=\frac{1}{B+1}\pa{1+\texttt{count}^+}\textrm{ and }\texttt{pvalue}^-=\frac{1}{B+1}\pa{1+\texttt{count}^-}.$$
+\end{enumerate}
+
+\subsubsection{Refined permutation tests}
+
+The second test statistic that we deal with is defined by:
+\begin{equation}\label{defstat2}
+H(\X)=\sum_{i\neq j} \left(\Nbc(N_i^1,N_i^2)-\Nbc(N_i^1,N_j^2)\right).
+\end{equation}
+
+As in the above section, the corresponding critical values are constructed through a permutation approach.
+
+Let $\Pi_n$ be the set of all possible permutations of $\{1,\ldots,n\}$, and  introduce  a sample  $\pa{\sigma_1,\ldots,\sigma_B}$ of $B$  i.i.d. random variables uniformly distributed on $\Pi_n$.
+
+Let for $b=1\ldots B$, $\X^{\star b}=(X_1^{\star b},\ldots,X_n^{\star b})$, with $X_i^{\star b}=(N_i^1,N_{\sigma_b(i)}^2)$. 
+
+We introduce $H^{\star b}=H(\X^{\star b})$ for every $b=1\ldots B$, and denote by $H^{\star (B+1)}$ the statistic computed on the original data, that is $H^{\star (B+1)}=H(\X)$.
+
+Considering $F_{H,B+1}$ the empirical CDF associated with the sample $\pa{H^{\star 1},\ldots,H^{\star (B+1)}}$, we can define the following test functions:
+
+\begin{enumerate}
+\item $\Phi_{H,\textrm{perm},\alpha,B}^{+}(\X)=\1{H(\X)>F_{H,B+1}^{(-1)}(1-\alpha)},$
+\item $\Phi_{H,\textrm{perm},\alpha,B}^{-}(\X)=\1{H(\X)>F_{H,B+1}^{(-1)}(\alpha)} ?????$
+\end{enumerate}
+
+We will also need to consider the corresponding $p$-values, which are defined by:
+$$\hat{\alpha}^+_{H,perm,B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{H^{\star b} \geq H(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H^{\star b}\geq H(\X)}},$$
+and 
+$$\hat{\alpha}^-_{H,perm,B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{H^{\star b}\leq H(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H^{\star b}\leq H(\X)}}.$$
+
+\begin{thm}
+The test which rejects $(H_0)$ when $\hat{\alpha}^+_{H,perm,B}\leq \alpha$ is equivalent to the test $\Phi_{H,perm,\alpha,B}^+$, and both are of level $\alpha$.
+
+In the same way, the test which rejects $(H_0)$ when $\hat{\alpha}^-_{H,perm,B}\leq \alpha$ is equivalent to the test $ \Phi_{H,perm,\alpha,B}^-$, and both are also of level $\alpha$.
+\end{thm}
+
+
+\paragraph{Simulations.}
+Computation of the $p$-values.
+\begin{enumerate}
+\item Compute the test statistic on the original data: 
+$$H=\sum_{i=1}^{\texttt{ntrial}} \sum_{j\neq i}\left(\Nbc(N^1_i,N^2_{i})-\Nbc(N_i^1,N_j^2)\right)$$
+\item Randomly (uniformly) pick up an i.i.d. sample $\pa{\sigma_b}_{1\leq b\leq B}$ of permutations of the set $\{1,\ldots,\texttt{ntrial}\}$
+\item For every $1\leq b\leq B$, permute the trials of neuron 2 according to $\sigma_b$ and compute the test statitsic on the new data:
+$$H^{\star b}=\sum_{i=1}^{\texttt{ntrial}} \sum_{j\neq i}\left(\Nbc(N^1_i,N^2_{i})-\Nbc(N_i^1,N_j^2)\right)$$
+\item Count the number of $H^{\star b}$'s which are larger ($\geq$) than $H$, that is
+$$\texttt{count}^+=\sum_{b=1}^B \1{H^{\star b}\geq H}$$
+\item Count the number of $H^{\star b}$'s which are smaller ($\leq$) than $H$, that is
+$$\texttt{count}^-=\sum_{b=1}^B \1{H^{\star b}\leq H}$$
+\item Return $$\texttt{pvalue}^+=\frac{1}{B+1}\pa{1+\texttt{count}^+}\textrm{ and }\texttt{pvalue}^-=\frac{1}{B+1}\pa{1+\texttt{count}^-}.$$
+\end{enumerate}
+
+\subsection{Bootstrap tests of independence}
+
+In this section, we keep considering the test statistic $H$ defined by \eqref{defstat2}. However, we now construct some critical values through a bootstrap approach, applied to the random variables $X_i=(N_i^1,N_2^i)$.\\
+
+Notice that in our previous permutation approach, the resampling scheme exclusively focuses on the trials of neuron 2, whereas in the present bootstrap approach, it will concern the couples of neurons, without changing the way they are associated.\\
+
+For every $b=1\ldots B$, we construct a bootstrap sample $\X^{* b}=(X_1^{* b},\ldots, X_n^{* b})$ (with size $n$) by taking \underline{with replacement} $n$ elements in the original sample $\X=(X_1,\ldots,X_n)$.
+
+We introduce $H_C^{* b}=H(\X^{* b})-H(\X)$ for every $b=1\ldots B$.
+
+Considering $F_{H_C,B}$ the empirical CDF associated with the sample $\pa{H_C^{* 1},\ldots,H_C^{* (B)}}$, we can define the following test functions:
+
+\begin{enumerate}
+\item $\Phi_{H,\textrm{boot},\alpha,B}^{+}(\X)=\1{H(\X)>F_{H_C,B}^{(-1)}(1-\alpha)},$
+\item $\Phi_{H,\textrm{boot},\alpha,B}^{-}(\X)=\1{H(\X)>F_{H_C,B}^{(-1)}(\alpha)} ?????$
+\end{enumerate}
+
+We will also need to consider the corresponding $p$-values, which are defined by:
+$$\hat{\alpha}^+_{H,\textrm{boot},B}=\frac{1}{B}\sum_{b=1}^{B} \1{H_C^{* b} \geq H(\X)}\textrm{ or }\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H_C^{* b}\geq H(\X)}} ????$$
+and 
+$$\hat{\alpha}^-_{H,\textrm{boot},B}=\frac{1}{B}\sum_{b=1}^{B} \1{H_C^{* b}\leq H(\X)}\textrm{ or }\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H_C^{* b}\leq H(\X)}} ????$$
+
+\begin{thm}
+The test which rejects $(H_0)$ when $\hat{\alpha}^+_{H,\textrm{boot},B}\leq \alpha$ is equivalent to the test $\Phi_{H,\textrm{boot},\alpha,B}^+$, and both are asymptotically  (with $n\to +\infty$ and $B\to\infty$ ?????????????) of level $\alpha$.
+
+In the same way, the test which rejects $(H_0)$ when $\hat{\alpha}^-_{H,boot,B}\leq \alpha$ is equivalent to the test $ \Phi_{H,perm,\alpha,B}^-$, and both are also asymptotically of level $\alpha$.
+\end{thm}
+
+\begin{dem}
+{\bf Est-ce bien vrai ????????}
+\end{dem}
+
+
+\paragraph{Simulations.}
+Computation of the $p$-values.
+\begin{enumerate}
+\item Compute the test statistic on the original data: 
+$$H=\sum_{i=1}^{\texttt{ntrial}} \sum_{j\neq i}\left(\Nbc(N^1_i,N^2_{i})-\Nbc(N_i^1,N_j^2)\right)$$
+\item Draw an i.i.d. bootstrap sample $\pa{\X^{* b}}_{1\leq b\leq B}$, with $\X^{* b}=(X_1^{* b},\ldots, X_n^{* b})$, where each $X_i^{* b}$ is picked up randomly with replacement in $\{X_1=(N^1_1,N^2_1),\ldots, X_n=(N^1_n,N^2_n)\}$
+\item For every $b=1\ldots B$, compute the centered test statistic on the bootstrap sample $\X^{* b}$ :
+$$H_C^{* b}=H(\X^{*b})-H(\X)$$
+\item Count the number of $H_C^{* b}$'s which are larger ($\geq$) than $H$, that is
+$$\texttt{count}^+=\sum_{b=1}^B \1{H_C^{* b}\geq H}$$
+\item Count the number of $H^{*  b}$'s which are smaller ($\leq$) than $H$, that is
+$$\texttt{count}^-=\sum_{b=1}^B \1{H_C^{* b}\leq H}$$
+\item Return $H$
+\item Return $(H_C^{* 1},\ldots,H_C^{* B})$
+\item Return $\texttt{count}^+\textrm{ and }\texttt{count}^-.$
+\end{enumerate}
+
+
+
+
+\end{document}
