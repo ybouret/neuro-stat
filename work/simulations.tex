@@ -80,6 +80,7 @@
      % Raccourcis :
 
 \newcommand{\pa}[1]{\ensuremath{\left( #1 \right)}}
+\newcommand{\cro}[1]{\ensuremath{\left[ #1 \right]}}
 \newcommand{\ac}[1]{\ensuremath{\left\{ #1 \right\}}}
 
 
@@ -133,7 +134,7 @@
 \newcommand{\proba}[1]{\ensuremath{\mathds{P}(#1)}}     % probabilite ;
 \newcommand{\esp}[1]{\ensuremath{\mathds{E}[ \ #1 \ ]}} % esperance ;
 \newcommand{\esps}[2]{\ensuremath{\mathds{E}_{#1}[ \ #2 \ ]}} % esperance sous qqch;
-\newcommand{\1}[1]{\ensuremath{\mathds{1}_{\{ #1 \}}}}  % fonction caracteristique d'un ensemble ;
+\newcommand{\1}[1]{\ensuremath{\mathds{1}_{\left\{ #1 \right\}}}}  % fonction caracteristique d'un ensemble ;
 
 \newcommand{\Nm}{\ensuremath{\mc{N}(0,1)}}              % pour la loi normale ;
 
@@ -165,14 +166,14 @@
 
 \section{Introduction}
 
-The aim of the two tests described below is to detect the ruptures of independence between two neurons on a time period $[0,2]$. 
+The aim of the three tests described below is to detect the ruptures of independence between two neurons on a time period $[0,2]$. 
 
 \subsection{The data: description and notations}
 
 
-The data is obtained during $n$ experiments which last about two seconds and are supposed to be carried out in similar conditions.
-Each experiment $i$ provides the recordings of the spikes occurrence times for each of the two considered neurons. Such recordings are usually modeled as point processes, that we denote for each $i$, $N^1_i$ for neuron1, and $N^2_i$ for neuron 2. 
-We assume that the $(N^1_i,N^2_i)$'s are independent.
+The data is obtained during $n$ experiments or trials which last about two seconds and are supposed to be carried out in similar conditions.
+Each trial $i$ provides the recording of the spikes occurrence times for each of the two considered neurons. Such spikes occurrence times are usually modeled as point processes, that we denote for each $i$, $N^1_i$ for neuron 1, and $N^2_i$ for neuron 2. 
+We assume that the pairs $(N^1_i,N^2_i)$'s are independent.
 
 \paragraph{Simulations.}
 In the programs, let $\texttt{ntrial}=n$ be the number of experiments.
@@ -183,23 +184,29 @@ The functions introduced in the document \texttt{simulationPP.R} return a list o
 
 \subsection{Multiple testing: subdividing time}
 
-The data are recorded within the window $[0,2]$, and we want to detect when the neurons synchronize their action on this window. 
-To do this, we divide the interval $[0,2]$ in several sub-intervals $[a_i,b_i]$ (which may recover) on which we apply simultaneously a single test of independence. 
-The limits $(a_i,b_i)$ of the sub-intervals are given in a matrix \texttt{intervals} containing the $a_i$'s on the first row, and the $b_i$'s in the second row.
+The data is recorded within a time window $[0,2]$, and we want to detect when the neurons synchronize their action on this window. 
+To do this, we divide the interval $[0,2]$ in several sub-intervals $[a_k,b_k]$ (which may recover) on which we apply simultaneous single tests of independence. 
 
-\section{Single tests of independence on a window $[a,b]$}
+\paragraph{Simulations.}
+The limits $(a_k,b_k)$ of the sub-intervals are given in a matrix \texttt{intervals} containing the $a_k$'s in the first row, and the $b_k$'s in the second row.
+
+\section{Single tests of independence on a given time window $[a_k,b_k]$}
+
+In this section, we will introduce three different methods in order to test the null hypothesis $(H_{0,k})$: "neuron 1 and neuron 2 are independent on the time window $[a_k,b_k]$" against the alternative $(H_{1,k})$: "they are not".
+
+In all this section, by an abuse of notations, we will write $N^1_i$ (respectively $N^2_i$) instead of $(N^1_i)\cap [a_k,b_k]$ (respectively $(N^2_i)\cap [a_k,b_k]$). 
+
+\subsection{Number of coincidences}
+
+Given a fixed  \texttt{delta}, we say there is a coincidence on $[a_k,b_k]$ between neuron 1 and neuron 2 during the trial $i$ if the distance between a spike of $N^1_i$ and a spike of $N^2_i$ is smaller than \texttt{delta}.
+The number of coincidences  on $[a_k,b_k]$  between neuron 1 and neuron 2 for trial $ i$ is thus defined by:
+$$\Nbc(N^1_i,N^2_i)=\sum_{x\in N^1_i}\sum_{y\in N^2_i} \1{|x-y|\leq \texttt{delta}}.$$
 
 \subsection{Permutation tests of independence}
 
-\subsubsection{Number of coincidences}
-
-Given a fixed  \texttt{delta}, we say there is a coincidence on $[a,b]$ between neuron 1 and neuron 2 during the trial $i$ if the distance between a spike of $(N^1_i)\cap [a,b]$ and a spike of $(N^2_i)\cap[a,b]$ is smaller than \texttt{delta}.
-The number of coincidences between neuron 1 and neuron 2 for trial $ i$ is thus defined by:
-$$\Nbc(N^1_i,N^2_i)=\sum_{x\in N^1_i}\sum_{y\in N^2_i} \1{|x-y|\leq \texttt{delta}}.$$
-
 \subsubsection{Basic permutation tests}
 
-Denoting by $X_i=(N^1_i,N^2_i)$ and $\X=(X_1,\ldots,X_n)$, the first test statistic that we deal with counts the total number of coincidences between neurons 1 and 2 on the window $[a,b]$ that is:
+Denoting by $X_i=(N^1_i,N^2_i)$ and $\X=(X_1,\ldots,X_n)$, the first test statistic that we deal with counts the total number of coincidences between neurons 1 and 2 on  $[a_k,b_k]$ that is:
 $$T(\X)=\sum_{i=1}^n \Nbc(N^1_i,N^2_i).$$
 
 \paragraph{Simulations.} The function which computes this quantity has been implemented in \texttt{C++} under the name of \texttt{wink\_true\_coincidences}.\\
@@ -207,12 +214,12 @@ $$T(\X)=\sum_{i=1}^n \Nbc(N^1_i,N^2_i).$$
 
 Intuitively, too many or too less coincidences may be due to some dependencies between the neurons. Thus, we consider two unilateral tests:
 \begin{enumerate}
-\item A first test rejects the independence hypothesis when $T(\X)$ is larger than a well-chosen critical value.
-\item A second test rejects the independence hypothsesis when $T(\X)$ is smaller than another well-chosen critical value.
+\item A first test rejects the independence hypothesis $(H_{0,k})$ when $T(\X)$ is strictly larger than a well-chosen critical value.
+\item A second test rejects the independence hypothsesis $(H_{0,k})$ when $T(\X)$ is strictly smaller than another well-chosen critical value.
 \end{enumerate}
 
-Ideally, if the distribution function $F_0$ of $T( \X)$ under the independence hypothesis was known, we would of course choose  the $(1-\alpha)$ and $\alpha$ quantiles $F_0^{-1}(1-\alpha)$ and $F_0^{-1}(\alpha)$ for the critical values of the first and second test respectively.
-Since the distribution of $T(\X)$ under the independence hypothesis is not exactly known in our general context, we propose to choose some critical values obtained through  permutations among the trials of neuron 2.
+Ideally, if the distribution function $F_0$ of $T( \X)$ under $(H_{0,k})$ was known, we would of course choose  the $(1-\alpha)$ and $\alpha$ quantiles $F_0^{-1}(1-\alpha)$ and $F_0^{-1}(\alpha)$ for the critical values of the first and second test respectively.
+Since the distribution of $T(\X)$ under $(H_{0,k})$ is not exactly known in our general context, we propose to choose critical values obtained through  permutations among the trials of neuron 2.
 
 Let $\Pi_n$ be the set of all possible permutations of $\{1,\ldots,n\}$.
 We now introduce  a sample  $\pa{\sigma_1,\ldots,\sigma_B}$ of $B$  i.i.d. random variables uniformly distributed on $\Pi_n$: 
@@ -220,22 +227,26 @@ for each $b$, $\sigma_b$ denotes a random permutation of  $\{1,\ldots,n\}$, and 
 
 Let for $b=1\ldots B$, $\X^{\star b}=(X_1^{\star b},\ldots,X_n^{\star b})$, with $X_i^{\star b}=(N_i^1,N_{\sigma_b(i)}^2)$. We introduce $T^{\star b}=T(\X^{\star b})$ for every $b=1\ldots B$, and denote by $T^{\star (B+1)}$ the statistic computed on the original data, that is $T^{\star (B+1)}=T(\X)$.
 
-Considering $F_{T,B+1}$ the empirical cumulative distribution function (CDF) associated with the sample $\pa{T^{\star 1},\ldots,T^{\star (B+1)}}$, we can define the following test functions:
+The empirical cumulative distribution function (CDF) associated with the sample $\pa{T^{\star 1},\ldots,T^{\star (B+1)}}$ is denoted by $F^\star_{T,B+1}$, and the order statistic associated with  $\pa{T^{\star 1},\ldots,T^{\star (B+1)}}$ is denoted as usual by\\
+$\pa{T^{\star (1)},\ldots,T^{\star ((B+1))}}$ we can define the following test functions:
 
 \begin{enumerate}
-\item $\Phi_{T,\textrm{perm},\alpha,B}^{+}(\X)=\1{T(\X)>F_{T,B+1}^{(-1)}(1-\alpha)},$
-\item $\Phi_{T,\textrm{perm},\alpha,B}^{-}(\X)=\1{T(\X)>F_{T,B+1}^{(-1)}(\alpha)} ?????$
+\item $\Phi_{T,\textrm{perm},\alpha,B}^{+}(\X)=\1{T(\X)>\pa{F^\star_{T,B+1}}^{-1}(1-\alpha)}
+=\1{T(\X)>T^{\star (\lceil (1-\alpha)(B+1) \rceil)}},$
+\item $\Phi_{T,\textrm{perm},\alpha,B}^{-}(\X)=\1{T(\X)<-\pa{F^\star_{-T,B+1}}^{-1}(1-\alpha)}
+=\1{T(\X)<T^{\star (\lfloor \alpha (B+1) \rfloor + 1 )}},$
 \end{enumerate}
+where $\lfloor\cdot\rfloor$ and $\lceil\cdot\rceil$ respectively design the floor and ceil functions.
 
 In order to use the above tests in a multiple testing scheme, we need to consider the corresponding $p$-values, which are here defined by:
-$$\hat{\alpha}^+_{T,perm,B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{T^{\star b} \geq T(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{T^{\star b}\geq T(\X)}},$$
+$$\hat{\alpha}^+_{T,\textrm{perm},B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{T^{\star b} \geq T(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{T^{\star b}\geq T(\X)}},$$
 and 
-$$\hat{\alpha}^-_{T,perm,B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{T^{\star b}\leq T(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{T^{\star b}\leq T(\X)}}.$$
+$$\hat{\alpha}^-_{T,\textrm{perm},B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{T^{\star b}\leq T(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{T^{\star b}\leq T(\X)}}.$$
 
 \begin{thm}
-The test which rejects $(H_0)$ when $\hat{\alpha}^+_{T,perm,B}\leq \alpha$ is equivalent to the test $\Phi_{T,perm,\alpha,B}^+$, and both are of level $\alpha$.
+The test which rejects $(H_{0,k})$ when $\hat{\alpha}^+_{T,\textrm{perm},B}\leq \alpha$ is equivalent to the test $\Phi_{T,\textrm{perm},\alpha,B}^+$, and both are of level $\alpha$.
 
-In the same way, the test which rejects $(H_0)$ when $\hat{\alpha}^-_{T,perm,B}\leq \alpha$ is equivalent to the test $ \Phi_{T,perm,\alpha,B}^-$, and both are also of level $\alpha$.
+In the same way, the test which rejects $(H_{0,k})$ when $\hat{\alpha}^-_{T,\textrm{perm},B}\leq \alpha$ is equivalent to the test $ \Phi_{T,\textrm{perm},\alpha,B}^-$, and both are also of level $\alpha$.
 \end{thm}
 
 \begin{dem}
@@ -244,7 +255,7 @@ Proof of Mélisande... To come later.
 
 
 \paragraph{Simulations.}
-Computation of the $p$-values.
+Computation of the $p$-values (for a time window $[a_k,b_k]$).
 \begin{enumerate}
 \item Compute the number of coincidences of the original data: 
 $$T=\sum_{i=1}^{\texttt{ntrial}} \Nbc(N^1_i,N^2_{i}),$$
@@ -259,7 +270,7 @@ $$\texttt{count}^-=\sum_{b=1}^B \1{T^{\star b}\leq T}$$
 \item Return $$\texttt{pvalue}^+=\frac{1}{B+1}\pa{1+\texttt{count}^+}\textrm{ and }\texttt{pvalue}^-=\frac{1}{B+1}\pa{1+\texttt{count}^-}.$$
 \end{enumerate}
 
-\subsubsection{Refined permutation tests}
+\subsubsection{Centered permutation tests}
 
 The second test statistic that we deal with is defined by:
 \begin{equation}\label{defstat2}
@@ -274,33 +285,36 @@ Let for $b=1\ldots B$, $\X^{\star b}=(X_1^{\star b},\ldots,X_n^{\star b})$, with
 
 We introduce $H^{\star b}=H(\X^{\star b})$ for every $b=1\ldots B$, and denote by $H^{\star (B+1)}$ the statistic computed on the original data, that is $H^{\star (B+1)}=H(\X)$.
 
-Considering $F_{H,B+1}$ the empirical CDF associated with the sample $\pa{H^{\star 1},\ldots,H^{\star (B+1)}}$, we can define the following test functions:
+Considering the empirical CDF  $F^\star_{H,B+1}$  associated with the sample $\pa{H^{\star 1},\ldots,H^{\star (B+1)}}$,  and the order statistic associated with  $\pa{H^{\star 1},\ldots,H^{\star (B+1)}}$ denoted by
+$\pa{H^{\star (1)},\ldots,H^{\star ((B+1))}}$ we can define the following test functions: 
 
 \begin{enumerate}
-\item $\Phi_{H,\textrm{perm},\alpha,B}^{+}(\X)=\1{H(\X)>F_{H,B+1}^{(-1)}(1-\alpha)},$
-\item $\Phi_{H,\textrm{perm},\alpha,B}^{-}(\X)=\1{H(\X)>F_{H,B+1}^{(-1)}(\alpha)} ?????$
+\item $\Phi_{H,\textrm{perm},\alpha,B}^{+}(\X)=\1{H(\X)>\pa{F^\star_{H,B+1}}^{-1}(1-\alpha)}
+=\1{H(\X)>H^{\star (\lceil (1-\alpha)(B+1) \rceil)}},$
+\item $\Phi_{H,\textrm{perm},\alpha,B}^{-}(\X)=\1{H(\X)<-\pa{F^\star_{(-H),B+1}}^{-)}(1-\alpha)}
+=\1{H(\X)<H^{\star (\lfloor \alpha (B+1) \rfloor + 1 )}}.$
 \end{enumerate}
 
 We will also need to consider the corresponding $p$-values, which are defined by:
-$$\hat{\alpha}^+_{H,perm,B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{H^{\star b} \geq H(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H^{\star b}\geq H(\X)}},$$
+$$\hat{\alpha}^+_{H,\textrm{perm},B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{H^{\star b} \geq H(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H^{\star b}\geq H(\X)}},$$
 and 
-$$\hat{\alpha}^-_{H,perm,B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{H^{\star b}\leq H(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H^{\star b}\leq H(\X)}}.$$
+$$\hat{\alpha}^-_{H,\textrm{perm},B}=\frac{1}{B+1}\sum_{b=1}^{B+1} \1{H^{\star b}\leq H(\X)}=\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H^{\star b}\leq H(\X)}}.$$
 
 \begin{thm}
-The test which rejects $(H_0)$ when $\hat{\alpha}^+_{H,perm,B}\leq \alpha$ is equivalent to the test $\Phi_{H,perm,\alpha,B}^+$, and both are of level $\alpha$.
+The test which rejects $(H_{0,k})$ when $\hat{\alpha}^+_{H,\textrm{perm},B}\leq \alpha$ is equivalent to the test $\Phi_{H,\textrm{perm},\alpha,B}^+$, and both are of level $\alpha$.
 
-In the same way, the test which rejects $(H_0)$ when $\hat{\alpha}^-_{H,perm,B}\leq \alpha$ is equivalent to the test $ \Phi_{H,perm,\alpha,B}^-$, and both are also of level $\alpha$.
+In the same way, the test which rejects $(H_{0,k})$ when $\hat{\alpha}^-_{H,\textrm{perm},B}\leq \alpha$ is equivalent to the test $ \Phi_{H,\textrm{perm},\alpha,B}^-$, and both are also of level $\alpha$.
 \end{thm}
 
 
 \paragraph{Simulations.}
-Computation of the $p$-values.
+Computation of the $p$-values (for a time window $[a_k,b_k]$).
 \begin{enumerate}
 \item Compute the test statistic on the original data: 
 $$H=\sum_{i=1}^{\texttt{ntrial}} \sum_{j\neq i}\left(\Nbc(N^1_i,N^2_{i})-\Nbc(N_i^1,N_j^2)\right)$$
 \item Randomly (uniformly) pick up an i.i.d. sample $\pa{\sigma_b}_{1\leq b\leq B}$ of permutations of the set $\{1,\ldots,\texttt{ntrial}\}$
 \item For every $1\leq b\leq B$, permute the trials of neuron 2 according to $\sigma_b$ and compute the test statitsic on the new data:
-$$H^{\star b}=\sum_{i=1}^{\texttt{ntrial}} \sum_{j\neq i}\left(\Nbc(N^1_i,N^2_{i})-\Nbc(N_i^1,N_j^2)\right)$$
+$$H^{\star b}=\sum_{i=1}^{\texttt{ntrial}} \sum_{j\neq i}\left(\Nbc(N^1_i,N^2_{\sigma_b(i)})-\Nbc(N_i^1,N_{\sigma_b(j)}^2)\right)$$
 \item Count the number of $H^{\star b}$'s which are larger ($\geq$) than $H$, that is
 $$\texttt{count}^+=\sum_{b=1}^B \1{H^{\star b}\geq H}$$
 \item Count the number of $H^{\star b}$'s which are smaller ($\leq$) than $H$, that is
@@ -310,39 +324,63 @@ $$\texttt{count}^-=\sum_{b=1}^B \1{H^{\star b}\leq H}$$
 
 \subsection{Bootstrap tests of independence}
 
-In this section, we keep considering the test statistic $H$ defined by \eqref{defstat2}. However, we now construct some critical values through a bootstrap approach, applied to the random variables $X_i=(N_i^1,N_2^i)$.\\
+In this section, we keep considering the test statistic $H$ defined by \eqref{defstat2}. However, we now construct some critical values through a bootstrap approach, applied to the random variables $X_i=(N_i^1,N_i^2)$.\\
 
-Notice that in our previous permutation approach, the resampling scheme exclusively focuses on the trials of neuron 2, whereas in the present bootstrap approach, it will concern the couples of neurons, without changing the way they are associated.\\
+Notice that in our previous permutation approach, the resampling scheme exclusively focuses on the trials of neuron 2, as a result the way the pairs of neurons are associated is  disrupted, whereas in the present bootstrap approach, the resampling scheme concerns the pairs of neurons, without changing the way they are associated.\\
 
 For every $b=1\ldots B$, we construct a bootstrap sample $\X^{* b}=(X_1^{* b},\ldots, X_n^{* b})$ (with size $n$) by taking \underline{with replacement} $n$ elements in the original sample $\X=(X_1,\ldots,X_n)$.
 
 We introduce $H_C^{* b}=H(\X^{* b})-H(\X)$ for every $b=1\ldots B$.
 
-Considering $F_{H_C,B}$ the empirical CDF associated with the sample $\pa{H_C^{* 1},\ldots,H_C^{* (B)}}$, we can define the following test functions:
+\paragraph{Choice 1.}
+
+Considering the empirical CDF $F^*_{H_C,B}$ associated with the sample $\pa{H_C^{* 1},\ldots,H_C^{* (B)}}$, and the order statistic associated with  $\pa{H_C^{* 1},\ldots,H_C^{* B}}$ denoted by
+$\pa{H_C^{* (1)},\ldots,H_C^{* (B)}}$ we can define the following test functions:
 
 \begin{enumerate}
-\item $\Phi_{H,\textrm{boot},\alpha,B}^{+}(\X)=\1{H(\X)>F_{H_C,B}^{(-1)}(1-\alpha)},$
-\item $\Phi_{H,\textrm{boot},\alpha,B}^{-}(\X)=\1{H(\X)>F_{H_C,B}^{(-1)}(\alpha)} ?????$
+\item $\Phi_{H,\textrm{boot},\alpha,B}^{+}(\X)=\1{H(\X)>\pa{F^*_{H_C,B}}^{-1}(1-\alpha)}=\1{H(\X)>H_C^{* (\lceil (1-\alpha)B\rceil)}},$
+\item $\Phi_{H,\textrm{boot},\alpha,B}^{-}(\X)=\1{H(\X)<-\pa{F^*_{(-H_C),B}}^{-1}(1-\alpha)}=\1{H(\X)<H_C^{* (\lfloor \alpha B \rfloor + 1 )}}.$ 
 \end{enumerate}
 
 We will also need to consider the corresponding $p$-values, which are defined by:
-$$\hat{\alpha}^+_{H,\textrm{boot},B}=\frac{1}{B}\sum_{b=1}^{B} \1{H_C^{* b} \geq H(\X)}\textrm{ or }\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H_C^{* b}\geq H(\X)}} ????$$
+$$\hat{\alpha}^+_{H,\textrm{boot},B}=\frac{1}{B}\sum_{b=1}^{B} \1{H_C^{* b} \geq H(\X)},$$
 and 
-$$\hat{\alpha}^-_{H,\textrm{boot},B}=\frac{1}{B}\sum_{b=1}^{B} \1{H_C^{* b}\leq H(\X)}\textrm{ or }\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H_C^{* b}\leq H(\X)}} ????$$
+$$\hat{\alpha}^-_{H,\textrm{boot},B}=\frac{1}{B}\sum_{b=1}^{B} \1{H_C^{* b}\leq H(\X)}.$$
 
-\begin{thm}
-The test which rejects $(H_0)$ when $\hat{\alpha}^+_{H,\textrm{boot},B}\leq \alpha$ is equivalent to the test $\Phi_{H,\textrm{boot},\alpha,B}^+$, and both are asymptotically  (with $n\to +\infty$ and $B\to\infty$ ?????????????) of level $\alpha$.
+\begin{thm}\label{Th_bootstrap1}
+The test which rejects $(H_{0,k})$ when $\hat{\alpha}^+_{H,\textrm{boot},B}\leq \alpha$ is equivalent to the test $\Phi_{H,\textrm{boot},\alpha,B}^+$, and both are asymptotically  (with $n\to +\infty$ and $B\to\infty$ ?????????????) of level $\alpha$.
 
-In the same way, the test which rejects $(H_0)$ when $\hat{\alpha}^-_{H,boot,B}\leq \alpha$ is equivalent to the test $ \Phi_{H,perm,\alpha,B}^-$, and both are also asymptotically of level $\alpha$.
+In the same way, the test which rejects $(H_{0,k})$ when $\hat{\alpha}^-_{H,\textrm{boot},B}\leq \alpha$ is equivalent to the test $ \Phi_{H,\textrm{perm},\alpha,B}^-$, and both are also asymptotically of level $\alpha$.
 \end{thm}
 
 \begin{dem}
-{\bf Est-ce bien vrai ????????}
+{\bf A faire...}
+\end{dem}
+
+\paragraph{Choice 2.}
+
+We can also choose to consider other $p$-values, which are of the same form as the $p$-values involved in permtuation approaches, that is:
+$$\hat{\alpha}^+_{H,\textrm{boot},B+1}=\frac{1}{B+1}\left(1+\sum_{b=1}^{B} \1{H_C^{* b} \geq H(\X)}\right),$$
+and 
+$$\hat{\alpha}^-_{H,\textrm{boot},B+1}=\frac{1}{B+1}\left(1+\sum_{b=1}^{B} \1{H_C^{* b}\leq H(\X)}\right).$$
+
+\begin{thm}
+The tests which reject $(H_{0,k})$ when $\hat{\alpha}^+_{H,\textrm{boot},B+1}\leq \alpha$  or when $\hat{\alpha}^-_{H,\textrm{boot},B+1}\leq \alpha$  are  asymptotically  (with $n\to +\infty$ and $B\to\infty$ ?????????????) of level $\alpha$.
+\end{thm}
+
+\begin{dem}
+{\bf Preuve très très proche de la précédente, ne pas la refaire du coup et dire que les mêmes arguments s'appliquent ici.}
 \end{dem}
 
 
+{\bf Comment.} Due to $\frac{1}{B}\sum_{b=1}^{B} \1{H_C^{* b} \geq H(\X)}\leq\frac{1}{B+1}\pa{1+\sum_{b=1}^B \1{H_C^{* b}\geq H(\X)}}$, the tests considered in the above Theorem are more conservative than the tests considered in Theorem \ref{Th_bootstrap1}.
+
+A numerical study will be done in order to decide between Choice 1 and Choice 2.
+
+
+
 \paragraph{Simulations.}
-Computation of the $p$-values.
+Computation of the $p$-values (for a time window $[a_k,b_k]$).
 \begin{enumerate}
 \item Compute the test statistic on the original data: 
 $$H=\sum_{i=1}^{\texttt{ntrial}} \sum_{j\neq i}\left(\Nbc(N^1_i,N^2_{i})-\Nbc(N_i^1,N_j^2)\right)$$
@@ -351,12 +389,17 @@ $$H=\sum_{i=1}^{\texttt{ntrial}} \sum_{j\neq i}\left(\Nbc(N^1_i,N^2_{i})-\Nbc(N_
 $$H_C^{* b}=H(\X^{*b})-H(\X)$$
 \item Count the number of $H_C^{* b}$'s which are larger ($\geq$) than $H$, that is
 $$\texttt{count}^+=\sum_{b=1}^B \1{H_C^{* b}\geq H}$$
-\item Count the number of $H^{*  b}$'s which are smaller ($\leq$) than $H$, that is
+\item Count the number of $H_C^{*  b}$'s which are smaller ($\leq$) than $H$, that is
 $$\texttt{count}^-=\sum_{b=1}^B \1{H_C^{* b}\leq H}$$
 \item Return $H$
 \item Return $(H_C^{* 1},\ldots,H_C^{* B})$
 \item Return $\texttt{count}^+\textrm{ and }\texttt{count}^-.$
 \end{enumerate}
+
+
+\section{Multiple testing}
+
+Recall that the aim of the present work consists in detecting the ruptures of independence between neuron 1 and neuron 2. Hence, once the recording time period $[0,2]$ has been divided in time windows $[a_k,b_k]$, we aim at testing simultaneously  all the null hypotheses $(H_{0,k})$ against $(H_{1,k})$ with the above basic permutation tests, or centered permutation tests, or centered bootstrap tests. This problem is well-known as a multiple testing problem, and the multiple testing method of Benjamini-Hochberg can be applied here. 
 
 
 
