@@ -188,6 +188,31 @@ SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta)
     return R_NilValue;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Serial Bootstrap
+//
+////////////////////////////////////////////////////////////////////////////////
+static inline
+bootstrap_method __check_option( SEXP Ropt )
+{
+    const char *option = CHAR(STRING_ELT(Ropt,0));
+    if(!option) throw Exception("NULL option");
+    
+    if(strcmp(option,"perm")==0)
+    {
+        return bootstrap_perm;
+    }
+    
+    if(strcmp(option,"repl")==0)
+    {
+        return bootstrap_repl;
+    }
+    
+    throw Exception("Unknown option '%s'", option);
+    
+}
+
 extern "C"
 SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt)
 {
@@ -196,24 +221,7 @@ SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt
         //----------------------------------------------------------------------
         //-- check option
         //----------------------------------------------------------------------
-        const char *option = CHAR(STRING_ELT(Ropt,0));
-        if(!option) throw Exception("NULL option");
-        
-        bootstrap_method kind = bootstrap_perm;
-        bool             safe = false;
-        if(strcmp(option,"perm")==0)
-        {
-            kind = bootstrap_perm;
-            safe = true;
-        }
-        
-        if(strcmp(option,"repl")==0)
-        {
-            kind = bootstrap_repl;
-            safe = true;
-        }
-        if(!safe)
-            throw Exception("Unknown option '%s'", option);
+        const bootstrap_method Bkind = __check_option(Ropt);
         
         //----------------------------------------------------------------------
         //-- parse arguments
@@ -223,16 +231,14 @@ SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt
         RIntervals      intervals(RI);
         const double    delta         = R2<double>(Rdelta);
         const size_t    nb            = R2<int>(RB);
-        if(nb<=0)
-            throw Exception("Invalid B");
         const size_t    num_intervals = intervals.cols;
-    
+        
         Rprintf("\tWINK: #intervals  = %u\n", unsigned(num_intervals));
         Rprintf("\tWINK: #bootstraps = %u\n", unsigned(nb));
-
+        
         //----------------------------------------------------------------------
         //-- prepare answer
-        //-- first row: alpha_minus
+        //-- first  row: alpha_minus
         //-- second row: alpha_plus
         //----------------------------------------------------------------------
         RMatrix<double> alpha(2,num_intervals);
@@ -247,7 +253,7 @@ SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt
             const size_t Tcoinc = double(xp.true_coincidences(N1, N2, a, b, delta));
             
             //-- bootstrap
-            xp.bootstrap(Bcoinc, kind, N1, N2, delta);
+            xp.bootstrap(Bcoinc, Bkind, N1, N2, delta);
             
             //-- evaluate pvalues
             xp.compute_pvalues_T(alpha[i][0],alpha[i][1],Bcoinc,Tcoinc);
@@ -268,4 +274,162 @@ SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt
     }
     return R_NilValue;
 }
+
+#include "../pyck/team.hpp"
+
+namespace
+{
+    struct WorkerArgs
+    {
+        neuron                 *N1;
+        neuron                 *N2;
+        const RMatrix<double> *intervals;
+        double                 delta;
+        size_t                 B;
+        bootstrap_method       Bkind;
+        RMatrix<double>       *alpha;
+        size_t                 num_threads;
+        size_t                 thread_rank;
+    };
+    
+    class Worker : public Runnable
+    {
+    public:
+        neuron                &N1;
+        neuron                &N2;
+        const RMatrix<double> &intervals;
+        const double           delta;
+        const size_t           B;
+        C_Array<size_t>        Bcoinc;
+        const bootstrap_method Bkind;
+        RMatrix<double>       &alpha;
+        size_t                 ini;
+        size_t                 num;
+        neurons                xp;
+        
+        explicit Worker( Mutex &m,
+                        const WorkerArgs &args ) :
+        Runnable(m),
+        N1( *args.N1 ),
+        N2( *args.N2 ),
+        intervals( *args.intervals),
+        delta( args.delta ),
+        B( args.B ),
+        Bcoinc(B),
+        Bkind( args.Bkind ),
+        alpha( *args.alpha ),
+        ini(0),
+        num(0),
+        xp()
+        {
+            TeamBalance( intervals.cols, ini, num, args.thread_rank, args.num_threads);
+        }
+        
+        virtual ~Worker() throw()
+        {
+        }
+        
+        virtual
+        void run() throw()
+        {
+            {
+                PYCK_LOCK(mutex);
+                std::cerr << "...Starting Worker: " << ini << " +" << num << std::endl;
+            }
+            try
+            {
+                for( size_t i=ini,j=0;j<num;++i,++j)
+                {
+                    const double a = intervals[i][0];
+                    const double b = intervals[i][1];
+                    
+                    //-- initialize with true coincidences
+                    const size_t Tcoinc = double(xp.true_coincidences(N1, N2, a, b, delta));
+                    
+                    //-- bootstrap
+                    xp.bootstrap(Bcoinc, Bkind, N1, N2, delta);
+                    
+                    //-- evaluate pvalues
+                    xp.compute_pvalues_T(alpha[i][0],alpha[i][1],Bcoinc,Tcoinc);
+                }
+            }
+            catch( const std::exception &e )
+            {
+                Rprintf("***wink_bootstrap_par/thread: %\n", e.what());
+            }
+            catch (...)
+            {
+                Rprintf("*** unhandled error in wink_bootstrap_par/thread\n");
+            }
+        }
+        
+    private:
+        Worker( const Worker & );
+        Worker&operator=(const Worker &);
+    };
+    
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Parallel Bootstrap
+//
+////////////////////////////////////////////////////////////////////////////////
+extern "C"
+SEXP wink_bootstrap_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt, SEXP RNumThreads)
+{
+    try
+    {
+        //----------------------------------------------------------------------
+        //
+        // Parsing Arguments Once
+        //
+        //----------------------------------------------------------------------
+        const bootstrap_method Bkind = __check_option(Ropt);
+        RNeuron                N1(RN1);
+        RNeuron                N2(RN2);
+        RIntervals             intervals(RI);
+        const double           delta         = R2<double>(Rdelta);
+        const size_t           B             = R2<int>(RB);
+        const size_t           num_threads   = R2<int>(RNumThreads);
+        if( num_threads <= 0 )
+            throw Exception("Invalide #num_threads");
+        
+        //----------------------------------------------------------------------
+        //-- prepare answer
+        //-- first  row: alpha_minus
+        //-- second row: alpha_plus
+        //----------------------------------------------------------------------
+        const size_t num_intervals = intervals.cols;
+        RMatrix<double> alpha(2,num_intervals);
+        neurons         xp;
+        
+        //----------------------------------------------------------------------
+        //
+        // Launching the team
+        //
+        //----------------------------------------------------------------------
+        Team<Worker> team(num_threads);
+        WorkerArgs   args = { &N1, &N2, &intervals, delta, B, Bkind, &alpha, num_threads };
+        for(size_t i=0;i<num_threads;++i)
+        {
+            args.thread_rank = i;
+            team.enqueue( args );
+        }
+        
+        return *alpha;
+    }
+    catch( const Exception &e )
+    {
+        Rprintf("*** wink_bootstrap_par: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("*** unhanled exception in wink_bootstrap_par\n");
+    }
+    return R_NilValue;
+}
+
+
+
 
