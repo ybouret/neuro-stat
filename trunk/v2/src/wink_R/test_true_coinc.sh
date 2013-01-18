@@ -1,2 +1,2 @@
-R --no-save < test_true_coinc.R
+R --no-save --slave < test_true_coinc.R
 

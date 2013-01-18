@@ -1,2 +1,2 @@
-R --no-save < test_bootstrap.R
+R --no-save --slave < test_bootstrap.R
 
