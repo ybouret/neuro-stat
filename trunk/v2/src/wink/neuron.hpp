@@ -22,8 +22,8 @@ namespace wink
         //! load a column-major R matrix
         /**
          \param Rmat the data in column-major layout
-         \param nrow, must be equal to trials
-         \param ncolm must be lower than records size.
+         \param nrow must be equal to trials
+         \param ncol must be lower than records size.
          */
         void loadR( const double *Rmat, size_t nrow, size_t ncol );
         

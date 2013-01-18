@@ -40,16 +40,18 @@ namespace wink
     void neuron:: loadR( const double *Rmat, size_t nrow, size_t ncol )
     {
         // sanity check
-        if(!Rmat)        throw Exception("experiment: NULL R matrix");
-        if(nrow!=trials) throw Exception("experiment: R rows!= trials");
-        if(ncol>length)  throw Exception("experiment: R ncol>length");
+        if(!Rmat)         throw Exception("neuron: NULL R matrix");
+        if(nrow!=trials)  throw Exception("neuron: R rows!= trials");
+        if(ncol>length+1) throw Exception("neuron: R ncol>length");
+        if(ncol<=0)       throw Exception("neuron: R ncol<1");
         
         // load data
         double *p = workspace;
+        const size_t top = ncol-1;
         for(size_t i=0; i < trials; ++i, p += stride )
         {
             assert( length == size_t(p[0]));
-            for( size_t j=0; j < ncol; ++j )
+            for( size_t j=0; j < top; ++j )
             {
                 p[j+1] = Rmat[i+j*nrow];
             }

@@ -39,6 +39,12 @@ namespace wink
          */
         void bootstrap( C_Array<size_t> &Bcoinc, bootstrap_method Bkind, const neuron &N1, const neuron &N2, double delta );
         
+        //! compute p_values for statistics T
+        void compute_pvalues_T(double                &alpha_plus,
+                               double                &alpha_minus,
+                               const C_Array<size_t> &Bcoinc,
+                               const size_t           Tcoinc) const throw();
+        
         static Mutex    access; //!< shared access
         static uint32_t seed32; //!< shared seed, for different random seeds
         
