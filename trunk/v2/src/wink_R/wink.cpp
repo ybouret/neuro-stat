@@ -48,7 +48,7 @@ namespace {
         neuron( self.rows, col2dat(self.cols) )
         {
             loadR( &self[0][0], self.rows, self.cols);
-            Rprintf("WINK: Neuron: #trials=%u, #max_tops=%u\n", trials, length );
+            Rprintf("\tWINK: Neuron: #trials=%u, #max_tops=%u\n", trials, length );
         }
         
         virtual ~RNeuron() throw()
@@ -172,7 +172,6 @@ SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta)
             const double b = intervals[i][1];
             ans[i] = double(xp.true_coincidences(N1, N2, a, b, delta));
         }
-        
         //----------------------------------------------------------------------
         //-- done
         //----------------------------------------------------------------------
