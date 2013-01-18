@@ -1,5 +1,5 @@
 all:
-	R CMD SHLIB -c --preclean ../wink/*.cpp wink.cpp -o wink.so
+	R CMD SHLIB -c --preclean ../wink/*.cpp ../pyck/*.cpp wink.cpp -o wink.so
 
 
 clean:
