@@ -32,7 +32,9 @@ namespace wink
         
     private:
         C_Array<record> records;
+    public:
         const size_t    length;      //!< max_data
+    private:
         const size_t    stride;
         double         *workspace;   //!< (max_data+1) * num_trials
         

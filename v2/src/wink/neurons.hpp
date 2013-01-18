@@ -40,8 +40,8 @@ namespace wink
         void bootstrap( C_Array<size_t> &Bcoinc, bootstrap_method Bkind, const neuron &N1, const neuron &N2, double delta );
         
         //! compute p_values for statistics T
-        void compute_pvalues_T(double                &alpha_plus,
-                               double                &alpha_minus,
+        void compute_pvalues_T(double                &alpha_minus,
+                               double                &alpha_plus,
                                const C_Array<size_t> &Bcoinc,
                                const size_t           Tcoinc) const throw();
         

@@ -22,7 +22,7 @@ namespace wink
     {
         PYCK_LOCK(access);
         const uint32_t s32 = IntegerHash32( WallTime::Seed() + seed32++ );
-        std::cerr << "s32=" << s32 << std::endl;
+        //std::cerr << "s32=" << s32 << std::endl;
         ran.seed(s32);
     }
     
@@ -85,8 +85,8 @@ namespace wink
         }
     }
     
-    void neurons:: compute_pvalues_T(double                &alpha_plus,
-                                     double                &alpha_minus,
+    void neurons:: compute_pvalues_T(double                &alpha_minus,
+                                     double                &alpha_plus,
                                      const C_Array<size_t> &Bcoinc,
                                      const size_t           Tcoinc) const throw()
     {
@@ -110,7 +110,6 @@ namespace wink
         const size_t den = 1+nb;
         alpha_plus       = double(count_plus)/den;
         alpha_minus      = double(count_minus)/den;
-        
     }
     
     
