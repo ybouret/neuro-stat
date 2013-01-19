@@ -35,7 +35,7 @@ namespace wink
         iwin.initialize(a, b, addr);
     }
 
-    size_t record:: coincidences_with( const record &other, const double delta ) const throw()
+    count_t record:: coincidences_with( const record &other, const double delta ) const throw()
     {
         return count_coincidences(addr,
                                   iwin,

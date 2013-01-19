@@ -1,4 +1,4 @@
-ADD_LIBRARY(wink STATIC
+ADD_LIBRARY(wink STATIC types.hpp
 	record.hpp		record.cpp 
 	neuron.hpp		neuron.cpp
 	lookup.hpp      	lookup.cpp

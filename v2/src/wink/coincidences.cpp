@@ -4,17 +4,17 @@
 namespace wink
 {
     
-    size_t coincidences::count(const double *X,
-                               const size_t  Nx,
-                               const double *Y,
-                               const size_t  Ny,
-                               const double  delta) throw()
+    count_t coincidences::count(const double *X,
+                                const size_t  Nx,
+                                const double *Y,
+                                const size_t  Ny,
+                                const double  delta) throw()
     {
         assert(Nx>0);
         assert(Ny>0);
         assert(X!=NULL);
         assert(Y!=NULL);
-        size_t       count = 0;
+        count_t      count = 0;
         size_t       j     = 0;              // initial value for Y testing
         
         //==========================================================================

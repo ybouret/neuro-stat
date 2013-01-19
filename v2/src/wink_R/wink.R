@@ -58,15 +58,17 @@ wink_check_common0 <- function(N1,N2,intervals,delta)
 ########################################################################
 ##
 ## Number of total true coincidences
-##
+## S: "T" or "H.
 ## return: the VECTOR of true_coincidences for each interval
 ##
 ########################################################################
-wink_true_coincidences <-function(N1,N2,intervals,delta)
+wink_true_coincidences <-function(N1,N2,intervals,delta,S)
 {
 	wink_check_common0(N1,N2,intervals,delta);
+	if( !is.character(S) )
+		stop("S is not a string");
 	## call the C++ code
-	.Call("wink_true_coincidences",N1,N2,intervals,delta)
+	.Call("wink_true_coincidences",N1,N2,intervals,delta,S)
 }
 
 ########################################################################

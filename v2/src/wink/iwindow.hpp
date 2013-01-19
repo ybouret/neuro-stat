@@ -5,7 +5,7 @@
 #ifndef WINK_IWINDOW_INCLUDED
 #define WINK_IWINDOW_INCLUDED 1
 
-#include <stddef.h>
+#include "./types.hpp"
 
 namespace wink
 {
@@ -41,11 +41,11 @@ namespace wink
      \param Wy a valid window associated to Y
      \return the number of coincidences within lag delta
      */
-    size_t count_coincidences(const double   *X,
-                              const iwindow  &Wx,
-                              const double   *Y,
-                              const iwindow  &Wy,
-                              const double    delta) throw();
+    count_t count_coincidences(const double   *X,
+                               const iwindow  &Wx,
+                               const double   *Y,
+                               const iwindow  &Wy,
+                               const double    delta) throw();
     
     
     

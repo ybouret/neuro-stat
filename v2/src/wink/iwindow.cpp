@@ -22,11 +22,11 @@ namespace wink
         }
     }
     
-    size_t count_coincidences(const double   *X,
-                              const iwindow  &Wx,
-                              const double   *Y,
-                              const iwindow  &Wy,
-                              const double    delta) throw()
+    count_t count_coincidences(const double   *X,
+                               const iwindow  &Wx,
+                               const double   *Y,
+                               const iwindow  &Wy,
+                               const double    delta) throw()
     {
         assert(X!=NULL);
         assert(Y!=NULL);
