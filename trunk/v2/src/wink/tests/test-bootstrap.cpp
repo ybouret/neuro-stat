@@ -24,9 +24,9 @@ int main(int argc, char *argv[] )
             xp.ran.fill_array(0, 10, &N2[i][1], N2[i].size());
         }
         
-        C_Array<size_t> Bcoinc(8192);
-        const size_t    nb    = Bcoinc.size;
-        const double    delta = 0.2;
+        C_Array<count_t> Bcoinc(8192);
+        const size_t     nb    = Bcoinc.size;
+        const double     delta = 0.2;
         cFile fp_perm("coinc_perm.dat", cFile::Overwrite);
         cFile fp_repl("coinc_repl.dat", cFile::Overwrite);
 
@@ -43,17 +43,17 @@ int main(int argc, char *argv[] )
             fp_repl("%g",a);
             const double b          = a + 1.0;
             //! initialize window for N1 and N2, then find coincidences
-            const size_t true_coinc = xp.true_coincidences(N1, N2, a, b, delta);
+            const size_t true_coinc = xp.true_coincidences(statistic_T, N1, N2, a, b, delta);
             fp_perm(" %u", unsigned(true_coinc) );
             fp_repl(" %u", unsigned(true_coinc) );
 
             
-            __CHRONO(ell_perm,xp.bootstrap(Bcoinc, bootstrap_perm, N1, N2, delta));
-            xp.compute_pvalues_T(alpha_plus, alpha_minus, Bcoinc, true_coinc);
+            __CHRONO(ell_perm,xp.bootstrap( statistic_T, Bcoinc, bootstrap_perm, N1, N2, delta));
+            xp.compute_pvalues(alpha_plus, alpha_minus, Bcoinc, true_coinc);
             fp_perm(" %g %g", alpha_plus, alpha_minus);
             
-            __CHRONO(ell_repl,xp.bootstrap(Bcoinc, bootstrap_repl, N1, N2, delta));
-            xp.compute_pvalues_T(alpha_plus, alpha_minus, Bcoinc, true_coinc);
+            __CHRONO(ell_repl,xp.bootstrap( statistic_T, Bcoinc, bootstrap_repl, N1, N2, delta));
+            xp.compute_pvalues(alpha_plus, alpha_minus, Bcoinc, true_coinc);
             fp_repl(" %g %g", alpha_plus, alpha_minus);
 
             

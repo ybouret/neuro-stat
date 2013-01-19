@@ -95,6 +95,17 @@ namespace wink
         assert(size==n);
     }
 
+    void drawing::  bootstrap2(size_t n, UniformGenerator &ran )
+    {
+        clear();
+        for( size_t i=0; i < n; ++i)
+        {
+            couple *cpl = query();
+            cpl->first  = cpl->second = ran.lt(n);
+            push_back(cpl);
+        }
+        assert(size==n);
+    }
     
     std::ostream & operator<<( std::ostream &os, const drawing &d)
     {

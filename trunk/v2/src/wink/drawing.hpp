@@ -49,6 +49,12 @@ namespace wink
          */
         void replacement( size_t n, UniformGenerator &ran ); 
         
+        //! bootstrap
+        /**
+         couple->first = couple->second = random([0..n-1])
+         */
+        void bootstrap2(size_t n, UniformGenerator &ran );
+        
         friend std::ostream & operator<<( std::ostream &, const drawing & );
         
     private:

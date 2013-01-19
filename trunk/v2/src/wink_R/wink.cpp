@@ -145,21 +145,39 @@ extern "C" SEXP wink_perm( SEXP Rn )
 // Compute the number of true coincidences on intervals
 //
 ////////////////////////////////////////////////////////////////////////////////
-extern "C"
-SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta)
+static inline
+statistic_value __check_stat_opt( SEXP Rvalue )
 {
+    const char *value = CHAR(STRING_ELT(Rvalue,0));
+    if(!value) throw Exception("NULL statistic_value");
     
+    if(strcmp(value,"T")==0)
+    {
+        return statistic_T;
+    }
+    
+    if(strcmp(value,"H")==0)
+    {
+        return statistic_H;
+    }
+    
+    throw Exception("Unknown option '%s'", value);
+}
+
+extern "C"
+SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP Rvalue)
+{
     try
     {
         //----------------------------------------------------------------------
         //-- parse arguments
         //----------------------------------------------------------------------
-        RNeuron         N1(RN1);
-        RNeuron         N2(RN2);
-        RIntervals      intervals(RI);
-        const double    delta = R2<double>(Rdelta);
-        
-        const size_t num_intervals = intervals.cols;
+        RNeuron              N1(RN1);
+        RNeuron               N2(RN2);
+        RIntervals            intervals(RI);
+        const double          delta = R2<double>(Rdelta);
+        const statistic_value S     = __check_stat_opt(Rvalue);
+        const size_t          num_intervals = intervals.cols;
         
         //----------------------------------------------------------------------
         //-- prepare answer
@@ -170,7 +188,7 @@ SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta)
         {
             const double a = intervals[i][0];
             const double b = intervals[i][1];
-            ans[i] = double(xp.true_coincidences(N1, N2, a, b, delta));
+            ans[i] = double(xp.true_coincidences( S,  N1, N2, a, b, delta));
         }
         //----------------------------------------------------------------------
         //-- done
@@ -241,22 +259,22 @@ SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt
         //-- first  row: alpha_minus
         //-- second row: alpha_plus
         //----------------------------------------------------------------------
-        RMatrix<double> alpha(2,num_intervals);
-        neurons         xp;
-        C_Array<size_t> Bcoinc( nb );
+        RMatrix<double>  alpha(2,num_intervals);
+        neurons          xp;
+        C_Array<count_t> Bcoinc( nb );
         for(size_t i=0; i < num_intervals;++i)
         {
             const double a = intervals[i][0];
             const double b = intervals[i][1];
             
             //-- initialize with true coincidences
-            const size_t Tcoinc = double(xp.true_coincidences(N1, N2, a, b, delta));
+            const size_t Tcoinc = double(xp.true_coincidences( statistic_T, N1, N2, a, b, delta));
             
             //-- bootstrap
-            xp.bootstrap(Bcoinc, Bkind, N1, N2, delta);
+            xp.bootstrap( statistic_T, Bcoinc, Bkind, N1, N2, delta);
             
             //-- evaluate pvalues
-            xp.compute_pvalues_T(alpha[i][0],alpha[i][1],Bcoinc,Tcoinc);
+            xp.compute_pvalues(alpha[i][0],alpha[i][1],Bcoinc,Tcoinc);
         }
         
         //----------------------------------------------------------------------
@@ -300,14 +318,14 @@ namespace
         const RMatrix<double> &intervals;
         const double           delta;
         const size_t           B;
-        C_Array<size_t>        Bcoinc;
+        C_Array<count_t>       Bcoinc;
         const bootstrap_method Bkind;
         RMatrix<double>       &alpha;
         size_t                 ini;
         size_t                 num;
         neurons                xp;
         
-        explicit Worker( Mutex &m,
+        explicit Worker(Mutex            &m,
                         const WorkerArgs &args ) :
         Runnable(m),
         N1( *args.N1 ),
@@ -344,13 +362,13 @@ namespace
                     const double b = intervals[i][1];
                     
                     //-- initialize with true coincidences
-                    const size_t Tcoinc = double(xp.true_coincidences(N1, N2, a, b, delta));
+                    const size_t Tcoinc = double(xp.true_coincidences(statistic_T, N1, N2, a, b, delta));
                     
                     //-- bootstrap
-                    xp.bootstrap(Bcoinc, Bkind, N1, N2, delta);
+                    xp.bootstrap( statistic_T, Bcoinc, Bkind, N1, N2, delta);
                     
                     //-- evaluate pvalues
-                    xp.compute_pvalues_T(alpha[i][0],alpha[i][1],Bcoinc,Tcoinc);
+                    xp.compute_pvalues(alpha[i][0],alpha[i][1],Bcoinc,Tcoinc);
                 }
             }
             catch( const std::exception &e )

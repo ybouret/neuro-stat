@@ -3,6 +3,7 @@
 
 #include "../pyck/os.hpp"
 #include "./iwindow.hpp"
+#include "./types.hpp"
 
 namespace wink
 {
@@ -25,7 +26,7 @@ namespace wink
         void         prepare(double a,double b) throw();
         
         //! count coincidences between two records and their prepared windows
-        size_t coincidences_with( const record &other, const double delta ) const throw();
+        count_t coincidences_with( const record &other, const double delta ) const throw();
         
     private:
         double *addr; //!< addr[1..n] are the tops value
