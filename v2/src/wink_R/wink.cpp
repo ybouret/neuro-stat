@@ -145,8 +145,10 @@ extern "C" SEXP wink_perm( SEXP Rn )
 // Compute the number of true coincidences on intervals
 //
 ////////////////////////////////////////////////////////////////////////////////
+
+//! Validate the statistic name
 static inline
-statistic_value __check_stat_opt( SEXP Rvalue )
+statistic_value __check_stat_val( SEXP Rvalue )
 {
     const char *value = CHAR(STRING_ELT(Rvalue,0));
     if(!value) throw Exception("NULL statistic_value");
@@ -176,7 +178,7 @@ SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP Rval
         RNeuron               N2(RN2);
         RIntervals            intervals(RI);
         const double          delta = R2<double>(Rdelta);
-        const statistic_value S     = __check_stat_opt(Rvalue);
+        const statistic_value S     = __check_stat_val(Rvalue);
         const size_t          num_intervals = intervals.cols;
         
         //----------------------------------------------------------------------
@@ -190,6 +192,7 @@ SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP Rval
             const double b = intervals[i][1];
             ans[i] = double(xp.true_coincidences( S,  N1, N2, a, b, delta));
         }
+        
         //----------------------------------------------------------------------
         //-- done
         //----------------------------------------------------------------------

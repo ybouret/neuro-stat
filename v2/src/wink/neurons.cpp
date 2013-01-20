@@ -138,7 +138,10 @@ namespace wink
         
         for( size_t i=0; i < nb; ++i )
         {
+            // generate couples
             ( *this.*gen)(n1,ran);
+            
+            // compute coincidences
             Bcoinc[i] = (*this.*coinc)(N1,N2,delta);
         }
         
