@@ -24,48 +24,71 @@ int main(int argc, char *argv[] )
             xp.ran.fill_array(0, 10, &N2[i][1], N2[i].size());
         }
         
-        C_Array<count_t> Bcoinc(8192);
+        C_Array<count_t> Bcoinc(4096);
         const size_t     nb    = Bcoinc.size;
         const double     delta = 0.2;
-        cFile fp_perm("coinc_perm.dat", cFile::Overwrite);
-        cFile fp_repl("coinc_repl.dat", cFile::Overwrite);
+        cFile fp_perm_T("coinc_perm_T.dat", cFile::Overwrite);
+        cFile fp_repl_T("coinc_repl_T.dat", cFile::Overwrite);
+        cFile fp_perm_H("coinc_perm_H.dat", cFile::Overwrite);
+        cFile fp_repl_H("coinc_repl_H.dat", cFile::Overwrite);
 
         chrono.start();
-        double ell_perm    = 0;
-        double ell_repl    = 0;
+        double ell_perm_T  = 0;
+        double ell_repl_T  = 0;
+        double ell_perm_H  = 0;
+        double ell_repl_H  = 0;
         size_t count       = 0;
         double alpha_plus  = 0;
         double alpha_minus = 0;
         for( double a=0;a<10; a += 0.1 )
         {
             ++count;
-            fp_perm("%g",a);
-            fp_repl("%g",a);
+            fp_perm_T("%g",a);
+            fp_repl_T("%g",a);
+            fp_perm_H("%g",a);
+            fp_repl_H("%g",a);
+
             const double b          = a + 1.0;
             //! initialize window for N1 and N2, then find coincidences
-            const size_t true_coinc = xp.true_coincidences(statistic_T, N1, N2, a, b, delta);
-            fp_perm(" %u", unsigned(true_coinc) );
-            fp_repl(" %u", unsigned(true_coinc) );
+            const count_t true_coinc_T = xp.true_coincidences(statistic_T, N1, N2, a, b, delta);
+            fp_perm_T(" %d", int(true_coinc_T) );
+            fp_repl_T(" %d", int(true_coinc_T) );
+            
+            const count_t true_coinc_H = xp.true_coincidences(statistic_H, N1, N2, a, b, delta);
+            fp_perm_H(" %d", int(true_coinc_H) );
+            fp_repl_H(" %d", int(true_coinc_H) );
 
             
-            __CHRONO(ell_perm,xp.bootstrap( statistic_T, Bcoinc, bootstrap_perm, N1, N2, delta));
-            xp.compute_pvalues(alpha_plus, alpha_minus, Bcoinc, true_coinc);
-            fp_perm(" %g %g", alpha_plus, alpha_minus);
+            __CHRONO(ell_perm_T,xp.bootstrap( statistic_T, Bcoinc, bootstrap_perm, N1, N2, delta));
+            xp.compute_pvalues(alpha_minus, alpha_plus, Bcoinc, true_coinc_T);
+            fp_perm_T(" %g %g", alpha_minus, alpha_plus);
             
-            __CHRONO(ell_repl,xp.bootstrap( statistic_T, Bcoinc, bootstrap_repl, N1, N2, delta));
-            xp.compute_pvalues(alpha_plus, alpha_minus, Bcoinc, true_coinc);
-            fp_repl(" %g %g", alpha_plus, alpha_minus);
-
+            __CHRONO(ell_repl_T,xp.bootstrap( statistic_T, Bcoinc, bootstrap_repl, N1, N2, delta));
+            xp.compute_pvalues(alpha_minus, alpha_plus, Bcoinc, true_coinc_T);
+            fp_repl_T(" %g %g", alpha_minus, alpha_plus);
+            
+            __CHRONO(ell_perm_H,xp.bootstrap( statistic_H, Bcoinc, bootstrap_perm, N1, N2, delta));
+            xp.compute_pvalues(alpha_minus, alpha_plus, Bcoinc, true_coinc_H);
+            fp_perm_H(" %g %g", alpha_minus, alpha_plus);
+            
+            __CHRONO(ell_repl_H,xp.bootstrap( statistic_H, Bcoinc, bootstrap_perm, N1, N2, delta));
+            xp.compute_pvalues(alpha_minus, alpha_plus, Bcoinc, true_coinc_H);
+            fp_repl_H(" %g %g", alpha_minus, alpha_plus);
             
             std::cerr << "."; std::cerr.flush();
             if( 0 == (count % 16 ) ) std::cerr << std::endl;
-            fp_perm("\n");
-            fp_repl("\n");
+            fp_perm_T("\n");
+            fp_repl_T("\n");
+            fp_perm_H("\n");
+            fp_repl_H("\n");
+            
         }
         std::cerr << std::endl;
         const double num_bs = (nb * count) * 1e-6;
-        std::cerr << "speed of perm=" << num_bs/ell_perm << " M/s" << std::endl;
-        std::cerr << "speed of repl=" << num_bs/ell_repl << " M/s" << std::endl;
+        std::cerr << "speed of perm_T=" << num_bs/ell_perm_T << " M/s" << std::endl;
+        std::cerr << "speed of repl_T=" << num_bs/ell_repl_T << " M/s" << std::endl;
+        std::cerr << "speed of perm_H=" << num_bs/ell_perm_H << " M/s" << std::endl;
+        std::cerr << "speed of repl_H=" << num_bs/ell_repl_H << " M/s" << std::endl;
 
         return 0;
     }
