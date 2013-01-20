@@ -66,6 +66,7 @@ namespace wink
             case statistic_H:
                 return coincidences_H(N1, N2, delta);
         }
+	throw Exception("unknown statistic type");
     }
     
     
