@@ -21,7 +21,7 @@ GET_TARGET_PROPERTY(winkLib wink LOCATION )
 MESSAGE( STATUS "winkLib=${winkLib}" )
 
 GET_TARGET_PROPERTY(pyckLib pyck LOCATION )
-MESSAGE( STATUS "pyckLib=${pyckLin}" )
+MESSAGE( STATUS "pyckLib=${pyckLib}" )
 	
 ADD_CUSTOM_TARGET(wink_R ALL
 	COMMAND ${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/${WINK_DLL} ${CMAKE_CURRENT_SOURCE_DIR}/wink.cpp "${winkLib}" "${pyckLib}"
