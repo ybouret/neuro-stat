@@ -130,7 +130,7 @@ wink_permutation_par <- function(N1,N2,intervals,delta,B,S,num_threads)
 ## N2       : second Neuron
 ## intervals: #intervals, 2 rows of a,b
 ## delta    : time lag for coincidence
-## B        : bootstraps count
+## B        : #bootstraps count
 ## S        : "T", "H"
 ########################################################################
 wink_bootstrap_counts <- function(N1,N2,intervals,delta,B)
