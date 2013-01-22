@@ -58,14 +58,14 @@ namespace wink
         count_t true_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta);
         
         
-        //! bootstrap
+        //! bootstrap for a given statistic
         /**
          \param N1 a prepared neuron on window [a,b]
          \param N2 a prepared neuron on window [a,b]
          */
         void bootstrap( statistic_value S, C_Array<count_t> &Bcoinc, bootstrap_method Bkind, const neuron &N1, const neuron &N2, double delta );
         
-        //! compute p_values for statistics T
+        //! compute p_values for a given statistic
         /**
          \param alpha_minus: 1/(B+1) (1+count(Bcounc[i]<=Tcoinc))
          \param alpha_plus:  1/(B+1) (1+count(Bcounc[i]>=Tcoinc))
@@ -75,9 +75,15 @@ namespace wink
                              const C_Array<count_t> &Bcoinc,
                              const count_t           Tcoinc) const throw();
         
+        //! compute count+ and count- for a given statistic
+        void compute_counts(double                 &count_minus,
+                            double                 &count_plus,
+                            const C_Array<count_t> &Bcoinc,
+                            const count_t           Tcoinc) const throw();
+        
         static Mutex    access; //!< shared access
         static uint32_t seed32; //!< shared seed, for different random seeds
-                
+        
     private:
         neurons(const neurons &);
         neurons&operator=(const neurons &);
