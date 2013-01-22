@@ -88,8 +88,30 @@ namespace {
         return value[0];
     }
     
-    static DefaultUniformGenerator shared_ran;
     static Mutex                   shared_mutex;
+    class SharedRan : public DefaultUniformGenerator
+    {
+    public:
+        explicit SharedRan()
+        {
+            seed( WallTime:: Seed() );
+        }
+        
+        
+        virtual ~SharedRan() throw()
+        {
+            
+        }
+        
+    private:
+        SharedRan(const SharedRan&);
+        SharedRan&operator=(const SharedRan&);
+
+    };
+    
+    static SharedRan shared_ran;
+
+   
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -202,43 +224,21 @@ SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP Rval
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Serial Bootstrap
+// Serial Permutations
 //
 ////////////////////////////////////////////////////////////////////////////////
-#if 0
-static inline
-bootstrap_method __check_option( SEXP Ropt )
-{
-    const char *option = CHAR(STRING_ELT(Ropt,0));
-    if(!option) throw Exception("NULL option");
-    
-    if(strcmp(option,"perm")==0)
-    {
-        return bootstrap_perm;
-    }
-    
-    if(strcmp(option,"repl")==0)
-    {
-        return bootstrap_repl;
-    }
-    
-    throw Exception("Unknown option '%s'", option);
-    
-}
-#endif
-
 extern "C"
 SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt)
 {
     try
     {
-        Rprintf("\tWINK: Serial Code\n");
         //----------------------------------------------------------------------
         //-- check option
         //----------------------------------------------------------------------
         const mix_method       Bkind = mix_perm; //__check_option(Ropt);
         const statistic_value  S     = __check_stat_val(Ropt);
-        
+        Rprintf("\tWINK: Serial Permutation Code\n");
+
         //----------------------------------------------------------------------
         //-- parse arguments
         //----------------------------------------------------------------------
@@ -284,6 +284,69 @@ SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ro
     }
     catch( const Exception &e )
     {
+        Rprintf("*** wink_permutation: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("*** unhanled exception in wink_permutation\n");
+    }
+    return R_NilValue;
+}
+
+extern "C"
+SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
+{
+    try
+    {
+        Rprintf("\tWINK: Serial Bootstrap Code\n");
+        
+        //----------------------------------------------------------------------
+        //-- parse arguments
+        //----------------------------------------------------------------------
+        const RMatrix<double> M1(RN1); __show_neuron(M1);
+        RNeuron               N1(M1);
+        const RMatrix<double> M2(RN2); __show_neuron(M2);
+        RNeuron               N2(M2);
+        RIntervals            intervals(RI);
+        const double          delta         = R2<double>(Rdelta);
+        const size_t          nb            = R2<int>(RB);
+        const size_t          num_intervals = intervals.cols;
+        
+        Rprintf("\tWINK: #intervals  = %u\n", unsigned(num_intervals));
+        Rprintf("\tWINK: #bootstraps = %u\n", unsigned(nb));
+        
+        
+        //----------------------------------------------------------------------
+        //-- prepare answer
+        //-- first  row: alpha_minus
+        //-- second row: alpha_plus
+        //----------------------------------------------------------------------
+        RMatrix<double>  counts(2,num_intervals);
+        neurons          xp;
+        C_Array<count_t> Bcoinc( nb );
+        for(size_t i=0; i < num_intervals;++i)
+        {
+            const double a = intervals[i][0];
+            const double b = intervals[i][1];
+            
+            //-- initialize with true coincidences
+            const size_t H  = double(xp.true_coincidences( statistic_H, N1, N2, a, b, delta));
+            
+            //-- mix'em all
+            xp.mix( statistic_H, Bcoinc, mix_perm, N1, N2, delta);
+            
+            //-- evaluate pvalues
+            xp.compute_counts(counts[i][0],counts[i][1],Bcoinc,H);
+        }
+        
+        //----------------------------------------------------------------------
+        //-- done
+        //----------------------------------------------------------------------
+        return *counts;
+
+    }
+    catch( const Exception &e )
+    {
         Rprintf("*** wink_bootstrap: %s\n", e.what());
     }
     catch(...)
@@ -292,6 +355,15 @@ SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ro
     }
     return R_NilValue;
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//
+// Parallel Code
+//
+//
+////////////////////////////////////////////////////////////////////////////////
 
 #include "../pyck/team.hpp"
 
@@ -353,12 +425,6 @@ namespace
         virtual
         void run() throw()
         {
-            /*
-             {
-             PYCK_LOCK(mutex);
-             Rprintf("\tWink Thread: %2d +%2d\n", unsigned(ini), unsigned(num));
-             }
-             */
             try
             {
                 for( size_t i=ini,j=0;j<num;++i,++j)
@@ -378,11 +444,11 @@ namespace
             }
             catch( const std::exception &e )
             {
-                Rprintf("***wink_bootstrap_par/thread: %\n", e.what());
+                Rprintf("***wink_permutation_par/thread: %\n", e.what());
             }
             catch (...)
             {
-                Rprintf("*** unhandled error in wink_bootstrap_par/thread\n");
+                Rprintf("*** unhandled error in wink_permutation_par/thread\n");
             }
         }
         
@@ -403,7 +469,6 @@ SEXP wink_permutation_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEX
 {
     try
     {
-        
         //----------------------------------------------------------------------
         //
         // Parsing Arguments Once
@@ -412,7 +477,7 @@ SEXP wink_permutation_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEX
         const size_t           num_threads   = R2<int>(RNumThreads);
         if( num_threads <= 0 )
             throw Exception("Invalid #num_threads");
-        Rprintf("\tWINK: Parallel Code [%u thread%c]\n", unsigned(num_threads), num_threads>1 ? 's' : ' ' );
+        Rprintf("\tWINK: Parallel Permutation Code [%u thread%c]\n", unsigned(num_threads), num_threads>1 ? 's' : ' ' );
         
         const mix_method       Bkind = mix_perm;
         const statistic_value  S     = __check_stat_val(Ropt);
@@ -450,11 +515,11 @@ SEXP wink_permutation_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEX
     }
     catch( const Exception &e )
     {
-        Rprintf("*** wink_bootstrap_par: %s\n", e.what());
+        Rprintf("*** wink_permutation_par: %s\n", e.what());
     }
     catch(...)
     {
-        Rprintf("*** unhanled exception in wink_bootstrap_par\n");
+        Rprintf("*** unhanled exception in wink_permutation_par\n");
     }
     return R_NilValue;
 }
