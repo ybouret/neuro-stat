@@ -142,3 +142,30 @@ wink_bootstrap_counts <- function(N1,N2,intervals,delta,B)
 	.Call("wink_bootstrap_counts",N1,N2,intervals,delta,B);
 }
 
+
+## N1       : first Neuron
+## N2       : second Neuron
+wink_single_H <- function(N1,N2,a,b,delta,B)
+{
+	if (!is.matrix(N1))
+		stop("N1 must be a matrix");
+		
+	if (!is.matrix(N2))
+		stop("N2 must be a matrix");
+		
+	if( !is.real(a) )
+		stop("a must be a real");
+		
+	if( !is.real(b) )
+		stop("b must be a real");
+		
+	if( !is.real(delta) )
+		stop("delta must be a real");
+		
+	if( !is.real(B) )
+		stop("B must be a real");
+		
+	.Call("wink_single_H",N1,N2,a,b,delta,B);
+	
+}
+
