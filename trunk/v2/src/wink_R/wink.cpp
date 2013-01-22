@@ -24,6 +24,7 @@ extern "C" SEXP wink_version()
 ////////////////////////////////////////////////////////////////////////////////
 namespace {
     
+#if 0
     class RNeuronWrapper
     {
     public:
@@ -39,12 +40,12 @@ namespace {
         RNeuronWrapper&operator=(const RNeuronWrapper&);
         
     };
+#endif
     
-    class RNeuron : public RNeuronWrapper, public neuron
+    class RNeuron :  public neuron
     {
     public:
-        explicit RNeuron( SEXP Rmat ) :
-        RNeuronWrapper(Rmat),
+        explicit RNeuron( const RMatrix<double> &self ) :
         neuron( self.rows, col2dat(self.cols) )
         {
             loadR( &self[0][0], self.rows, self.cols);
@@ -174,8 +175,10 @@ SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP Rval
         //----------------------------------------------------------------------
         //-- parse arguments
         //----------------------------------------------------------------------
-        RNeuron               N1(RN1);
-        RNeuron               N2(RN2);
+        const RMatrix<double> M1(RN1);
+        RNeuron               N1(M1);
+        const RMatrix<double> M2(RN2);
+        RNeuron               N2(M2);
         RIntervals            intervals(RI);
         const double          delta = R2<double>(Rdelta);
         const statistic_value S     = __check_stat_val(Rvalue);
@@ -235,24 +238,27 @@ bootstrap_method __check_option( SEXP Ropt )
 }
 
 extern "C"
-SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt)
+SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt)
 {
     try
     {
         //----------------------------------------------------------------------
         //-- check option
         //----------------------------------------------------------------------
-        const bootstrap_method Bkind = __check_option(Ropt);
+        const bootstrap_method Bkind = bootstrap_perm; //__check_option(Ropt);
+        const statistic_value  S     = __check_stat_val(Ropt);
         
         //----------------------------------------------------------------------
         //-- parse arguments
         //----------------------------------------------------------------------
-        RNeuron         N1(RN1);
-        RNeuron         N2(RN2);
-        RIntervals      intervals(RI);
-        const double    delta         = R2<double>(Rdelta);
-        const size_t    nb            = R2<int>(RB);
-        const size_t    num_intervals = intervals.cols;
+        const RMatrix<double> M1(RN1);
+        RNeuron               N1(M1);
+        const RMatrix<double> M2(RN2);
+        RNeuron               N2(M2);
+        RIntervals            intervals(RI);
+        const double          delta         = R2<double>(Rdelta);
+        const size_t          nb            = R2<int>(RB);
+        const size_t          num_intervals = intervals.cols;
         
         Rprintf("\tWINK: #intervals  = %u\n", unsigned(num_intervals));
         Rprintf("\tWINK: #bootstraps = %u\n", unsigned(nb));
@@ -271,10 +277,10 @@ SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt
             const double b = intervals[i][1];
             
             //-- initialize with true coincidences
-            const size_t Tcoinc = double(xp.true_coincidences( statistic_T, N1, N2, a, b, delta));
+            const size_t Tcoinc = double(xp.true_coincidences( S, N1, N2, a, b, delta));
             
             //-- bootstrap
-            xp.bootstrap( statistic_T, Bcoinc, Bkind, N1, N2, delta);
+            xp.bootstrap( S, Bcoinc, Bkind, N1, N2, delta);
             
             //-- evaluate pvalues
             xp.compute_pvalues(alpha[i][0],alpha[i][1],Bcoinc,Tcoinc);
@@ -296,6 +302,7 @@ SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt
     return R_NilValue;
 }
 
+#if 0
 #include "../pyck/team.hpp"
 
 namespace
@@ -450,6 +457,7 @@ SEXP wink_bootstrap_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP 
     }
     return R_NilValue;
 }
+#endif
 
 
 
