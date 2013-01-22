@@ -80,29 +80,32 @@ wink_true_coincidences <-function(N1,N2,intervals,delta,S)
 ## intervals: #intervals, 2 rows of a,b
 ## delta    : time lag for coincidence
 ## B        : bootstraps count
-##
+## S        : "T", "H"
 ########################################################################
-wink_check_common1 <- function(N1,N2,intervals,delta,B,option)
+wink_check_common1 <- function(N1,N2,intervals,delta,B,S)
 {
 	wink_check_common0(N1,N2,intervals,delta);
 	
 	if( !is.real(B) )
 		stop("delta must be a real");
 		
-	if( !is.character(option) )
-		stop("option is not a string");
+	if( !is.character(S) )
+		stop("S is not a string");
 }
 
-wink_bootstrap <- function(N1,N2,intervals,delta,B,option)
+wink_permutation <- function(N1,N2,intervals,delta,B,S)
 {
-	wink_check_common1(N1,N2,intervals,delta,B,option);
+	wink_check_common1(N1,N2,intervals,delta,B,S);
 	
-	.Call("wink_bootstrap",N1,N2,intervals,delta,B,option);
+	.Call("wink_permutation",N1,N2,intervals,delta,B,S);
 }
 
-wink_bootstrap_par <- function(N1,N2,intervals,delta,B,option,num_threads)
+
+
+wink_bootstrap_par <- function(N1,N2,intervals,delta,B,S,num_threads)
 {
-	wink_check_common1(N1,N2,intervals,delta,B,option);
+	wink_check_common1(N1,N2,intervals,delta,B,S);
+	
 	if( !is.real(num_threads) )
 		stop("num_threads is not a real");
 		
