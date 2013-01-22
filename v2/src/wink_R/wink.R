@@ -87,16 +87,26 @@ wink_check_common1 <- function(N1,N2,intervals,delta,B,S)
 	wink_check_common0(N1,N2,intervals,delta);
 	
 	if( !is.real(B) )
-		stop("delta must be a real");
+		stop("B must be a real");
 		
 	if( !is.character(S) )
 		stop("S is not a string");
 }
 
+########################################################################
+##
+## return pvalues for chosen statistic
+##
+## N1       : first Neuron
+## N2       : second Neuron
+## intervals: #intervals, 2 rows of a,b
+## delta    : time lag for coincidence
+## B        : bootstraps count
+## S        : "T", "H"
+########################################################################
 wink_permutation <- function(N1,N2,intervals,delta,B,S)
 {
 	wink_check_common1(N1,N2,intervals,delta,B,S);
-	
 	.Call("wink_permutation",N1,N2,intervals,delta,B,S);
 }
 
@@ -109,5 +119,26 @@ wink_permutation_par <- function(N1,N2,intervals,delta,B,S,num_threads)
 		stop("num_threads is not a real");
 		
 	.Call("wink_permutation_par",N1,N2,intervals,delta,B,S,num_threads);
+}
+
+########################################################################
+##
+## return bootstrap counts(-,+), using centered H statistic
+## and bootstrap drawings
+##
+## N1       : first Neuron
+## N2       : second Neuron
+## intervals: #intervals, 2 rows of a,b
+## delta    : time lag for coincidence
+## B        : bootstraps count
+## S        : "T", "H"
+########################################################################
+wink_bootstrap_counts <- function(N1,N2,intervals,delta,B)
+{
+	wink_check_common0(N1,N2,intervals,delta);	
+	if( !is.real(B) )
+		stop("B must be a real");
+		
+	.Call("wink_bootstrap_counts",N1,N2,intervals,delta,B);
 }
 

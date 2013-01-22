@@ -134,6 +134,10 @@ namespace wink
             case mix_repl:
                 gen = & drawing:: replacement;
                 break;
+                
+            case mix_boot:
+                gen = & drawing:: bootstrap2;
+                break;
         }
         
         for( size_t i=0; i < nb; ++i )
