@@ -102,7 +102,7 @@ namespace wink
     }
     
     
-    void neurons:: bootstrap( statistic_value S, C_Array<count_t> &Bcoinc, bootstrap_method Bkind, const neuron &N1, const neuron &N2, double delta )
+    void neurons:: mix( statistic_value S, C_Array<count_t> &Bcoinc, mix_method Bkind, const neuron &N1, const neuron &N2, double delta )
     {
         const size_t nb = Bcoinc.size;
         const size_t n1 = N1.trials;
@@ -127,11 +127,11 @@ namespace wink
         void (drawing:: *gen)( size_t, UniformGenerator &) = 0;
         switch( Bkind )
         {
-            case bootstrap_perm:
+            case mix_perm:
                 gen = & drawing:: permutation;
                 break;
                 
-            case bootstrap_repl:
+            case mix_repl:
                 gen = & drawing:: replacement;
                 break;
         }

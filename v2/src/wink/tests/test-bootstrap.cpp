@@ -59,19 +59,19 @@ int main(int argc, char *argv[] )
             fp_repl_H(" %d", int(true_coinc_H) );
 
             
-            __CHRONO(ell_perm_T,xp.bootstrap( statistic_T, Bcoinc, bootstrap_perm, N1, N2, delta));
+            __CHRONO(ell_perm_T,xp.mix( statistic_T, Bcoinc, mix_perm, N1, N2, delta));
             xp.compute_pvalues(alpha_minus, alpha_plus, Bcoinc, true_coinc_T);
             fp_perm_T(" %g %g", alpha_minus, alpha_plus);
             
-            __CHRONO(ell_repl_T,xp.bootstrap( statistic_T, Bcoinc, bootstrap_repl, N1, N2, delta));
+            __CHRONO(ell_repl_T,xp.mix( statistic_T, Bcoinc, mix_repl, N1, N2, delta));
             xp.compute_pvalues(alpha_minus, alpha_plus, Bcoinc, true_coinc_T);
             fp_repl_T(" %g %g", alpha_minus, alpha_plus);
             
-            __CHRONO(ell_perm_H,xp.bootstrap( statistic_H, Bcoinc, bootstrap_perm, N1, N2, delta));
+            __CHRONO(ell_perm_H,xp.mix( statistic_H, Bcoinc, mix_perm, N1, N2, delta));
             xp.compute_pvalues(alpha_minus, alpha_plus, Bcoinc, true_coinc_H);
             fp_perm_H(" %g %g", alpha_minus, alpha_plus);
             
-            __CHRONO(ell_repl_H,xp.bootstrap( statistic_H, Bcoinc, bootstrap_perm, N1, N2, delta));
+            __CHRONO(ell_repl_H,xp.mix( statistic_H, Bcoinc, mix_perm, N1, N2, delta));
             xp.compute_pvalues(alpha_minus, alpha_plus, Bcoinc, true_coinc_H);
             fp_repl_H(" %g %g", alpha_minus, alpha_plus);
             

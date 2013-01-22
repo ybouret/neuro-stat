@@ -205,6 +205,7 @@ SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP Rval
 // Serial Bootstrap
 //
 ////////////////////////////////////////////////////////////////////////////////
+#if 0
 static inline
 bootstrap_method __check_option( SEXP Ropt )
 {
@@ -224,6 +225,7 @@ bootstrap_method __check_option( SEXP Ropt )
     throw Exception("Unknown option '%s'", option);
     
 }
+#endif
 
 extern "C"
 SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ropt)
@@ -234,7 +236,7 @@ SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ro
         //----------------------------------------------------------------------
         //-- check option
         //----------------------------------------------------------------------
-        const bootstrap_method Bkind = bootstrap_perm; //__check_option(Ropt);
+        const mix_method       Bkind = mix_perm; //__check_option(Ropt);
         const statistic_value  S     = __check_stat_val(Ropt);
         
         //----------------------------------------------------------------------
@@ -268,8 +270,8 @@ SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ro
             //-- initialize with true coincidences
             const size_t Tcoinc = double(xp.true_coincidences( S, N1, N2, a, b, delta));
             
-            //-- bootstrap
-            xp.bootstrap( S, Bcoinc, Bkind, N1, N2, delta);
+            //-- mix'em all
+            xp.mix( S, Bcoinc, Bkind, N1, N2, delta);
             
             //-- evaluate pvalues
             xp.compute_pvalues(alpha[i][0],alpha[i][1],Bcoinc,Tcoinc);
@@ -303,7 +305,7 @@ namespace
         const RMatrix<double> *intervals;
         double                 delta;
         size_t                 B;
-        bootstrap_method       Bkind;
+        mix_method             Bkind;
         RMatrix<double>       *alpha;
         size_t                 num_threads;
         size_t                 thread_rank;
@@ -319,7 +321,7 @@ namespace
         const double           delta;
         const size_t           B;
         C_Array<count_t>       Bcoinc;
-        const bootstrap_method Bkind;
+        const mix_method       Bkind;
         RMatrix<double>       &alpha;
         size_t                 ini;
         size_t                 num;
@@ -368,7 +370,7 @@ namespace
                     const size_t Tcoinc = double(xp.true_coincidences(S, N1, N2, a, b, delta));
                     
                     //-- bootstrap
-                    xp.bootstrap( S, Bcoinc, Bkind, N1, N2, delta);
+                    xp.mix( S, Bcoinc, Bkind, N1, N2, delta);
                     
                     //-- evaluate pvalues
                     xp.compute_pvalues(alpha[i][0],alpha[i][1],Bcoinc,Tcoinc);
@@ -412,7 +414,7 @@ SEXP wink_permutation_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEX
             throw Exception("Invalid #num_threads");
         Rprintf("\tWINK: Parallel Code [%u thread%c]\n", unsigned(num_threads), num_threads>1 ? 's' : ' ' );
         
-        const bootstrap_method Bkind = bootstrap_perm;
+        const mix_method       Bkind = mix_perm;
         const statistic_value  S     = __check_stat_val(Ropt);
         RMatrix<double>        M1(RN1); __show_neuron(M1);
         RMatrix<double>        M2(RN2); __show_neuron(M2);

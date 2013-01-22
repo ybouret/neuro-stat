@@ -17,11 +17,11 @@ namespace wink
         statistic_H
     };
     
-    //! bootstrap choice
-    enum bootstrap_method
+    //! mix choice
+    enum mix_method
     {
-        bootstrap_perm,
-        bootstrap_repl
+        mix_perm,
+        mix_repl
     };
     
     //! inherits from drawing.
@@ -58,12 +58,12 @@ namespace wink
         count_t true_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta);
         
         
-        //! bootstrap for a given statistic
+        //! mix for a given statistic
         /**
          \param N1 a prepared neuron on window [a,b]
          \param N2 a prepared neuron on window [a,b]
          */
-        void bootstrap( statistic_value S, C_Array<count_t> &Bcoinc, bootstrap_method Bkind, const neuron &N1, const neuron &N2, double delta );
+        void mix( statistic_value S, C_Array<count_t> &Bcoinc, mix_method Bkind, const neuron &N1, const neuron &N2, double delta );
         
         //! compute p_values for a given statistic
         /**
