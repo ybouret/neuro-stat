@@ -302,15 +302,14 @@ SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ro
     return R_NilValue;
 }
 
-#if 0
 #include "../pyck/team.hpp"
 
 namespace
 {
     struct WorkerArgs
     {
-        neuron                 *N1;
-        neuron                 *N2;
+        RMatrix<double>       *M1;
+        RMatrix<double>       *M2;
         const RMatrix<double> *intervals;
         double                 delta;
         size_t                 B;
@@ -323,8 +322,8 @@ namespace
     class Worker : public Runnable
     {
     public:
-        neuron                &N1;
-        neuron                &N2;
+        RNeuron                N1;
+        RNeuron                N2;
         const RMatrix<double> &intervals;
         const double           delta;
         const size_t           B;
@@ -338,8 +337,8 @@ namespace
         explicit Worker(Mutex            &m,
                         const WorkerArgs &args ) :
         Runnable(m),
-        N1( *args.N1 ),
-        N2( *args.N2 ),
+        N1( *args.M1 ),
+        N2( *args.M2 ),
         intervals( *args.intervals),
         delta( args.delta ),
         B( args.B ),
@@ -414,8 +413,8 @@ SEXP wink_bootstrap_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP 
         //
         //----------------------------------------------------------------------
         const bootstrap_method Bkind = __check_option(Ropt);
-        RNeuron                N1(RN1);
-        RNeuron                N2(RN2);
+        RMatrix<double>        M1(RN1);
+        RMatrix<double>        M2(RN2);
         RIntervals             intervals(RI);
         const double           delta         = R2<double>(Rdelta);
         const size_t           B             = R2<int>(RB);
@@ -438,7 +437,7 @@ SEXP wink_bootstrap_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP 
         //
         //----------------------------------------------------------------------
         Team<Worker> team(num_threads);
-        WorkerArgs   args = { &N1, &N2, &intervals, delta, B, Bkind, &alpha, num_threads };
+        WorkerArgs   args = { &M1, &M2, &intervals, delta, B, Bkind, &alpha, num_threads };
         for(size_t i=0;i<num_threads;++i)
         {
             args.thread_rank = i;
@@ -457,7 +456,6 @@ SEXP wink_bootstrap_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP 
     }
     return R_NilValue;
 }
-#endif
 
 
 

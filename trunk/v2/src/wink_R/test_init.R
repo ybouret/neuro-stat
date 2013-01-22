@@ -9,6 +9,6 @@ a=seq(0,2-ab,by=shift)
 b=a+ab
 intervals=t(matrix(c(a,b),ncol=2))
 
-B=10000
+B=1000
 delta=0.01
 
