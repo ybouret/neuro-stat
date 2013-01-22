@@ -318,8 +318,8 @@ SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
         
         //----------------------------------------------------------------------
         //-- prepare answer
-        //-- first  row: alpha_minus
-        //-- second row: alpha_plus
+        //-- first  row: count_minus
+        //-- second row: count_plus
         //----------------------------------------------------------------------
         RMatrix<double>  counts(2,num_intervals);
         neurons          xp;
