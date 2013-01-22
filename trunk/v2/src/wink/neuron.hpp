@@ -1,3 +1,7 @@
+/**
+ \file
+ \brief a set of neuronal tops.
+ */
 #ifndef WINK_EXPERIMENT_INCLUDED
 #define WINK_EXPERIMENT_INCLUDED 1
 
@@ -11,11 +15,15 @@ namespace wink
     class neuron
     {
     public:
+        //! allocate memoro
         explicit neuron( size_t num_trials, size_t max_data );
         virtual ~neuron() throw();
         
         
+        //! record[0<=indx<trials]
         const record & operator[]( size_t indx ) const throw();
+        
+        //! record[0<=indx<trials]
         record       & operator[]( size_t indx ) throw();
         
         
@@ -35,15 +43,16 @@ namespace wink
     public:
         const size_t    length;      //!< max_data
     private:
-        const size_t    stride;
-        double         *workspace;   //!< (max_data+1) * num_trials
+        const size_t    stride;      //!< max_data+1
+        double         *workspace;   //!< stride * num_trials
         
         neuron(const neuron &);
         neuron&operator=(const neuron &);
         
     public:
-        const size_t trials;
+        const size_t trials; //!< #records for this neuron
     };
+    
 }
 
 

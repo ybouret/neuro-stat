@@ -11,5 +11,5 @@ default:
 	R CMD SHLIB -c --preclean -o wink$(DYN_EXT) ../wink/*.cpp ../pyck/*.cpp wink.cpp
 
 clean:
-	rm -f wink.so wink.dll
+	rm -f wink.so wink.dll Rplots.pdf
 

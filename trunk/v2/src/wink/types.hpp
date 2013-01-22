@@ -1,3 +1,7 @@
+/**
+ \file
+ \brief standard types for wink
+ */
 #ifndef WINK_TYPES_INCLUDED
 #define WINK_TYPES_INCLUDED 1
 

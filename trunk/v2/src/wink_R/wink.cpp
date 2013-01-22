@@ -174,7 +174,7 @@ SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP Rval
         //----------------------------------------------------------------------
         //-- parse arguments
         //----------------------------------------------------------------------
-        RNeuron              N1(RN1);
+        RNeuron               N1(RN1);
         RNeuron               N2(RN2);
         RIntervals            intervals(RI);
         const double          delta = R2<double>(Rdelta);
@@ -355,7 +355,7 @@ namespace
         {
             {
                 PYCK_LOCK(mutex);
-                std::cerr << "...Starting Worker: " << ini << " +" << num << std::endl;
+                Rprintf("Starting Worker: %2d +%2d\n", unsigned(ini), unsigned(num));
             }
             try
             {
@@ -414,7 +414,7 @@ SEXP wink_bootstrap_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP 
         const size_t           B             = R2<int>(RB);
         const size_t           num_threads   = R2<int>(RNumThreads);
         if( num_threads <= 0 )
-            throw Exception("Invalide #num_threads");
+            throw Exception("Invalid #num_threads");
         
         //----------------------------------------------------------------------
         //-- prepare answer

@@ -1,3 +1,7 @@
+/**
+ \file
+ \brief drawing couple of indices for bootstrapping
+ */
 #ifndef WINK_DRAWING_INCLUDED
 #define WINK_DRAWING_INCLUDED 1
 
@@ -10,6 +14,7 @@
 namespace wink
 {
     
+    //! couple of indices
     struct couple
     {
         size_t  first;
@@ -22,14 +27,17 @@ namespace wink
         static void kill( couple * ) throw();
     };
     
+    //! a drawing is a list of couples
     class drawing : public couple::list
     {
     public:
         explicit drawing() throw();
         virtual ~drawing() throw();
         
+        //! remove all couple from current list
         void clear() throw();
         
+        //! put n couples in cache
         void reserve( size_t n );
         
         //!identity drawing
@@ -55,6 +63,7 @@ namespace wink
          */
         void bootstrap2(size_t n, UniformGenerator &ran );
         
+        //! display, for debugging
         friend std::ostream & operator<<( std::ostream &, const drawing & );
         
     private:

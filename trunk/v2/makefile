@@ -21,6 +21,8 @@ clean:
 	@echo "-- removing MacOSX Finder info" && find . -name '.DS_Store' | xargs rm -f
 	@echo "-- removing .dat, .ppm, .vtk, .png, .bin  and .dot" && rm -f *.dat *.ppm *.vtk *.png *.dot *.bin
 	@echo "-- cleaning auxiliary files"
+	@echo "-- cleaning wink_R"
+	@$(MAKE) -s -C src/wink_R clean
 
 preclean:
 	@echo "-- removing out of sources builds" && cd forge && touch targets &&  ( ( cat targets | xargs rm -rf ) && rm -f targets )
