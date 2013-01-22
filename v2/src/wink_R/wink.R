@@ -123,7 +123,8 @@ wink_permutation_par <- function(N1,N2,intervals,delta,B,S,num_threads)
 
 ########################################################################
 ##
-## return bootstrap counts(-,+), using centered H statistic
+## return bootstrap counts(- in first row,+ in second row), 
+## using centered H statistic
 ## and bootstrap drawings
 ##
 ## N1       : first Neuron
@@ -131,7 +132,6 @@ wink_permutation_par <- function(N1,N2,intervals,delta,B,S,num_threads)
 ## intervals: #intervals, 2 rows of a,b
 ## delta    : time lag for coincidence
 ## B        : #bootstraps count
-## S        : "T", "H"
 ########################################################################
 wink_bootstrap_counts <- function(N1,N2,intervals,delta,B)
 {
@@ -142,9 +142,20 @@ wink_bootstrap_counts <- function(N1,N2,intervals,delta,B)
 	.Call("wink_bootstrap_counts",N1,N2,intervals,delta,B);
 }
 
-
-## N1       : first Neuron
-## N2       : second Neuron
+########################################################################
+##
+## return a list L with: L$H = H(N1,N2) and L$Hc = H^*(N1,N2) (SORTED)
+## for B bootstrap
+## 
+## see test_single.R for more info
+##
+## N1   :first Neuron
+## N2   : second Neuron
+## a    : window start
+## b    : window end
+## delta: time lag
+## B    : bootstrap count 
+########################################################################
 wink_single_H <- function(N1,N2,a,b,delta,B)
 {
 	if (!is.matrix(N1))

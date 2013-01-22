@@ -352,6 +352,8 @@ SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
     return R_NilValue;
 }
 
+#include "../pyck/sort.hpp"
+
 extern "C"
 SEXP wink_single_H(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
 {
@@ -373,21 +375,51 @@ SEXP wink_single_H(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
         
         
         PYCK_LOCK( shared_mutex() );
+        //----------------------------------------------------------------------
         //-- initialize window
+        //----------------------------------------------------------------------
         const count_t    H = xp.true_coincidences( statistic_H, N1, N2, a, b, delta);
         C_Array<count_t> Hc(nb);
         
+        //----------------------------------------------------------------------
         //-- mix'em all, bootstrap kind
+        //----------------------------------------------------------------------
         xp.mix( statistic_H, Hc, mix_boot, N1, N2, delta);
         
+        //----------------------------------------------------------------------
         //-- center
+        //----------------------------------------------------------------------
         for( size_t j=0; j < nb; ++j )
         {
             Hc[j] -= H;
         }
         
+        //----------------------------------------------------------------------
         //-- sort
-        return R_NilValue;
+        //----------------------------------------------------------------------
+        Sort( &Hc[0], nb );
+        
+        //----------------------------------------------------------------------
+        //-- make a list H/Hc
+        //----------------------------------------------------------------------
+        const char *names[] = { "H", "Hc" };
+        
+        RVector<double> rH(1);
+        rH[0] = H;
+        
+        RVector<double> rHc(nb);
+        for( size_t j=0; j < nb; ++j ) rHc[j] = double( Hc[j] );
+        
+        SEXP L = 0, list_names=0;
+        PROTECT( L = allocVector(VECSXP,2) );
+        SET_VECTOR_ELT(L, 0, *rH);
+        SET_VECTOR_ELT(L, 1, *rHc);
+        PROTECT(list_names = allocVector(STRSXP,2));
+        for(size_t i = 0; i < 2; i++)
+            SET_STRING_ELT(list_names,i,mkChar(names[i]));
+        setAttrib(L, R_NamesSymbol, list_names);
+        UNPROTECT(2);
+        return L;
     }
     catch( const Exception &e )
     {
