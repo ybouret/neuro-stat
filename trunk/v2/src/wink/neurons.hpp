@@ -21,7 +21,8 @@ namespace wink
     enum mix_method
     {
         mix_perm,
-        mix_repl
+        mix_repl,
+        mix_boot
     };
     
     //! inherits from drawing.

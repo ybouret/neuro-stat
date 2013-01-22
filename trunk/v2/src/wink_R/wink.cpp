@@ -294,7 +294,7 @@ SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ro
 }
 
 extern "C"
-SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
+SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
 {
     try
     {
@@ -324,6 +324,7 @@ SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
         RMatrix<double>  counts(2,num_intervals);
         neurons          xp;
         C_Array<count_t> Bcoinc( nb );
+        
         for(size_t i=0; i < num_intervals;++i)
         {
             const double a = intervals[i][0];
@@ -332,10 +333,14 @@ SEXP wink_bootstrap(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
             //-- initialize with true coincidences
             const size_t H  = double(xp.true_coincidences( statistic_H, N1, N2, a, b, delta));
             
-            //-- mix'em all
-            xp.mix( statistic_H, Bcoinc, mix_perm, N1, N2, delta);
+            //-- mix'em all, bootstrap kind
+            xp.mix( statistic_H, Bcoinc, mix_boot, N1, N2, delta);
             
-            //-- evaluate pvalues
+            //-- center
+            for(size_t j=0; j < nb; ++j )
+                Bcoinc[j] -= H;
+            
+            //-- evaluate counts
             xp.compute_counts(counts[i][0],counts[i][1],Bcoinc,H);
         }
         
