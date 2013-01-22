@@ -66,7 +66,7 @@ namespace wink
             case statistic_H:
                 return coincidences_H(N1, N2, delta);
         }
-	throw Exception("unknown statistic type");
+        throw Exception("unknown statistic type");
     }
     
     
@@ -175,5 +175,27 @@ namespace wink
         alpha_minus      = double(count_minus)/den;
     }
     
+    void neurons:: compute_counts(double                 &count_minus,
+                                  double                 &count_plus,
+                                  const C_Array<count_t> &Bcoinc,
+                                  const count_t           Tcoinc) const throw()
+    {
+        const size_t nb = Bcoinc.size;
+        count_minus     = 0;
+        count_plus      = 0;
+        for( size_t i=0; i < nb; ++i )
+        {
+            const count_t bvalue = Bcoinc[i];
+            if( bvalue >= Tcoinc)
+            {
+                ++count_plus;
+            }
+            else
+            {
+                if(bvalue<=Tcoinc)
+                    ++count_minus;
+            }
+        }        
+    }
     
 }

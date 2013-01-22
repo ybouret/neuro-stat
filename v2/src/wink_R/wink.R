@@ -108,6 +108,6 @@ wink_permutation_par <- function(N1,N2,intervals,delta,B,S,num_threads)
 	if( !is.real(num_threads) )
 		stop("num_threads is not a real");
 		
-	.Call("wink_permutation_par",N1,N2,intervals,delta,B,option,num_threads);
+	.Call("wink_permutation_par",N1,N2,intervals,delta,B,S,num_threads);
 }
 
