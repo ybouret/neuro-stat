@@ -1,3 +1,7 @@
+/**
+ \file
+ \brief overlay a record structure on a matrix
+ */
 #ifndef WINK_RECORD_INCLUDED
 #define WINK_RECORD_INCLUDED 1
 
@@ -18,12 +22,17 @@ namespace wink
          */
         explicit     record( double *data ) throw();
         
+        //! return data[1<=indx<=size()]
         const double &operator[]( size_t indx ) const throw();
+        
+        //! return data[1<=indx<=size()]
         double       &operator[]( size_t indx ) throw();
         
+        //! data[0]
         size_t size() const throw();
+        
         iwindow      iwin; //!< for computation
-        void         prepare(double a,double b) throw();
+        void         prepare(double a,double b) throw(); //!< prepare the window
         
         //! count coincidences between two records and their prepared windows
         count_t coincidences_with( const record &other, const double delta ) const throw();
