@@ -22,8 +22,6 @@ namespace wink
     {
         PYCK_LOCK(access);
         const uint32_t s32 = IntegerHash32( WallTime::Seed() + seed32++ );
-        //std::cerr << "s32=" << s32 << std::endl;
-        //std::cerr.flush();
         ran.seed(s32);
     }
     

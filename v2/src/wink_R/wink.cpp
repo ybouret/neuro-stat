@@ -88,30 +88,20 @@ namespace {
         return value[0];
     }
     
-    static Mutex                   shared_mutex;
-    class SharedRan : public DefaultUniformGenerator
+    static
+    Mutex &shared_mutex()
     {
-    public:
-        explicit SharedRan()
-        {
-            seed( WallTime:: Seed() );
-        }
-        
-        
-        virtual ~SharedRan() throw()
-        {
-            
-        }
-        
-    private:
-        SharedRan(const SharedRan&);
-        SharedRan&operator=(const SharedRan&);
-
-    };
+        static Mutex m;
+        return m;
+    }
     
-    static SharedRan shared_ran;
-
-   
+    static
+    neurons & shared_neurons()
+    {
+        static neurons n;
+        return n;
+    }
+    
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -135,8 +125,8 @@ extern "C" SEXP wink_perm( SEXP Rn )
             ans[i] = int(i);
         }
         
-        PYCK_LOCK(shared_mutex);
-        shared_ran.shuffle( &ans[0], n);
+        PYCK_LOCK(shared_mutex());
+        shared_neurons().ran.shuffle( &ans[0], n);
         
         return *ans;
     }
@@ -198,7 +188,8 @@ SEXP wink_true_coincidences( SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP Rval
         //-- prepare answer
         //----------------------------------------------------------------------
         RVector<double> ans(num_intervals);
-        neurons         xp;
+        //neurons         &xp = shared_neurons;
+        neurons          xp;
         for(size_t i=0; i < num_intervals;++i)
         {
             const double a = intervals[i][0];
@@ -238,7 +229,7 @@ SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ro
         const mix_method       Bkind = mix_perm; //__check_option(Ropt);
         const statistic_value  S     = __check_stat_val(Ropt);
         Rprintf("\tWINK: Serial Permutation Code\n");
-
+        
         //----------------------------------------------------------------------
         //-- parse arguments
         //----------------------------------------------------------------------
@@ -348,7 +339,7 @@ SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
         //-- done
         //----------------------------------------------------------------------
         return *counts;
-
+        
     }
     catch( const Exception &e )
     {
@@ -357,6 +348,54 @@ SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
     catch(...)
     {
         Rprintf("*** unhanled exception in wink_bootstrap\n");
+    }
+    return R_NilValue;
+}
+
+extern "C"
+SEXP wink_single_H(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
+{
+    try
+    {
+        
+        //----------------------------------------------------------------------
+        //-- parse arguments
+        //----------------------------------------------------------------------
+        const RMatrix<double> M1(RN1);
+        RNeuron               N1(M1);
+        const RMatrix<double> M2(RN2);
+        RNeuron               N2(M2);
+        const double          a     = R2<double>(Ra);
+        const double          b     = R2<double>(Rb);
+        const double          delta = R2<double>(Rdelta);
+        const size_t          nb    = R2<int>(RB);
+        neurons              &xp    = shared_neurons();
+        
+        
+        PYCK_LOCK( shared_mutex() );
+        //-- initialize window
+        const count_t    H = xp.true_coincidences( statistic_H, N1, N2, a, b, delta);
+        C_Array<count_t> Hc(nb);
+        
+        //-- mix'em all, bootstrap kind
+        xp.mix( statistic_H, Hc, mix_boot, N1, N2, delta);
+        
+        //-- center
+        for( size_t j=0; j < nb; ++j )
+        {
+            Hc[j] -= H;
+        }
+        
+        //-- sort
+        return R_NilValue;
+    }
+    catch( const Exception &e )
+    {
+        Rprintf("*** wink_single_H: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("*** unhanled exception in wink_single_H\n");
     }
     return R_NilValue;
 }
