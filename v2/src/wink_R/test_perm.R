@@ -1,6 +1,6 @@
 source("test_init.R")
 
-par(mfrow=c(2,1))
+par(mfrow=c(1,1))
 
 ## how to generate bootstrap with permutation
 stamp=proc.time()
