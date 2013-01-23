@@ -142,6 +142,18 @@ wink_bootstrap_counts <- function(N1,N2,intervals,delta,B)
 	.Call("wink_bootstrap_counts",N1,N2,intervals,delta,B);
 }
 
+wink_bootstrap_counts_par <- function(N1,N2,intervals,delta,B,num_threads)
+{
+	wink_check_common0(N1,N2,intervals,delta);	
+	if( !is.real(B) )
+		stop("B must be a real");
+		
+	if( !is.real(num_threads) )
+		stop("num_threads must be a real");
+		
+	.Call("wink_bootstrap_counts_par",N1,N2,intervals,delta,B,num_threads);
+}
+
 ########################################################################
 ##
 ## return a list L with: L$H = H(N1,N2) and L$Hc = H^*(N1,N2) (SORTED)
