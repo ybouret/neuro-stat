@@ -168,7 +168,7 @@ wink_bootstrap_counts_par <- function(N1,N2,intervals,delta,B,num_threads)
 ## delta: time lag
 ## B    : bootstrap count 
 ########################################################################
-wink_single_H <- function(N1,N2,a,b,delta,B)
+wink_single_boot <- function(N1,N2,a,b,delta,B)
 {
 	if (!is.matrix(N1))
 		stop("N1 must be a matrix");
@@ -188,14 +188,14 @@ wink_single_H <- function(N1,N2,a,b,delta,B)
 	if( !is.real(B) )
 		stop("B must be a real");
 		
-	.Call("wink_single_H",N1,N2,a,b,delta,B);
+	.Call("wink_single_boot",N1,N2,a,b,delta,B);
 	
 }
 
 ########################################################################
 ##
-## return a list L with: L$T = T(N1,N2) and L$Tp = T^*(N1,N2) (SORTED)
-## for B bootstrap
+## return a list L with: L$S = S(N1,N2) and L$Sp = S^*(N1,N2) (SORTED)
+## for B bootstrap and S="T" or S="H"
 ## 
 ## see test_single.R for more info
 ##
@@ -205,8 +205,10 @@ wink_single_H <- function(N1,N2,a,b,delta,B)
 ## b    : window end
 ## delta: time lag
 ## B    : bootstrap count 
+## S    : "T" or "H:
+##
 ########################################################################
-wink_single_T <- function(N1,N2,a,b,delta,B)
+wink_single_perm <- function(N1,N2,a,b,delta,B,S)
 {
 	if (!is.matrix(N1))
 		stop("N1 must be a matrix");
@@ -226,7 +228,10 @@ wink_single_T <- function(N1,N2,a,b,delta,B)
 	if( !is.real(B) )
 		stop("B must be a real");
 		
-	.Call("wink_single_T",N1,N2,a,b,delta,B);
+	if( !is.character(S) )
+		stop("S must be a string");
+		
+	.Call("wink_single_perm",N1,N2,a,b,delta,B,S);
 	
 }
 

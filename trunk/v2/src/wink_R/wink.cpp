@@ -352,7 +352,7 @@ SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
 
 #include "../pyck/sort.hpp"
 extern "C"
-SEXP wink_single_H(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
+SEXP wink_single_boot(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
 {
     try
     {
@@ -428,18 +428,18 @@ SEXP wink_single_H(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
     }
     catch( const Exception &e )
     {
-        Rprintf("*** wink_single_H: %s\n", e.what());
+        Rprintf("*** wink_single_boot: %s\n", e.what());
     }
     catch(...)
     {
-        Rprintf("*** unhanled exception in wink_single_H\n");
+        Rprintf("*** unhanled exception in wink_single_boot\n");
     }
     return R_NilValue;
 }
 
 
 extern "C"
-SEXP wink_single_T(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
+SEXP wink_single_perm(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB, SEXP Ropt)
 {
     try
     {
@@ -456,19 +456,20 @@ SEXP wink_single_T(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
         const double          delta = R2<double>(Rdelta);
         const size_t          nb    = R2<int>(RB);
         neurons              &xp    = shared_neurons();
-        
+        const statistic_value  S    = __check_stat_val(Ropt);
+
         
         PYCK_LOCK( shared_mutex() );
         //----------------------------------------------------------------------
         //-- initialize window
         //----------------------------------------------------------------------
-        const count_t    T = xp.true_coincidences( statistic_T, N1, N2, a, b, delta);
+        const count_t    T = xp.true_coincidences( S, N1, N2, a, b, delta);
         C_Array<count_t> Tp(nb);
         
         //----------------------------------------------------------------------
         //-- mix'em all, bootstrap kind
         //----------------------------------------------------------------------
-        xp.mix( statistic_T, Tp, mix_perm, N1, N2, delta);
+        xp.mix( S, Tp, mix_perm, N1, N2, delta);
         
        
         
@@ -480,7 +481,7 @@ SEXP wink_single_T(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
         //----------------------------------------------------------------------
         //-- make a list H/Hc
         //----------------------------------------------------------------------
-        const char *names[] = { "T", "Tp" };
+        const char *names[] = { "S", "Sp" };
         
         //-- first element: H
         RVector<double> rT(1);
@@ -509,11 +510,11 @@ SEXP wink_single_T(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
     }
     catch( const Exception &e )
     {
-        Rprintf("*** wink_single_T: %s\n", e.what());
+        Rprintf("*** wink_single_perm: %s\n", e.what());
     }
     catch(...)
     {
-        Rprintf("*** unhanled exception in wink_single_T\n");
+        Rprintf("*** unhanled exception in wink_single_perm\n");
     }
     return R_NilValue;
 }
