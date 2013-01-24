@@ -192,3 +192,41 @@ wink_single_H <- function(N1,N2,a,b,delta,B)
 	
 }
 
+########################################################################
+##
+## return a list L with: L$T = T(N1,N2) and L$Tp = T^*(N1,N2) (SORTED)
+## for B bootstrap
+## 
+## see test_single.R for more info
+##
+## N1   :first Neuron
+## N2   : second Neuron
+## a    : window start
+## b    : window end
+## delta: time lag
+## B    : bootstrap count 
+########################################################################
+wink_single_T <- function(N1,N2,a,b,delta,B)
+{
+	if (!is.matrix(N1))
+		stop("N1 must be a matrix");
+		
+	if (!is.matrix(N2))
+		stop("N2 must be a matrix");
+		
+	if( !is.real(a) )
+		stop("a must be a real");
+		
+	if( !is.real(b) )
+		stop("b must be a real");
+		
+	if( !is.real(delta) )
+		stop("delta must be a real");
+		
+	if( !is.real(B) )
+		stop("B must be a real");
+		
+	.Call("wink_single_T",N1,N2,a,b,delta,B);
+	
+}
+
