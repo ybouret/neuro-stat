@@ -1,12 +1,22 @@
 
 source("test_init.R")
 
-L=wink_single_H(neurons[[1]],neurons[[2]],0.1,0.1+delta,delta,B);
+window_width = 10 * delta;
+L=wink_single_boot(neurons[[1]],neurons[[2]],0.1,0.1+window_width,delta,B);
 
 count_plus =sum(L$Hc>=L$H);
 count_minus=sum(L$Hc<=L$H);
 
-L2=wink_single_T(neurons[[1]],neurons[[2]],0.1,0.1+delta,delta,B);
+plot.ecdf(L$Hc);
 
-count_plus2  = sum(L2$Tp>=L2$T);
-count_minus2 = sum(L2$Tp<=L2$T);
+LT=wink_single_perm(neurons[[1]],neurons[[2]],0.1,0.1+window_width,delta,B,"T");
+
+count_plus_T  = sum(LT$Sp>=LT$S);
+count_minus_T = sum(LT$Sp<=LT$S);
+plot.ecdf(LT$Sp);
+
+LH=wink_single_perm(neurons[[1]],neurons[[2]],0.1,0.1+window_width,delta,B,"H");
+
+count_plus_H  = sum(LH$Sp>=LH$S);
+count_minus_H = sum(LH$Sp<=LH$S);
+plot.ecdf(LH$Sp);
