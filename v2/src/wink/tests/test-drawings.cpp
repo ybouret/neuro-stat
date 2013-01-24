@@ -25,6 +25,7 @@ void perform( drawing &drw, DefaultUniformGenerator &ran)
 {
     const size_t    n = 100;
     const size_t    N = 4000;
+    const size_t    m = n/2;
     C_Array<double> a_head(N);
     C_Array<double> a_tail(N);
     C_Array<double> a_mid(N);
@@ -33,7 +34,7 @@ void perform( drawing &drw, DefaultUniformGenerator &ran)
         drw.permutation(n, ran);
         a_head[i] = drw.head->second; assert(drw.head->first==0);
         a_tail[i] = drw.tail->second; assert(drw.tail->first==n-1);
-        a_mid[i]  = drw.fetch(n/2)->second;
+        a_mid[i]  = drw.fetch(m)->second;
     }
     std::cerr << "Head: " << std::endl;
     display_stats(a_head,n);
