@@ -40,34 +40,6 @@ namespace wink
         return count;
     }
     
-    
-    
-    count_t neurons:: true_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta)
-    {
-        const size_t trials = N1.trials;
-        if( N2.trials != trials )
-            throw Exception("#trials mismatch for true_coincidences_T");
-        
-        //! preparing the windows
-        N1.prepare_windows(a, b);
-        N2.prepare_windows(a, b);
-        
-        //! setting identity drawing
-        identity(trials);
-        
-        //! evaluate coincidences
-        switch( S )
-        {
-            case statistic_T:
-                return coincidences_T(N1, N2, delta);
-                
-            case statistic_H:
-                return coincidences_H(N1, N2, delta);
-        }
-        throw Exception("unknown statistic type");
-    }
-    
-    
     count_t neurons:: coincidences_H( const neuron &N1, const neuron &N2, double delta ) const
     {
         const size_t  ntrials = N1.trials; assert(ntrials>0);
@@ -98,6 +70,33 @@ namespace wink
         }
         return count;
     }
+    
+    count_t neurons:: true_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta)
+    {
+        const size_t trials = N1.trials;
+        if( N2.trials != trials )
+            throw Exception("#trials mismatch for true_coincidences_T");
+        
+        //! preparing the windows
+        N1.prepare_windows(a, b);
+        N2.prepare_windows(a, b);
+        
+        //! setting identity drawing
+        identity(trials);
+        
+        //! evaluate coincidences
+        switch( S )
+        {
+            case statistic_T:
+                return coincidences_T(N1, N2, delta);
+                
+            case statistic_H:
+                return coincidences_H(N1, N2, delta);
+        }
+        throw Exception("unknown statistic type");
+    }
+    
+    
     
     
     void neurons:: mix( statistic_value S, C_Array<count_t> &Bcoinc, mix_method Bkind, const neuron &N1, const neuron &N2, double delta )
@@ -162,14 +161,10 @@ namespace wink
         {
             const count_t bvalue = Bcoinc[i];
             if( bvalue >= Tcoinc)
-            {
                 ++count_plus;
-            }
-            else
-            {
-                if(bvalue<=Tcoinc)
-                    ++count_minus;
-            }
+            
+            if(bvalue<=Tcoinc)
+                ++count_minus;
         }
         
         const size_t den = 1+nb;
@@ -188,16 +183,13 @@ namespace wink
         for( size_t i=0; i < nb; ++i )
         {
             const count_t bvalue = Bcoinc[i];
+            
             if( bvalue >= Tcoinc)
-            {
                 ++count_plus;
-            }
-            else
-            {
-                if(bvalue<=Tcoinc)
-                    ++count_minus;
-            }
-        }        
+            
+            if(bvalue<=Tcoinc)
+                ++count_minus;
+        }
     }
     
 }
