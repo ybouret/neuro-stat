@@ -1,5 +1,5 @@
 source("test_init.R")
-par(mfrow=c(1,1))
+par(mfrow=c(2,1))
 
 stamp=proc.time()
 HC_par <- wink_bootstrap_counts_par(neurons[[1]],neurons[[2]],intervals,delta,B,4);

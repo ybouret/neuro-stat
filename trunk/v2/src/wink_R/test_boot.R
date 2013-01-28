@@ -1,5 +1,5 @@
 source("test_init.R")
-par(mfrow=c(1,1))
+par(mfrow=c(2,1))
 
 #H  <- wink_true_coincidences(neurons[[1]],neurons[[2]],intervals,delta,"H");
 HC <- wink_bootstrap_counts(neurons[[1]],neurons[[2]],intervals,delta,B);

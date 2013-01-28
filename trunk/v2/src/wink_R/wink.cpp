@@ -249,7 +249,7 @@ SEXP wink_permutation(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP Ro
         //-- second row: alpha_plus
         //----------------------------------------------------------------------
         RMatrix<double>  alpha(2,num_intervals);
-        neurons          xp;
+        neurons          &xp = shared_neurons();
         C_Array<count_t> Bcoinc( nb );
         for(size_t i=0; i < num_intervals;++i)
         {
@@ -311,7 +311,7 @@ SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB)
         //-- second row: count_plus
         //----------------------------------------------------------------------
         RMatrix<double>  counts(2,num_intervals);
-        neurons          xp;
+        neurons          &xp = shared_neurons();
         C_Array<count_t> Bcoinc( nb );
         
         for(size_t i=0; i < num_intervals;++i)
@@ -372,6 +372,7 @@ SEXP wink_single_boot(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB
         
         
         PYCK_LOCK( shared_mutex() );
+        
         //----------------------------------------------------------------------
         //-- initialize window
         //----------------------------------------------------------------------
@@ -413,6 +414,8 @@ SEXP wink_single_boot(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB
         //-- create the list
         SEXP L = 0, list_names=0;
         PROTECT( L = allocVector(VECSXP,2) );
+        
+        //-- assign the elements
         SET_VECTOR_ELT(L, 0, *rH);
         SET_VECTOR_ELT(L, 1, *rHc);
         
@@ -467,10 +470,9 @@ SEXP wink_single_perm(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB
         C_Array<count_t> Tp(nb);
         
         //----------------------------------------------------------------------
-        //-- mix'em all, bootstrap kind
+        //-- mix'em all, permutation kind
         //----------------------------------------------------------------------
         xp.mix( S, Tp, mix_perm, N1, N2, delta);
-        
        
         
         //----------------------------------------------------------------------
@@ -479,15 +481,15 @@ SEXP wink_single_perm(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB
         Sort( &Tp[0], nb );
         
         //----------------------------------------------------------------------
-        //-- make a list H/Hc
+        //-- make a list S/Sp
         //----------------------------------------------------------------------
         const char *names[] = { "S", "Sp" };
         
-        //-- first element: H
+        //-- first element: Satistic Value
         RVector<double> rT(1);
         rT[0] = T;
         
-        //-- second element: Hc
+        //-- second element: Permutation Counts
         RVector<double> rTp(nb);
         for( size_t j=0; j < nb; ++j )
             rTp[j] = double( Tp[j] );
