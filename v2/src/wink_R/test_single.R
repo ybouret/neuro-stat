@@ -1,6 +1,8 @@
 
 source("test_init.R")
 
+par(mfrow=c(3,1))
+
 window_width = 10 * delta;
 L=wink_single_boot(neurons[[1]],neurons[[2]],0.1,0.1+window_width,delta,B);
 

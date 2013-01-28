@@ -12,6 +12,7 @@ namespace wink
     
     neurons:: ~neurons() throw()
     {
+        //std::cerr << "[Destructing Neurons @" << (void*)this << " ]" << std::endl;
     }
     
     
@@ -23,6 +24,7 @@ namespace wink
         PYCK_LOCK(access);
         const uint32_t s32 = IntegerHash32( WallTime::Seed() + seed32++ );
         ran.seed(s32);
+        //std::cerr << "[Initializing Neurons @" << (void*)this << ", With Seed=" << s32 << "]" << std::endl;
     }
     
     
@@ -54,7 +56,7 @@ namespace wink
             
             const size_t  i      = I->first;
             const size_t  sig_i  = I->second;
-            const record &X_i   = N1[i];
+            const record &X_i    = N1[i];
             
             count += n1 * X_i.coincidences_with( N2[sig_i], delta);
             
