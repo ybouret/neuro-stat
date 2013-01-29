@@ -19,7 +19,8 @@ namespace wink
     
     neurons::neurons() throw() :
     drawing(),
-    ran()
+    ran(),
+    M()
     {
         PYCK_LOCK(access);
         const uint32_t s32 = IntegerHash32( WallTime::Seed() + seed32++ );
@@ -47,8 +48,8 @@ namespace wink
         const size_t  ntrials = N1.trials; assert(ntrials>0);
         assert(N2.trials==N2.trials);
         assert(ntrials==size);
-        count_t       count  = 0;
-        const size_t  n1     = ntrials - 1;
+        count_t        count  = 0;
+        const count_t  n1     = count_t(ntrials) - 1;
         for( const couple *I = head;I;I=I->next)
         {
             assert(I->first  < N1.trials);
@@ -57,9 +58,9 @@ namespace wink
             const size_t  i      = I->first;
             const size_t  sig_i  = I->second;
             const record &X_i    = N1[i];
-            
-            count += n1 * X_i.coincidences_with( N2[sig_i], delta);
-            
+            const count_t diago  = X_i.coincidences_with(N2[sig_i], delta);
+            count += n1 * diago;
+            std::cerr << "diago0[" << i << "][" << sig_i << "]=" << diago << std::endl;
             for( const couple *J=head;J;J=J->next)
             {
                 const size_t j = J->first;
@@ -193,5 +194,90 @@ namespace wink
                 ++count_minus;
         }
     }
+    
+    void neurons:: initialize_correlations( neuron &N1, neuron &N2, const double a, const double b, const double delta)
+    {
+        const size_t n1 = N1.trials;
+        const size_t n2 = N2.trials;
+        if(n1!=n2) throw Exception("#trials mismatch for initialize_correlation");
+        const size_t n = n1;
+        
+        //! prepare the matrix
+        M.make(n,n);
+
+        //! preparing the windows
+        N1.prepare_windows(a, b);
+        N2.prepare_windows(a, b);
+        for( size_t i=0; i < n; ++i )
+        {
+            for( size_t j=i; j < n; ++j )
+            {
+                M[i][j] = M[j][i] = N1[i].coincidences_with(N2[j], delta);
+            }
+        }
+        //std::cerr << "M=" << M << std::endl;
+    }
+    
+    
+    count_t neurons:: coincidences_T() const throw()
+    {
+        assert(M.rows==M.cols);
+        count_t ans = 0;
+        for( const couple *c = head;c;c=c->next)
+        {
+            const size_t i = c->first;  assert(i<M.rows);
+            const size_t j = c->second; assert(j<M.cols);
+            ans += M[i][j];
+        }
+        return ans;
+    }
+    
+    count_t neurons:: coincidences_H() const throw()
+    {
+        count_t       count  = 0;
+        const count_t n      = count_t(this->size); //!< #couples
+        const count_t n1     = n-1;
+        for( const couple *I = head;I;I=I->next)
+        {
+            
+            const size_t   i      = I->first;   assert(i<M.rows);
+            const size_t   sig_i  = I->second;  assert(sig_i<M.cols);
+            count += n1 * M[i][sig_i];
+            std::cerr << "diago1[" << i << "][" << sig_i << "]=" << M[i][sig_i] << std::endl;
+
+            for( const couple *J=head;J;J=J->next)
+            {
+                const size_t j = J->first;
+                if( j != i )
+                {
+                    const size_t sig_j = J->second; assert( sig_j < M.cols);
+                    count -= M[i][sig_j];
+                }
+            }
+        }
+        return count;
+        
+    }
+    
+    count_t neurons:: self_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta)
+    {
+        initialize_correlations(N1,N2,a,b,delta);
+        assert(N1.trials==N2.trials);
+        identity(N1.trials);
+        count_t ans = 0;
+        switch( S )
+        {
+            case statistic_T:
+                ans = coincidences_T();
+                break;
+                
+            case statistic_H:
+                ans = coincidences_H();
+                break;
+        }
+        return ans;
+    }
+    
+    
     
 }

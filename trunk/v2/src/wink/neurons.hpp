@@ -7,6 +7,7 @@
 
 #include "./neuron.hpp"
 #include "./drawing.hpp"
+#include "../pyck/c_matrix.hpp"
 
 namespace wink
 {
@@ -33,6 +34,7 @@ namespace wink
         virtual ~neurons() throw();
         
         DefaultUniformGenerator ran; //!< own random number generator
+        C_Matrix<count_t>       M;   //!< matrix of precomputed coincidences
         
         //! sum coincidences for N1 and N2 for CURRENT drawing
         /**
@@ -81,6 +83,30 @@ namespace wink
                             double                 &count_plus,
                             const C_Array<count_t> &Bcoinc,
                             const count_t           Tcoinc) const throw();
+        
+        
+        //! prepare the neurons for window [a,b] and fill the diagonal part of the count matrix.
+        /**
+         \param N1 first  neuron
+         \param N2 second neuron
+         */
+        void initialize_correlations( neuron &N1, neuron &N2, const double a, const double b, const double delta);
+        
+        
+        //! get T coincidences for the CURRENT drawing, using the count matrix.
+        count_t coincidences_T() const throw();
+        
+        //! get H coincidences for the CURRENT drawing, using the count matrix.
+        count_t coincidences_H() const throw();
+        
+        //! initialize neurons,correlations and set drawing=id, then call coincidences
+        /**
+         \param S the statistic value (T,H,...)
+         \param N1 first  neuron
+         \param N2 second neuron
+         */
+        count_t self_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta);
+        
         
         static Mutex    access; //!< shared access
         static uint32_t seed32; //!< shared seed, for different random seeds
