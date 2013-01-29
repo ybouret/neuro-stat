@@ -213,16 +213,10 @@ namespace wink
         N2.prepare_windows(a, b);
         for( size_t i=0; i < n; ++i )
         {
-            for( size_t j=i; j < n; ++j )
-            {
-                M[i][j] = M[j][i] = N1[i].coincidences_with(N2[j], delta);
-            }
-            
             for(size_t j=0; j < n; ++j )
             {
                 M[i][j] = N1[i].coincidences_with(N2[j], delta);
             }
-            
         }
         //std::cerr << "M=" << M << std::endl;
     }
@@ -252,7 +246,6 @@ namespace wink
             const size_t   i      = I->first;   assert(i<M.rows);
             const size_t   sig_i  = I->second;  assert(sig_i<M.cols);
             count += n1 * M[i][sig_i];
-            //std::cerr << "diago1[" << i << "][" << sig_i << "]=" << M[i][sig_i] << "|";
             
             for( const couple *J=head;J;J=J->next)
             {
@@ -260,12 +253,10 @@ namespace wink
                 if( j != i )
                 {
                     const size_t sig_j = J->second; assert( sig_j < M.cols);
-                    // std::cerr << " [" << sig_j << "]=" << M[i][sig_j];
                     count -= M[i][sig_j];
                     
                 }
             }
-            //std::cerr << std::endl;
         }
         return count;
         
@@ -290,6 +281,55 @@ namespace wink
         return ans;
     }
     
+    void neurons:: eval_coincidences( statistic_value S, C_Array<count_t> &coinc, mix_method kind )
+    {
+        assert(M.rows==M.cols);
+        const size_t n  = M.rows;
+        const size_t nb = coinc.size;
+        
+        
+        // fetch the coincidence method
+        count_t (neurons:: *proc)(void) const = 0;
+        switch( S )
+        {
+            case statistic_T:
+                proc = & neurons:: coincidences_T;
+                break;
+                
+            case statistic_H:
+                proc = & neurons:: coincidences_H;
+                break;
+                
+        }
+        
+        // fetch the generator method
+        void (drawing:: *gen)( size_t, UniformGenerator &) = 0;
+        switch( kind )
+        {
+            case mix_perm:
+                gen = & drawing:: permutation;
+                break;
+                
+            case mix_repl:
+                gen = & drawing:: replacement;
+                break;
+                
+            case mix_boot:
+                gen = & drawing:: bootstrap2;
+                break;
+        }
+        
+        for( size_t i=0; i < nb; ++i )
+        {
+            // generate couples
+            ( *this.*gen)(n,ran);
+            
+            // compute coincidences
+            coinc[i] = (*this.*proc)();
+        }
+
+    }
+
     
     
 }

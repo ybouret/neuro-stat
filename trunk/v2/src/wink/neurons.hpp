@@ -107,6 +107,12 @@ namespace wink
          */
         count_t self_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta);
         
+        //! eval for a given statistic
+        /**
+         must be called after a self_coincidences, so that the matrix is built
+         */
+        void eval_coincidences( statistic_value S, C_Array<count_t> &coinc, mix_method kind );
+        
         
         static Mutex    access; //!< shared access
         static uint32_t seed32; //!< shared seed, for different random seeds
