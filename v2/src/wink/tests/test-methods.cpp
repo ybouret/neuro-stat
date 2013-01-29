@@ -89,7 +89,7 @@ int main(int argc, char *argv[] )
                      H1=xp.self_coincidences(statistic_H, N1, N2, a, b, delta);
                      xp.eval_coincidences(statistic_H, coinc1, mix_perm) );
             
-            xp.compute_pvalues(am1, ap1, coinc1, T1);
+            xp.compute_pvalues(am1, ap1, coinc1, H1);
             
             if( H0 != H1 ) throw Exception("H0!=H1");
             
