@@ -60,16 +60,19 @@ namespace wink
             const record &X_i    = N1[i];
             const count_t diago  = X_i.coincidences_with(N2[sig_i], delta);
             count += n1 * diago;
-            std::cerr << "diago0[" << i << "][" << sig_i << "]=" << diago << std::endl;
+            //std::cerr << "diago0[" << i << "][" << sig_i << "]=" << diago << "|";
             for( const couple *J=head;J;J=J->next)
             {
                 const size_t j = J->first;
                 if( j != i )
                 {
-                    const size_t sig_j = J->second;
-                    count -= X_i.coincidences_with( N2[sig_j], delta);
+                    const size_t  sig_j = J->second;
+                    const count_t extra = X_i.coincidences_with( N2[sig_j], delta);
+                    //std::cerr << " [" << sig_j << "]=" << extra;
+                    count -= extra;
                 }
             }
+            //std::cerr << std::endl;
         }
         return count;
     }
@@ -204,7 +207,7 @@ namespace wink
         
         //! prepare the matrix
         M.make(n,n);
-
+        
         //! preparing the windows
         N1.prepare_windows(a, b);
         N2.prepare_windows(a, b);
@@ -214,6 +217,12 @@ namespace wink
             {
                 M[i][j] = M[j][i] = N1[i].coincidences_with(N2[j], delta);
             }
+            
+            for(size_t j=0; j < n; ++j )
+            {
+                M[i][j] = N1[i].coincidences_with(N2[j], delta);
+            }
+            
         }
         //std::cerr << "M=" << M << std::endl;
     }
@@ -243,17 +252,20 @@ namespace wink
             const size_t   i      = I->first;   assert(i<M.rows);
             const size_t   sig_i  = I->second;  assert(sig_i<M.cols);
             count += n1 * M[i][sig_i];
-            std::cerr << "diago1[" << i << "][" << sig_i << "]=" << M[i][sig_i] << std::endl;
-
+            //std::cerr << "diago1[" << i << "][" << sig_i << "]=" << M[i][sig_i] << "|";
+            
             for( const couple *J=head;J;J=J->next)
             {
                 const size_t j = J->first;
                 if( j != i )
                 {
                     const size_t sig_j = J->second; assert( sig_j < M.cols);
+                    // std::cerr << " [" << sig_j << "]=" << M[i][sig_j];
                     count -= M[i][sig_j];
+                    
                 }
             }
+            //std::cerr << std::endl;
         }
         return count;
         

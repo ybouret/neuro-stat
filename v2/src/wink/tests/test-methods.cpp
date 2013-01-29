@@ -36,7 +36,6 @@ int main(int argc, char *argv[] )
             count_t H1 = xp.self_coincidences( statistic_H, N1, N2, a, b, delta);
             
             std::cerr << "T: " << T0 << "/" << T1 << " | H: " << H0 << "/" << H1 << std::endl;
-            break;
         }
         
         
