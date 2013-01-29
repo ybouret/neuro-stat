@@ -27,6 +27,13 @@ namespace wink
                       const double *Y,
                       const size_t  Ny,
                       const double  delta) throw();
+        
+        static
+        count_t count_all(const double *X,
+                          const size_t  Nx,
+                          const double *Y,
+                          const size_t  Ny,
+                          const double  delta) throw();
     };
     
 }

@@ -35,6 +35,9 @@ int main(int argc, char *argv[] )
                 {
                     const size_t nc = xp[i].coincidences_with( xp[j], delta );
                     fp(" %u", unsigned(nc) );
+                    const size_t nc2 = xp[j].coincidences_with(xp[i], delta);
+                    if( nc2 != nc )
+                        throw Exception("Count is not symetrical!");
                 }
             }
             fp("\n");

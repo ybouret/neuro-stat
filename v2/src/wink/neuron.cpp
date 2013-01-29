@@ -50,7 +50,7 @@ namespace wink
         
         for(size_t i=0; i < trials; ++i, p += stride )
         {
-            assert( length == size_t(p[0]));
+            //assert( length == size_t(p[0]));
             for( size_t j=0; j < ncol; ++j )
             {
                 p[j] = Rmat[i+j*nrow];

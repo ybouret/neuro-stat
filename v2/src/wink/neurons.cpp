@@ -60,7 +60,6 @@ namespace wink
             const record &X_i    = N1[i];
             const count_t diago  = X_i.coincidences_with(N2[sig_i], delta);
             count += n1 * diago;
-            //std::cerr << "diago0[" << i << "][" << sig_i << "]=" << diago << "|";
             for( const couple *J=head;J;J=J->next)
             {
                 const size_t j = J->first;
@@ -68,11 +67,9 @@ namespace wink
                 {
                     const size_t  sig_j = J->second;
                     const count_t extra = X_i.coincidences_with( N2[sig_j], delta);
-                    //std::cerr << " [" << sig_j << "]=" << extra;
                     count -= extra;
                 }
             }
-            //std::cerr << std::endl;
         }
         return count;
     }
@@ -218,7 +215,6 @@ namespace wink
                 M[i][j] = N1[i].coincidences_with(N2[j], delta);
             }
         }
-        //std::cerr << "M=" << M << std::endl;
     }
     
     
