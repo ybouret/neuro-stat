@@ -1,5 +1,6 @@
 #include "./coincidences.hpp"
 #include <cassert>
+#include <cmath>
 
 namespace wink
 {
@@ -14,6 +15,7 @@ namespace wink
         assert(Ny>0);
         assert(X!=NULL);
         assert(Y!=NULL);
+        
         count_t      count = 0;
         size_t       j     = 0;              // initial value for Y testing
         
@@ -52,6 +54,32 @@ namespace wink
         }
         
         return count;
+        
     }
+    
+    count_t coincidences::count_all(const double *X,
+                                    const size_t  Nx,
+                                    const double *Y,
+                                    const size_t  Ny,
+                                    const double  delta) throw()
+    {
+        assert(Nx>0);
+        assert(Ny>0);
+        assert(X!=NULL);
+        assert(Y!=NULL);
+        count_t count = 0;
+        
+        for( size_t i=0; i < Nx; ++i )
+        {
+            const double Xi  = X[i];       // current value
+            for(size_t j=0; j < Ny; ++j )
+            {
+                const double Yj = Y[j];
+                if( fabs(Xi-Yj) <= delta ) ++count;
+            }
+        }
+        return count;
+    }
+    
     
 }

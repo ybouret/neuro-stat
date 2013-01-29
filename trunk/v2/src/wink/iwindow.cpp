@@ -2,6 +2,7 @@
 #include "./lookup.hpp"
 #include "./coincidences.hpp"
 #include <cassert>
+#include <iostream>
 
 namespace wink
 {
@@ -19,6 +20,8 @@ namespace wink
         if( foundA && foundB && (indexA <= indexB) )
         {
             length = indexB - indexA + 1;
+            assert(X[indexA]>=a);
+            assert(X[indexB]<=b);
         }
     }
     
@@ -41,7 +44,9 @@ namespace wink
             assert( Wy.indexB>0 );
             assert( Wy.indexA <= size_t(Y[0]) );
             assert( Wy.indexB <= size_t(Y[0]) );
-            return coincidences::count(X+Wx.indexA, Wx.length, Y+Wy.indexA, Wy.length, delta);
+            const count_t ans = coincidences::count(X+Wx.indexA, Wx.length, Y+Wy.indexA, Wy.length, delta);
+            //std::cerr << "count=" << ans << "/" <<  coincidences::count_all(X+Wx.indexA, Wx.length, Y+Wy.indexA, Wy.length, delta) << std::endl;
+            return ans;
         }
         else
         {
