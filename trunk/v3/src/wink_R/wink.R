@@ -113,6 +113,54 @@ wink_bootstrap_counts <- function(N1,N2,intervals,delta,B,num_threads)
     .Call("wink_bootstrap_counts",N1,N2,intervals,delta,B,num_threads);
 }
 
+########################################################################
+##
+## return a list L with: L$S = S(N1,N2) and L$Sp = S^*(N1,N2) (SORTED)
+## for B iterations and S="T" or S="H"
+##
+##
+## S    : "T" or "H:
+## N1   :first Neuron
+## N2   : second Neuron
+## a    : window start
+## b    : window end
+## delta: time lag
+## B    : number of iterations
+##
+########################################################################
+wink_single_perm <- function(S,N1,N2,a,b,delta,B)
+{
+    if( !is.matrix(N1) )       stop("N1 must be a matrix");
+    if( !is.matrix(N2) )       stop("N2 must be a matrix");
+    if( !is.real(delta) )      stop("delta must be a real");
+    if( !is.real(a) )          stop("delta must be a real");
+    if( !is.real(b) )          stop("delta must be a real");
+    if( !is.real(B) )          stop("B must be a real");
+    .Call("wink_single_perm",S,N1,N2,a,b,delta,B);
+}
 
-
+########################################################################
+##
+## return a list L with: L$H = H(N1,N2) and L$Hc = H^*(N1,N2) (SORTED)
+## for B bootstrap
+##
+## see test_single.R for more info
+##
+## N1   :first Neuron
+## N2   : second Neuron
+## a    : window start
+## b    : window end
+## delta: time lag
+## B    : bootstrap count
+########################################################################
+wink_single_boot <- function(N1,N2,a,b,delta,B)
+{
+    if (!is.matrix(N1))  stop("N1 must be a matrix");
+    if (!is.matrix(N2))  stop("N2 must be a matrix");
+    if( !is.real(a) )    stop("a must be a real");
+    if( !is.real(b) )    stop("b must be a real");
+    if( !is.real(delta)) stop("delta must be a real");
+    if( !is.real(B) )    stop("B must be a real");
+    .Call("wink_single_boot",N1,N2,a,b,delta,B);    
+}
 
