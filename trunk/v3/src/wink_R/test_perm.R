@@ -51,3 +51,5 @@ rms = norm(alpha_diff,"f")/prod(dim(alpha_diff));
 print(paste("rms_H=",rms));
 speedup = tmx_H_ser[[3]]/tmx_H_par[[3]];
 print(paste("speedup_H=",speedup));
+
+

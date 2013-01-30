@@ -805,8 +805,8 @@ SEXP wink_bootstrap_counts_par(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB
         
         //----------------------------------------------------------------------
         //-- prepare answer
-        //-- first  row: alpha_minus
-        //-- second row: alpha_plus
+        //-- first  row: count_minus
+        //-- second row: count_plus
         //----------------------------------------------------------------------
         const size_t num_intervals = intervals.cols;
         RMatrix<double> counts(2,num_intervals);

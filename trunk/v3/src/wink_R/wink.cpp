@@ -267,17 +267,11 @@ namespace
     public:
         explicit WorkerPerm( Mutex            &m,
                             const WorkerArgs &args ) :
-        Worker(m,args)
-        {
-        }
+        Worker(m,args) {}
         
-        virtual ~WorkerPerm() throw()
-        {
-            
-        }
+        virtual ~WorkerPerm() throw() {}
         
-        virtual
-        void run() throw()
+        virtual void run() throw()
         {
             RMatrix<double> &alpha = output;
             try
@@ -312,6 +306,63 @@ namespace
     private:
         WorkerPerm(const WorkerPerm &);
         WorkerPerm&operator=(const WorkerPerm &);
+    };
+    
+    
+    class WorkerBoot : public Worker
+    {
+    public:
+        explicit WorkerBoot(Mutex            &m,
+                            const WorkerArgs &args ) :
+        Worker(m,args)
+        {
+        }
+        
+        virtual ~WorkerBoot() throw()
+        {
+            
+        }
+        
+        virtual
+        void run() throw()
+        {
+            RMatrix<double> &counts = output;
+            const size_t     nb     = coinc.size;
+            try
+            {
+                for( size_t i=ini,j=0;j<num;++i,++j)
+                {
+                    const double a = intervals[i][0];
+                    const double b = intervals[i][1];
+                    
+                    //-- initialize with true coincidences
+                    const size_t H  = double(xp.true_coincidences( statistic_H, N1, N2, a, b, delta));
+                    
+                    //-- mix'em all, bootstrap kind
+                    xp.eval_coincidences( statistic_H, coinc, mix_boot);
+                    
+                    //-- center
+                    for(size_t k=0; k < nb; ++k )
+                        coinc[k] -= H;
+                    
+                    //-- evaluate counts
+                    xp.compute_counts(counts[i][0],counts[i][1],coinc,H);
+                }
+            }
+            catch( const std::exception &e )
+            {
+                Rprintf("***wink_bootstrap_counts/thread: %\n", e.what());
+            }
+            catch (...)
+            {
+                Rprintf("*** unhandled error in wink_bootstrap_counts/thread\n");
+            }
+        }
+        
+        
+    private:
+        WorkerBoot(const WorkerBoot &);
+        WorkerBoot&operator=(const WorkerBoot &);
     };
     
     
@@ -400,6 +451,81 @@ SEXP wink_permutations(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP
     }
     return R_NilValue;
 }
+
+extern "C"
+SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP RNumThreads)
+{
+    try
+    {
+        //----------------------------------------------------------------------
+        //
+        // Parsing Arguments Once
+        //
+        //----------------------------------------------------------------------
+        const size_t           num_threads   = R2Scalar<int>(RNumThreads);
+        if( num_threads <= 0 )
+            throw Exception("Invalid #num_threads");
+        Rprintf("\tWINK: Bootstrap Counts [%u thread%c]\n", unsigned(num_threads), num_threads>1 ? 's' : ' ' );
+        
+        RMatrix<double>        M1(RN1); __show_neuron(1,M1);
+        RMatrix<double>        M2(RN2); __show_neuron(2,M2);
+        RIntervals             intervals(RI);
+        const double           delta         = R2Scalar<double>(Rdelta);
+        const size_t           B             = R2Scalar<int>(RB);
+        
+        //----------------------------------------------------------------------
+        //-- prepare answer
+        //-- first  row: count_minus
+        //-- second row: count_plus
+        //----------------------------------------------------------------------
+        const size_t    num  = intervals.cols;
+        RMatrix<double> counts(2,num);
+        
+        Rprintf("\tWINK: #intervals  = %6u\n", unsigned(num));
+        Rprintf("\tWINK: #bootstraps = %6u\n", unsigned(B));
+        
+        //----------------------------------------------------------------------
+        //
+        // Launching the team
+        //
+        //----------------------------------------------------------------------
+        WorkerArgs       args = { &M1, &M2, statistic_H, &intervals, delta, B, mix_boot, &counts, num_threads,0 };
+        
+        if( num_threads > 1 )
+        {
+            Team<WorkerBoot> team(num_threads);
+            Rprintf("\tWINK: <PARALLEL CODE>\n");
+            for(size_t i=0;i<num_threads;++i)
+            {
+                args.thread_rank = i;
+                team.enqueue( args );
+            }
+            team.finish();
+        }
+        else
+        {
+            WorkerBoot worker( shared_mutex(), args );
+            Rprintf("\tWINK: <SERIAL CODE>\n");
+            worker.run();
+        }
+        //----------------------------------------------------------------------
+        //
+        // All done
+        //
+        //----------------------------------------------------------------------
+        return *counts;
+    }
+    catch( const Exception &e )
+    {
+        Rprintf("*** wink_bootstrap_counts: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("*** unhanled exception in wink_bootstrap_counts\n");
+    }
+    return R_NilValue;
+}
+
 
 
 
