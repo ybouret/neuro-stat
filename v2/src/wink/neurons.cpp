@@ -208,6 +208,8 @@ namespace wink
         //! preparing the windows
         N1.prepare_windows(a, b);
         N2.prepare_windows(a, b);
+        
+        //! building the correlation matrix
         for( size_t i=0; i < n; ++i )
         {
             for(size_t j=0; j < n; ++j )
