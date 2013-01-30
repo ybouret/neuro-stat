@@ -59,7 +59,22 @@ wink_true_coincidences <-function(S,N1,N2,intervals,delta)
     .Call("wink_true_coincidences",S,N1,N2,intervals,delta)
 }
 
-
+########################################################################
+##
+## Evaluate permutation pvalues
+##
+## S:          "T" or "H.
+## N1:         first neuron
+## N2:         second neuron
+## intervals:  matrix, two rows , each colum is [a,b]
+## delta:      time lag
+## B:          number of permutations
+## num_threads: 1 --> serial code, >1 --> parallel code
+##
+## return: the MATRIX with row[1]= pvalues^-
+##                         row[2]= pvalues^+
+##
+########################################################################
 wink_permutations <- function(S,N1,N2,intervals,delta,B,num_threads)
 {
     if( !is.character(S) )     stop("S must be a string");
@@ -71,3 +86,33 @@ wink_permutations <- function(S,N1,N2,intervals,delta,B,num_threads)
     if( !is.real(num_threads)) stop("num_threads must be a real");
     .Call("wink_permutations",S,N1,N2,intervals,delta,B,num_threads);
 }
+
+########################################################################
+##
+## Evaluate bootstrap counts
+##
+## N1:        first neuron
+## N2:        second neuron
+## intervals: matrix, two rows , each colum is [a,b]
+## delta:     time lag
+## B:         number of bootstraps
+##
+## num_threads: 1 --> serial code, >1 --> parallel code
+## return: the MATRIX with row[1]= counts^-
+##                         row[2]= counts^+
+##
+########################################################################
+wink_bootstrap_counts <- function(N1,N2,intervals,delta,B,num_threads)
+{
+    if( !is.matrix(N1) )       stop("N1 must be a matrix");
+    if( !is.matrix(N2) )       stop("N2 must be a matrix");
+    if( !is.matrix(intervals)) stop("intervals must be a matrix");
+    if( !is.real(delta) )      stop("delta must be a real");
+    if( !is.real(B) )          stop("B must be a real");
+    if( !is.real(num_threads)) stop("num_threads must be a real");
+    .Call("wink_bootstrap_counts",N1,N2,intervals,delta,B,num_threads);
+}
+
+
+
+
