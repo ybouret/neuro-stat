@@ -18,6 +18,7 @@ int main(int argc, char *argv[] )
         neuron       N1(trials,100 + xp.ran.leq(20));
         neuron       N2(trials,100 + xp.ran.leq(20));
         
+        chrono.start();
         for(size_t i=0; i < trials; ++i )
         {
             xp.ran.fill_array(0, 10, &N1[i][1], N1[i].size());
