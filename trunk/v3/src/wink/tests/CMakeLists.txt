@@ -1,0 +1,14 @@
+FILE(GLOB TESTS_SRCS test-*.cpp)
+
+MESSAGE( STATUS "Sources: ${TESTS_SRCS}" )
+
+FOREACH(fn IN LISTS TESTS_SRCS )
+	#MESSAGE( STATUS "*** ${fn}" )
+	GET_FILENAME_COMPONENT(fx ${fn} NAME_WE)
+	MESSAGE( STATUS "****** ${fx}" )
+	ADD_EXECUTABLE( ${fx} ${fn} )
+	TARGET_LINK_LIBRARIES( ${fx} wink pyck )
+	IF( CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD" )
+		TARGET_LINK_LIBRARIES( ${fx} pthread)
+	ENDIF()
+ENDFOREACH(fn)
