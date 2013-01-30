@@ -370,7 +370,7 @@ namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Parallel Permutations
+// Parallel/Serial Permutations
 //
 ////////////////////////////////////////////////////////////////////////////////
 extern "C"
@@ -452,6 +452,11 @@ SEXP wink_permutations(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP
     return R_NilValue;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Parallel/Serial Bootstrap Counts
+//
+////////////////////////////////////////////////////////////////////////////////
 extern "C"
 SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP RNumThreads)
 {
@@ -526,9 +531,150 @@ SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SE
     return R_NilValue;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Parallel/Serial Bootstrap Counts
+//
+////////////////////////////////////////////////////////////////////////////////
+#include "../pyck/sort.hpp"
 
+extern "C"
+SEXP wink_single_perm(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
+{
+    try
+    {
+        
+        //----------------------------------------------------------------------
+        //-- parse arguments
+        //----------------------------------------------------------------------
+        const RMatrix<double> M1(RN1);
+        RNeuron               N1(M1);
+        const RMatrix<double> M2(RN2);
+        RNeuron               N2(M2);
+        const double          a     = R2Scalar<double>(Ra);
+        const double          b     = R2Scalar<double>(Rb);
+        const double          delta = R2Scalar<double>(Rdelta);
+        const size_t          nb    = R2Scalar<int>(RB);
+        neurons              &xp    = shared_neurons();
+        const statistic_value  S    = __check_stat_val(Ropt);
 
+        //----------------------------------------------------------------------
+        //-- initialize window
+        //----------------------------------------------------------------------
+        const count_t    T = xp.true_coincidences( S, N1, N2, a, b, delta);
+        C_Array<count_t> Tp(nb);
+        
+        //----------------------------------------------------------------------
+        //-- mix'em all, permutation kind
+        //----------------------------------------------------------------------
+        xp.eval_coincidences(S,Tp,mix_perm);
+        
+        
+        //----------------------------------------------------------------------
+        //-- sort
+        //----------------------------------------------------------------------
+        Sort( &Tp[0], nb );
+        
+        //----------------------------------------------------------------------
+        //-- make a list S/Sp
+        //----------------------------------------------------------------------
+        const char *names[] = { "S", "Sp" };
+        
+        //-- first element: Satistic Value
+        RVector<double> rT(1);
+        rT[0] = T;
+        
+        //-- second element: Permutation Counts
+        RVector<double> rTp(nb);
+        for( size_t j=0; j < nb; ++j )
+            rTp[j] = double( Tp[j] );
 
+        RList L(names,sizeof(names)/sizeof(names[0]));
+        L.set(0,rT);
+        L.set(1,rTp);
+        return *L;
+        
+    }
+    catch( const Exception &e )
+    {
+        Rprintf("*** wink_single_perm: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("*** unhanled exception in wink_single_perm\n");
+    }
+    return R_NilValue;
+}
 
-
+extern "C"
+SEXP wink_single_boot(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
+{
+    try
+    {
+        
+        //----------------------------------------------------------------------
+        //-- parse arguments
+        //----------------------------------------------------------------------
+        const RMatrix<double> M1(RN1);
+        RNeuron               N1(M1);
+        const RMatrix<double> M2(RN2);
+        RNeuron               N2(M2);
+        const double          a     = R2Scalar<double>(Ra);
+        const double          b     = R2Scalar<double>(Rb);
+        const double          delta = R2Scalar<double>(Rdelta);
+        const size_t          nb    = R2Scalar<int>(RB);
+        neurons              &xp    = shared_neurons();
+        
+        //----------------------------------------------------------------------
+        //-- initialize window
+        //----------------------------------------------------------------------
+        const count_t    H = xp.true_coincidences( statistic_H, N1, N2, a, b, delta);
+        C_Array<count_t> Hc(nb);
+        
+        //----------------------------------------------------------------------
+        //-- mix'em all, bootstrap kind
+        //----------------------------------------------------------------------
+        xp.eval_coincidences( statistic_H,Hc,mix_boot);
+        
+        //----------------------------------------------------------------------
+        //-- centering
+        //----------------------------------------------------------------------
+        for( size_t i=0;i<nb;++i)
+            Hc[i] -= H;
+        
+        //----------------------------------------------------------------------
+        //-- sort
+        //----------------------------------------------------------------------
+        Sort( &Hc[0], nb );
+        
+        //----------------------------------------------------------------------
+        //-- make a list S/Sp
+        //----------------------------------------------------------------------
+        const char *names[] = { "H", "Hc" };
+        
+        //-- first element: Satistic Value
+        RVector<double> rH(1);
+        rH[0] = H;
+        
+        //-- second element: H centered
+        RVector<double> rHc(nb);
+        for( size_t j=0; j < nb; ++j )
+            rHc[j] = double( Hc[j] );
+        
+        RList L(names,sizeof(names)/sizeof(names[0]));
+        L.set(0,rH);
+        L.set(1,rHc);
+        return *L;
+        
+    }
+    catch( const Exception &e )
+    {
+        Rprintf("*** wink_single_boot: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("*** unhanled exception in wink_single_boot\n");
+    }
+    return R_NilValue;
+}
 
