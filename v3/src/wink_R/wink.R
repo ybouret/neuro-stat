@@ -96,8 +96,8 @@ wink_permutations <- function(S,N1,N2,intervals,delta,B,num_threads)
 ## intervals: matrix, two rows , each colum is [a,b]
 ## delta:     time lag
 ## B:         number of bootstraps
-##
 ## num_threads: 1 --> serial code, >1 --> parallel code
+##
 ## return: the MATRIX with row[1]= counts^-
 ##                         row[2]= counts^+
 ##
