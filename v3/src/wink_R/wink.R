@@ -47,14 +47,27 @@ wink_perm <- function(n)
 ## return: the VECTOR of true_coincidences for each interval
 ##
 ########################################################################
-wink_true_coincidences <-function(N1,N2,intervals,delta,S)
+wink_true_coincidences <-function(S,N1,N2,intervals,delta)
 {
+    if( !is.character(S) )     stop("S must be a string");
     if( !is.matrix(N1) )       stop("N1 must be a matrix");
     if( !is.matrix(N2) )       stop("N2 must be a matrix");
     if( !is.matrix(intervals)) stop("intervals must be a matrix");
     if( !is.real(delta) )      stop("delta must be a real");
-    if( !is.character(S) )     stop("S must be a string");
     
     ## call the C++ code
-    .Call("wink_true_coincidences",N1,N2,intervals,delta,S)
+    .Call("wink_true_coincidences",S,N1,N2,intervals,delta)
+}
+
+
+wink_permutations <- function(S,N1,N2,intervals,delta,B,num_threads)
+{
+    if( !is.character(S) )     stop("S must be a string");
+    if( !is.matrix(N1) )       stop("N1 must be a matrix");
+    if( !is.matrix(N2) )       stop("N2 must be a matrix");
+    if( !is.matrix(intervals)) stop("intervals must be a matrix");
+    if( !is.real(delta) )      stop("delta must be a real");
+    if( !is.real(B) )          stop("B must be a real");
+    if( !is.real(num_threads)) stop("num_threads must be a real");
+    .Call("wink_permutations",S,N1,N2,intervals,delta,B,num_threads);
 }
