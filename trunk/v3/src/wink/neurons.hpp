@@ -36,37 +36,8 @@ namespace wink
         DefaultUniformGenerator ran; //!< own random number generator
         C_Matrix<count_t>       M;   //!< matrix of precomputed coincidences
         
-        //! sum coincidences for N1 and N2 for CURRENT drawing
-        /**
-         \param N1 a prepared neuron on window [a,b]
-         \param N2 a prepared neuron on window [a,b]
-         \param delta time lag
-         */
-        count_t coincidences_T( const neuron &N1, const neuron &N2, double delta ) const;
-        
-        //! sum coincidences for N1 and N2 for CURRENT drawing
-        /**
-         \param N1 a prepared neuron on window [a,b]
-         \param N2 a prepared neuron on window [a,b]
-         \param delta time lag
-         */
-        count_t coincidences_H( const neuron &N1, const neuron &N2, double delta ) const;
-        
-        //! initialize neurons and drawing=id, then call coincidences
-        /**
-         \param S the statistic value (T,H,...)
-         \param N1 first  neuron
-         \param N2 second neuron
-         */
-        count_t true_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta);
-        
-        
-        //! mix for a given statistic
-        /**
-         \param N1 a prepared neuron on window [a,b]
-         \param N2 a prepared neuron on window [a,b]
-         */
-        void mix( statistic_value S, C_Array<count_t> &Bcoinc, mix_method Bkind, const neuron &N1, const neuron &N2, double delta );
+                
+       
         
         //! compute p_values for a given statistic
         /**
@@ -99,13 +70,13 @@ namespace wink
         //! get H coincidences for the CURRENT drawing, using the count matrix.
         count_t coincidences_H() const throw();
         
-        //! initialize neurons,correlations and set drawing=id, then call coincidences
+        //! initialize neurons,correlations and set drawing=id, then call coincidences_[T|H]
         /**
          \param S the statistic value (T,H,...)
          \param N1 first  neuron
          \param N2 second neuron
          */
-        count_t self_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta);
+        count_t true_coincidences( statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta);
         
         //! eval for a given statistic
         /**

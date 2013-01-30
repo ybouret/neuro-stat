@@ -20,10 +20,10 @@ namespace wink
         virtual ~neuron() throw();
         
         
-        //! record[0<=indx<trials]
+        //! record[0 <= indx < trials]
         const record & operator[]( size_t indx ) const throw();
         
-        //! record[0<=indx<trials]
+        //! record[0 <= indx < trials]
         record       & operator[]( size_t indx ) throw();
         
         
@@ -41,7 +41,7 @@ namespace wink
     private:
         C_Array<record> records;
     public:
-        const size_t    length;      //!< max_data
+        const size_t    length;      //!< max_data per record
     private:
         const size_t    stride;      //!< max_data+1
         double         *workspace;   //!< stride * num_trials
@@ -50,7 +50,7 @@ namespace wink
         neuron&operator=(const neuron &);
         
     public:
-        const size_t trials; //!< #records for this neuron
+        const size_t trials; //!< #records for this neuron (records.size)
     };
     
 }
