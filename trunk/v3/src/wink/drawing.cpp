@@ -21,7 +21,8 @@ namespace wink
     
     drawing:: drawing() throw() :
     couple::list(),
-    pool()
+    pool(),
+    arr()
     {
         
     }
@@ -67,7 +68,7 @@ namespace wink
         clear();
         if(n>0)
         {
-            C_Array<size_t> arr(n);
+            arr.ensure(n);
             for(size_t i=0; i <n; ++i) arr[i] = i;
             ran.shuffle(&arr[0],n);
             for( size_t i=0; i < n; ++i )
