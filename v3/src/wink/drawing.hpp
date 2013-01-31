@@ -9,6 +9,7 @@
 #include "../pyck/pool.hpp"
 #include "../pyck/list.hpp"
 #include "../pyck/rand32.hpp"
+#include "../pyck/c_array.hpp"
 #include <iosfwd>
 
 namespace wink
@@ -68,7 +69,8 @@ namespace wink
         
     private:
         couple *query();
-        couple::pool pool;
+        couple::pool    pool;
+        C_Array<size_t> arr;
         drawing(const drawing &);
         drawing&operator=(const drawing &);
     };
