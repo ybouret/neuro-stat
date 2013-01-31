@@ -374,7 +374,7 @@ namespace
 //
 ////////////////////////////////////////////////////////////////////////////////
 extern "C"
-SEXP wink_permutations(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP RNumThreads)
+SEXP wink_permutation_pvalues(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP RNumThreads)
 {
     try
     {
