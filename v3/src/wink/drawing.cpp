@@ -35,7 +35,7 @@ namespace wink
     
     couple *drawing:: query()
     {
-        couple *cpl = pool.size ? pool.query() : new couple;
+        couple *cpl = (pool.size > 0) ? pool.query() : new couple;
         memset(cpl,0,sizeof(couple));
         return cpl;
     }
