@@ -28,7 +28,7 @@ namespace wink
     
     void drawing:: clear() throw()
     {
-        while( size ) pool.store( pop_back() );
+        while(size) pool.store( pop_back() );
         assert( 0 == size );
     }
     
@@ -79,7 +79,6 @@ namespace wink
             }
         }
         assert(size==n);
-        
     }
     
     void drawing:: replacement( size_t n, UniformGenerator &ran )
