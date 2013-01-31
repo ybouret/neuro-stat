@@ -652,7 +652,7 @@ SEXP wink_single_boot(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB
         //----------------------------------------------------------------------
         const char *names[] = { "H", "Hc" };
         
-        //-- first element: Satistic Value
+        //-- first element: H
         RVector<double> rH(1);
         rH[0] = H;
         

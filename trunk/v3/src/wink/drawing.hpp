@@ -70,9 +70,10 @@ namespace wink
     private:
         couple *query();
         couple::pool    pool;
-        C_Array<size_t> arr;
         drawing(const drawing &);
         drawing&operator=(const drawing &);
+    public:
+        C_Array<size_t> arr; //!< for fast permutations
     };
     
 }

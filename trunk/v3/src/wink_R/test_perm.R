@@ -4,7 +4,7 @@ par(mfrow=c(2,2))
 num_threads=4;
 
 ## Generate Permutation Statistic
-
+print("---- Testing T ----");
 #T/parallel
 stamp=proc.time()
 alpha_T_par = wink_permutations("T",neurons[[1]],neurons[[2]],intervals,delta,B,num_threads);
@@ -27,8 +27,9 @@ rms = norm(alpha_diff,"f")/prod(dim(alpha_diff));
 print(paste("rms_T=",rms));
 speedup = tmx_T_ser[[3]]/tmx_T_par[[3]];
 print(paste("speedup_T=",speedup));
+print("");
 
-
+print("---- Testing H ----");
 #H/parallel
 stamp=proc.time()
 alpha_H_par = wink_permutations("H",neurons[[1]],neurons[[2]],intervals,delta,B,num_threads);
