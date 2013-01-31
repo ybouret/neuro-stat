@@ -75,7 +75,7 @@ wink_true_coincidences <-function(S,N1,N2,intervals,delta)
 ##                         row[2]= pvalues^+
 ##
 ########################################################################
-wink_permutations <- function(S,N1,N2,intervals,delta,B,num_threads)
+wink_permutation_pvalues <- function(S,N1,N2,intervals,delta,B,num_threads)
 {
     if( !is.character(S) )     stop("S must be a string");
     if( !is.matrix(N1) )       stop("N1 must be a matrix");
@@ -84,7 +84,7 @@ wink_permutations <- function(S,N1,N2,intervals,delta,B,num_threads)
     if( !is.real(delta) )      stop("delta must be a real");
     if( !is.real(B) )          stop("B must be a real");
     if( !is.real(num_threads)) stop("num_threads must be a real");
-    .Call("wink_permutations",S,N1,N2,intervals,delta,B,num_threads);
+    .Call("wink_permutation_pvalues",S,N1,N2,intervals,delta,B,num_threads);
 }
 
 ########################################################################
