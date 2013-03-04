@@ -53,7 +53,7 @@ wink_true_coincidences <-function(S,N1,N2,intervals,delta)
     if( !is.matrix(N1) )       stop("N1 must be a matrix");
     if( !is.matrix(N2) )       stop("N2 must be a matrix");
     if( !is.matrix(intervals)) stop("intervals must be a matrix");
-    if( !is.real(delta) )      stop("delta must be a real");
+    if( !is.double(delta) )    stop("delta must be a real");
     
     ## call the C++ code
     .Call("wink_true_coincidences",S,N1,N2,intervals,delta)
@@ -77,13 +77,13 @@ wink_true_coincidences <-function(S,N1,N2,intervals,delta)
 ########################################################################
 wink_permutation_pvalues <- function(S,N1,N2,intervals,delta,B,num_threads)
 {
-    if( !is.character(S) )     stop("S must be a string");
-    if( !is.matrix(N1) )       stop("N1 must be a matrix");
-    if( !is.matrix(N2) )       stop("N2 must be a matrix");
-    if( !is.matrix(intervals)) stop("intervals must be a matrix");
-    if( !is.real(delta) )      stop("delta must be a real");
-    if( !is.real(B) )          stop("B must be a real");
-    if( !is.real(num_threads)) stop("num_threads must be a real");
+    if( !is.character(S) )       stop("S must be a string");
+    if( !is.matrix(N1) )         stop("N1 must be a matrix");
+    if( !is.matrix(N2) )         stop("N2 must be a matrix");
+    if( !is.matrix(intervals))   stop("intervals must be a matrix");
+    if( !is.double(delta) )      stop("delta must be a real");
+    if( !is.double(B) )          stop("B must be a real");
+    if( !is.double(num_threads)) stop("num_threads must be a real");
     .Call("wink_permutation_pvalues",S,N1,N2,intervals,delta,B,num_threads);
 }
 
@@ -104,12 +104,12 @@ wink_permutation_pvalues <- function(S,N1,N2,intervals,delta,B,num_threads)
 ########################################################################
 wink_bootstrap_counts <- function(N1,N2,intervals,delta,B,num_threads)
 {
-    if( !is.matrix(N1) )       stop("N1 must be a matrix");
-    if( !is.matrix(N2) )       stop("N2 must be a matrix");
-    if( !is.matrix(intervals)) stop("intervals must be a matrix");
-    if( !is.real(delta) )      stop("delta must be a real");
-    if( !is.real(B) )          stop("B must be a real");
-    if( !is.real(num_threads)) stop("num_threads must be a real");
+    if( !is.matrix(N1) )         stop("N1 must be a matrix");
+    if( !is.matrix(N2) )         stop("N2 must be a matrix");
+    if( !is.matrix(intervals))   stop("intervals must be a matrix");
+    if( !is.double(delta) )      stop("delta must be a real");
+    if( !is.double(B) )          stop("B must be a real");
+    if( !is.double(num_threads)) stop("num_threads must be a real");
     .Call("wink_bootstrap_counts",N1,N2,intervals,delta,B,num_threads);
 }
 
@@ -132,10 +132,10 @@ wink_single_perm <- function(S,N1,N2,a,b,delta,B)
 {
     if( !is.matrix(N1) )       stop("N1 must be a matrix");
     if( !is.matrix(N2) )       stop("N2 must be a matrix");
-    if( !is.real(delta) )      stop("delta must be a real");
-    if( !is.real(a) )          stop("delta must be a real");
-    if( !is.real(b) )          stop("delta must be a real");
-    if( !is.real(B) )          stop("B must be a real");
+    if( !is.double(delta) )    stop("delta must be a real");
+    if( !is.double(a) )        stop("delta must be a real");
+    if( !is.double(b) )        stop("delta must be a real");
+    if( !is.double(B) )        stop("B must be a real");
     .Call("wink_single_perm",S,N1,N2,a,b,delta,B);
 }
 
@@ -155,12 +155,12 @@ wink_single_perm <- function(S,N1,N2,a,b,delta,B)
 ########################################################################
 wink_single_boot <- function(N1,N2,a,b,delta,B)
 {
-    if (!is.matrix(N1))  stop("N1 must be a matrix");
-    if (!is.matrix(N2))  stop("N2 must be a matrix");
-    if( !is.real(a) )    stop("a must be a real");
-    if( !is.real(b) )    stop("b must be a real");
-    if( !is.real(delta)) stop("delta must be a real");
-    if( !is.real(B) )    stop("B must be a real");
+    if (!is.matrix(N1))    stop("N1 must be a matrix");
+    if (!is.matrix(N2))    stop("N2 must be a matrix");
+    if( !is.double(a) )    stop("a must be a real");
+    if( !is.double(b) )    stop("b must be a real");
+    if( !is.double(delta)) stop("delta must be a real");
+    if( !is.double(B) )    stop("B must be a real");
     .Call("wink_single_boot",N1,N2,a,b,delta,B);    
 }
 
