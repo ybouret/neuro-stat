@@ -53,7 +53,7 @@ namespace wink
         
         //! drawing with replacement
         /**
-         couple->first  = [0..n-1]
+         couple->first  = random([0..n-1])
          couple->second = random([0..n-1])
          */
         void replacement( size_t n, UniformGenerator &ran ); 

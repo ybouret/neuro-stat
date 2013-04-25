@@ -1,7 +1,7 @@
 
 source("test_init.R")
 
-par(mfrow=c(3,1))
+par(mfrow=c(2,2))
 
 window_width = 10 * delta;
 L=wink_single_boot(neurons[[1]],neurons[[2]],0.1,0.1+window_width,delta,B);
@@ -10,6 +10,13 @@ count_plus =sum(L$Hc>=L$H);
 count_minus=sum(L$Hc<=L$H);
 
 plot.ecdf(L$Hc);
+
+Ltau=wink_single_boot(neurons[[1]],neurons[[2]],0.1,0.1+window_width,delta,B,"tau");
+
+count_plus_tau =sum(Ltau$Hc>=Ltau$H);
+count_minus_tau=sum(Ltau$Hc<=Ltau$H);
+
+plot.ecdf(Ltau$Hc);
 
 LT=wink_single_perm("T",neurons[[1]],neurons[[2]],0.1,0.1+window_width,delta,B);
 
