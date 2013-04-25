@@ -97,12 +97,13 @@ wink_permutation_pvalues <- function(S,N1,N2,intervals,delta,B,num_threads)
 ## delta:     time lag
 ## B:         number of bootstraps
 ## num_threads: 1 --> serial code, >1 --> parallel code
+## mix_name: "" --> Pn, "tau" --> tau(Pn)
 ##
 ## return: the MATRIX with row[1]= counts^-
 ##                         row[2]= counts^+
 ##
 ########################################################################
-wink_bootstrap_counts <- function(N1,N2,intervals,delta,B,num_threads)
+wink_bootstrap_counts <- function(N1,N2,intervals,delta,B,num_threads,mix_name="")
 {
     if( !is.matrix(N1) )         stop("N1 must be a matrix");
     if( !is.matrix(N2) )         stop("N2 must be a matrix");
@@ -110,7 +111,8 @@ wink_bootstrap_counts <- function(N1,N2,intervals,delta,B,num_threads)
     if( !is.double(delta) )      stop("delta must be a real");
     if( !is.double(B) )          stop("B must be a real");
     if( !is.double(num_threads)) stop("num_threads must be a real");
-    .Call("wink_bootstrap_counts",N1,N2,intervals,delta,B,num_threads);
+    if( !is.character(mix_name)) stop("mix must be a string");
+    .Call("wink_bootstrap_counts",N1,N2,intervals,delta,B,num_threads,mix_name);
 }
 
 ########################################################################
@@ -152,8 +154,10 @@ wink_single_perm <- function(S,N1,N2,a,b,delta,B)
 ## b    : window end
 ## delta: time lag
 ## B    : bootstrap count
+## mix_name: "" --> Pn, "tau" --> tau(Pn)
+##
 ########################################################################
-wink_single_boot <- function(N1,N2,a,b,delta,B)
+wink_single_boot <- function(N1,N2,a,b,delta,B,mix_name="")
 {
     if (!is.matrix(N1))    stop("N1 must be a matrix");
     if (!is.matrix(N2))    stop("N2 must be a matrix");
@@ -161,6 +165,6 @@ wink_single_boot <- function(N1,N2,a,b,delta,B)
     if( !is.double(b) )    stop("b must be a real");
     if( !is.double(delta)) stop("delta must be a real");
     if( !is.double(B) )    stop("B must be a real");
-    .Call("wink_single_boot",N1,N2,a,b,delta,B);    
+    .Call("wink_single_boot",N1,N2,a,b,delta,B,mix_name);
 }
 

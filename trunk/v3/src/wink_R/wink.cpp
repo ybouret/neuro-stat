@@ -45,7 +45,7 @@ SEXP wink_perm( SEXP Rn )
             throw Exception("required length is negative!");
         }
         
-        RVector<int>         ans(n);
+        RVector<int> ans(n);
         for(size_t i=0; i<n;++i)
         {
             ans[i] = int(i);
@@ -125,7 +125,7 @@ namespace
     static inline
     statistic_value __check_stat_val( SEXP Rvalue )
     {
-        const char *value = CHAR(STRING_ELT(Rvalue,0));
+        const char *value = R2String(Rvalue);
         if(!value) throw Exception("NULL statistic_value");
         
         if(strcmp(value,"T")==0)
@@ -150,7 +150,11 @@ namespace
 //
 ////////////////////////////////////////////////////////////////////////////////
 extern "C"
-SEXP wink_true_coincidences( SEXP Rvalue, SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta)
+SEXP wink_true_coincidences(SEXP Rvalue,
+                            SEXP RN1,
+                            SEXP RN2,
+                            SEXP RI,
+                            SEXP Rdelta)
 {
     try
     {
@@ -282,7 +286,7 @@ namespace
                     const double b = intervals[i][1];
                     
                     //-- initialize with true coincidences
-                    const size_t TrueS = double(xp.true_coincidences(S, N1, N2, a, b, delta));
+                    const count_t TrueS = xp.true_coincidences(S, N1, N2, a, b, delta);
                     
                     //-- permutations
                     xp.eval_coincidences(S,coinc,kind);
@@ -339,7 +343,7 @@ namespace
                     const size_t H  = double(xp.true_coincidences( statistic_H, N1, N2, a, b, delta));
                     
                     //-- mix'em all, bootstrap kind
-                    xp.eval_coincidences( statistic_H, coinc, mix_boot);
+                    xp.eval_coincidences( statistic_H, coinc, kind);
                     
                     //-- center
                     for(size_t k=0; k < nb; ++k )
@@ -374,7 +378,13 @@ namespace
 //
 ////////////////////////////////////////////////////////////////////////////////
 extern "C"
-SEXP wink_permutation_pvalues(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP RNumThreads)
+SEXP wink_permutation_pvalues(SEXP Ropt,
+                              SEXP RN1,
+                              SEXP RN2,
+                              SEXP RI,
+                              SEXP Rdelta,
+                              SEXP RB,
+                              SEXP RNumThreads)
 {
     try
     {
@@ -457,8 +467,32 @@ SEXP wink_permutation_pvalues(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelt
 // Parallel/Serial Bootstrap Counts
 //
 ////////////////////////////////////////////////////////////////////////////////
+
+static inline
+mix_method __parse_mix( SEXP Rmix )
+{
+    const char            *mix_name      = R2String(Rmix);
+    if( 0 == strcmp("",mix_name) )
+    {
+        return mix_boot;
+    }
+    
+    if( 0 == strcmp("tau",mix_name) )
+    {
+        return mix_repl;
+    }
+    
+    throw Exception("Invalid mix_name=%s",mix_name);
+}
+
 extern "C"
-SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SEXP RNumThreads)
+SEXP wink_bootstrap_counts(SEXP RN1,
+                           SEXP RN2,
+                           SEXP RI,
+                           SEXP Rdelta,
+                           SEXP RB,
+                           SEXP RNumThreads,
+                           SEXP Rmix)
 {
     try
     {
@@ -476,7 +510,8 @@ SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SE
         RMatrix<double>        M2(RN2); __show_neuron(2,M2);
         RIntervals             intervals(RI);
         const double           delta         = R2Scalar<double>(Rdelta);
-        const size_t           B             = R2Scalar<int>(RB);
+        const size_t           B             = R2Scalar<int>(RB);        
+        const mix_method       kind          = __parse_mix(Rmix);
         
         //----------------------------------------------------------------------
         //-- prepare answer
@@ -488,13 +523,14 @@ SEXP wink_bootstrap_counts(SEXP RN1, SEXP RN2, SEXP RI, SEXP Rdelta, SEXP RB, SE
         
         Rprintf("\tWINK: #intervals  = %6u\n", unsigned(num));
         Rprintf("\tWINK: #bootstraps = %6u\n", unsigned(B));
+        Rprintf("\tWINK: Mix method  = <%s>\n",R2String(Rmix));
         
         //----------------------------------------------------------------------
         //
         // Launching the team
         //
         //----------------------------------------------------------------------
-        WorkerArgs       args = { &M1, &M2, statistic_H, &intervals, delta, B, mix_boot, &counts, num_threads,0 };
+        WorkerArgs       args = { &M1, &M2, statistic_H, &intervals, delta, B, kind, &counts, num_threads,0 };
         
         if( num_threads > 1 )
         {
@@ -557,7 +593,7 @@ SEXP wink_single_perm(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdel
         const size_t          nb    = R2Scalar<int>(RB);
         neurons              &xp    = shared_neurons();
         const statistic_value  S    = __check_stat_val(Ropt);
-
+        
         //----------------------------------------------------------------------
         //-- initialize window
         //----------------------------------------------------------------------
@@ -588,7 +624,7 @@ SEXP wink_single_perm(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdel
         RVector<double> rTp(nb);
         for( size_t j=0; j < nb; ++j )
             rTp[j] = double( Tp[j] );
-
+        
         RList L(names,sizeof(names)/sizeof(names[0]));
         L.set(0,rT);
         L.set(1,rTp);
@@ -607,7 +643,13 @@ SEXP wink_single_perm(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdel
 }
 
 extern "C"
-SEXP wink_single_boot(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
+SEXP wink_single_boot(SEXP RN1,
+                      SEXP RN2,
+                      SEXP Ra,
+                      SEXP Rb,
+                      SEXP Rdelta,
+                      SEXP RB,
+                      SEXP Rmix)
 {
     try
     {
@@ -624,6 +666,7 @@ SEXP wink_single_boot(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB
         const double          delta = R2Scalar<double>(Rdelta);
         const size_t          nb    = R2Scalar<int>(RB);
         neurons              &xp    = shared_neurons();
+        const mix_method      kind  = __parse_mix(Rmix);
         
         //----------------------------------------------------------------------
         //-- initialize window
@@ -634,7 +677,7 @@ SEXP wink_single_boot(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB
         //----------------------------------------------------------------------
         //-- mix'em all, bootstrap kind
         //----------------------------------------------------------------------
-        xp.eval_coincidences( statistic_H,Hc,mix_boot);
+        xp.eval_coincidences( statistic_H,Hc,kind);
         
         //----------------------------------------------------------------------
         //-- centering

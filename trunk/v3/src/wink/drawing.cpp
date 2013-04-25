@@ -88,7 +88,7 @@ namespace wink
         for( size_t i=0; i < n; ++i)
         {
             couple *cpl = query();
-            cpl->first  = i;
+            cpl->first  = ran.lt(n);
             cpl->second = ran.lt(n);
             push_back(cpl);
         }
