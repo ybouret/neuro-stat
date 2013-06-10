@@ -32,6 +32,11 @@ Mutex & shared_mutex() throw()
     return M;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// function to test the permutation
+//
+////////////////////////////////////////////////////////////////////////////////
 extern "C"
 SEXP wink_perm( SEXP Rn )
 {
@@ -63,6 +68,13 @@ SEXP wink_perm( SEXP Rn )
     }
     return R_NilValue;
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Interface R/C++
+//
+////////////////////////////////////////////////////////////////////////////////
 
 namespace
 {
@@ -201,8 +213,7 @@ SEXP wink_true_coincidences(SEXP Rvalue,
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-//
-//
+// Base code for Parallel Work
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -266,6 +277,7 @@ namespace
         Worker&operator=(const Worker &);
     };
     
+    
     class WorkerPerm : public Worker
     {
     public:
@@ -280,18 +292,30 @@ namespace
             RMatrix<double> &alpha = output;
             try
             {
+                //==============================================================
+                //
+                // Loops on my share or work...
+                //
+                //==============================================================
                 for( size_t i=ini,j=0;j<num;++i,++j)
                 {
                     const double a = intervals[i][0];
                     const double b = intervals[i][1];
                     
+                    //----------------------------------------------------------
                     //-- initialize with true coincidences
+                    //----------------------------------------------------------
                     const count_t TrueS = xp.true_coincidences(S, N1, N2, a, b, delta);
                     
+                    //----------------------------------------------------------
                     //-- permutations
+                    //----------------------------------------------------------
                     xp.eval_coincidences(S,coinc,kind);
                     
+                    //----------------------------------------------------------
                     //-- evaluate pvalues
+                    //----------------------------------------------------------
+
                     xp.compute_pvalues(alpha[i][0],alpha[i][1],coinc,TrueS);
                 }
                 
@@ -334,22 +358,35 @@ namespace
             const size_t     nb     = coinc.size;
             try
             {
+                //==============================================================
+                //
+                // Loops on my share or work...
+                //
+                //==============================================================
                 for( size_t i=ini,j=0;j<num;++i,++j)
                 {
                     const double a = intervals[i][0];
                     const double b = intervals[i][1];
                     
+                    //----------------------------------------------------------
                     //-- initialize with true coincidences
+                    //----------------------------------------------------------
                     const size_t H  = double(xp.true_coincidences( statistic_H, N1, N2, a, b, delta));
                     
+                    //----------------------------------------------------------
                     //-- mix'em all, bootstrap kind
+                    //----------------------------------------------------------
                     xp.eval_coincidences( statistic_H, coinc, kind);
                     
+#if 0
                     //-- center
                     for(size_t k=0; k < nb; ++k )
                         coinc[k] -= H;
+#endif
                     
+                    //----------------------------------------------------------
                     //-- evaluate counts
+                    //----------------------------------------------------------
                     xp.compute_counts(counts[i][0],counts[i][1],coinc,H);
                 }
             }
@@ -569,7 +606,7 @@ SEXP wink_bootstrap_counts(SEXP RN1,
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Parallel/Serial Bootstrap Counts
+// Parallel/Serial Bootstrap Counts for a SINGLE data
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "../pyck/sort.hpp"
