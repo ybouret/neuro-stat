@@ -124,20 +124,21 @@ namespace wink
             for( const couple *J=head;J;J=J->next)
             {
                 const size_t j = J->first;
-                if( j != i )
-                {
-                    const size_t sig_j = J->second; assert( sig_j < M.cols);
-                    count -= M[i][sig_j];
-                }
+                // if( j != i ) {
+                const size_t sig_j = J->second; assert( sig_j < M.cols);
+                count -= M[i][sig_j];
+                //}
             }
         }
-        return count;        
+        
+        
+        return count;
     }
     
     count_t neurons:: true_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta)
     {
         assert(N1.trials==N2.trials);
-
+        
         //----------------------------------------------------------------------
         //
         // initialize all windows and
