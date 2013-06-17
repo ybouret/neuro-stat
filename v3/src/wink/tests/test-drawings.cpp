@@ -53,6 +53,8 @@ int main(int argc, char *argv[] )
         DefaultUniformGenerator ran;
         ran.seed( WallTime::Seed() );
         drawing drw;
+		
+		std::cerr << "Identity" << std::endl;
         for(size_t i=0; i < 10; ++i )
         {
 			drw.identity(10);
@@ -60,13 +62,16 @@ int main(int argc, char *argv[] )
         std::cerr << "drw=" << drw << std::endl;
         std::cerr << std::endl;
         
+		
+		std::cerr << "Permutation" << std::endl;
         for( size_t i=0; i < 10; ++i )
         {
             drw.permutation(10,ran);
             std::cerr << "drw=" << drw << std::endl;
         }
-        
         std::cerr << std::endl;
+		
+		std::cerr << "Replacement" <<std::endl;
         for( size_t i=0; i < 10; ++i )
         {
             drw.replacement(10,ran);
@@ -74,6 +79,15 @@ int main(int argc, char *argv[] )
         }
         std::cerr << std::endl;
 
+		std::cerr << "Bootstrap" <<std::endl;
+        for( size_t i=0; i < 10; ++i )
+        {
+            drw.bootstrap2(10,ran);
+            std::cerr << "drw=" << drw << std::endl;
+        }
+        std::cerr << std::endl;
+		
+		
         
         perform( drw, ran );
         
