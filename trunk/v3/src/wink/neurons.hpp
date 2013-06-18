@@ -36,7 +36,6 @@ namespace wink
         DefaultUniformGenerator ran; //!< own random number generator
         C_Matrix<count_t>       M;   //!< matrix of precomputed coincidences
         
-                
        
         
         //! compute p_values for a given statistic

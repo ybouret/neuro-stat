@@ -93,6 +93,7 @@ namespace wink
                 M[i][j] = N1[i].coincidences_with(N2[j], delta);
             }
         }
+        //std::cerr << "CorrMat=" << M << std::endl;
     }
     
     
@@ -111,28 +112,44 @@ namespace wink
     
     count_t neurons:: coincidences_H() const throw()
     {
-        count_t       count  = 0;
+        assert(this->size>0);
         const count_t n      = count_t(this->size); //!< #couples
-        const count_t n1     = n-1;
-        for( const couple *I = head;I;I=I->next)
+        
+        //----------------------------------------------------------------------
+        // build the index arrays
+        //----------------------------------------------------------------------
+        C_Array<size_t> v(n<<1);
+        size_t *c1 = &v[0];
+        size_t *c2 = c1+n;
+        
+        unsigned idx = 0;
+        for( const couple *c = head; c; c=c->next, ++idx )
         {
-            
-            const size_t   i      = I->first;   assert(i<M.rows);
-            const size_t   sig_i  = I->second;  assert(sig_i<M.cols);
-            count += n1 * M[i][sig_i];
-            
-            for( const couple *J=head;J;J=J->next)
+            c1[idx] = c->first;  assert(c->first<M.rows);
+            c2[idx] = c->second; assert(c->second<M.cols);
+        }
+        
+        //----------------------------------------------------------------------
+        // compute H from the correlation matrix
+        //----------------------------------------------------------------------
+        count_t direct  = 0;
+        count_t crossed = 0;
+        for(count_t i=0; i < n; ++i )
+        {
+            const count_t c1i = c1[i];
+            direct += M[c1i][c2[i]];
+            for(count_t j=0;j<n;++j)
             {
-                const size_t j = J->first;
-                // if( j != i ) {
-                const size_t sig_j = J->second; assert( sig_j < M.cols);
-                count -= M[i][sig_j];
-                //}
+                if(i!=j)
+                {
+                    crossed += M[c1i][c2[j]];
+                }
             }
         }
         
+        return 2 * ( (n-1) * direct - crossed);
         
-        return count;
+     
     }
     
     count_t neurons:: true_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta)
