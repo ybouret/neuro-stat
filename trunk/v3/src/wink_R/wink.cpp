@@ -1,6 +1,6 @@
-#include "../pyck/R++.hpp"
 #include "../wink/neurons.hpp"
 #include "../pyck/wtime.hpp"
+#include "../pyck/R++.hpp"
 
 using namespace wink;
 
