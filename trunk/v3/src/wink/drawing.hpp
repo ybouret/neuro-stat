@@ -70,9 +70,10 @@ namespace wink
         
         //! trial shuffle
         /**
-         
+         couple->first  = random([0..n-1])
+         couple->second = random([0..n-1]) != couple->first
          */
-        void trial_shuffle(size_t n, UniformGenerator &ran );
+        void trial_shuffling(size_t n, UniformGenerator &ran );
         
         //! display, for debugging
         friend std::ostream & operator<<( std::ostream &, const drawing & );

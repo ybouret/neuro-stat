@@ -87,10 +87,10 @@ int main(int argc, char *argv[] )
         }
         std::cerr << std::endl;
 		
-        std::cerr << "TrialShuffle" <<std::endl;
+        std::cerr << "TrialShuffling" <<std::endl;
         for( size_t i=0; i < 10; ++i )
         {
-            drw.trial_shuffle(10,ran);
+            drw.trial_shuffling(10,ran);
             std::cerr << "drw=" << drw << std::endl;
         }
         std::cerr << std::endl;

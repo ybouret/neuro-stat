@@ -97,7 +97,7 @@ wink_permutation_pvalues <- function(S,N1,N2,intervals,delta,B,num_threads)
 ## delta:     time lag
 ## B:         number of bootstraps
 ## num_threads: 1 --> serial code, >1 --> parallel code
-## mix_name: "" --> Pn, "tau" --> tau(Pn)
+## mix_name:    "" --> Pn, "tau" --> tau(Pn), "TS" --> Trial Shuffling
 ##
 ## return: the MATRIX with row[1]= counts^-
 ##                         row[2]= counts^+
