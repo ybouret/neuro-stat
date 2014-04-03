@@ -107,18 +107,17 @@ namespace wink
         assert(size==n);
     }
     
-    void drawing:: trial_shuffle(size_t n, UniformGenerator &ran )
+    void drawing:: trial_shuffling(size_t n, UniformGenerator &ran )
     {
         clear();
-        const size_t n1 = n-1;
         for( size_t i=0; i < n; ++i)
         {
             couple *cpl = query();
-            cpl->first  = 1 + ran.lt(n1); // [1..n-1]
+            cpl->first  = ran.lt(n); // [0..n-1]
             cpl->second = cpl->first;
             while(cpl->second==cpl->first)
             {
-                cpl->second = 1 + ran.lt(n1); // [1..n-1]
+                cpl->second = ran.lt(n);
             }
             push_back(cpl);
         }

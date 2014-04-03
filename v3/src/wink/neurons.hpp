@@ -23,7 +23,8 @@ namespace wink
     {
         mix_perm,
         mix_repl,
-        mix_boot
+        mix_boot,
+        mix_shuf
     };
     
     //! inherits from drawing.

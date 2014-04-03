@@ -514,6 +514,11 @@ mix_method __parse_mix( SEXP Rmix )
         return mix_repl;
     }
     
+    if( 0 == strcmp("TS",mix_name) )
+    {
+        return mix_shuf;
+    }
+    
     throw Exception("Invalid mix_name=%s",mix_name);
 }
 
