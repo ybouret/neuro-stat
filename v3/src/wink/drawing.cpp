@@ -107,6 +107,25 @@ namespace wink
         assert(size==n);
     }
     
+    void drawing:: trial_shuffle(size_t n, UniformGenerator &ran )
+    {
+        clear();
+        const size_t n1 = n-1;
+        for( size_t i=0; i < n; ++i)
+        {
+            couple *cpl = query();
+            cpl->first  = 1 + ran.lt(n1); // [1..n-1]
+            cpl->second = cpl->first;
+            while(cpl->second==cpl->first)
+            {
+                cpl->second = 1 + ran.lt(n1); // [1..n-1]
+            }
+            push_back(cpl);
+        }
+        assert(size==n);
+    }
+
+    
     std::ostream & operator<<( std::ostream &os, const drawing &d)
     {
         os << "{";
