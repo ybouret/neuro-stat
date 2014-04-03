@@ -42,6 +42,10 @@ namespace wink
         void reserve( size_t n );
         
         //!identity drawing
+        /**
+         couple->first = [0..n-1]
+         couple->second = couple->first
+         */
         void identity( size_t n );
         
         //! drawing without replacement
@@ -63,6 +67,12 @@ namespace wink
          couple->first = couple->second = random([0..n-1])
          */
         void bootstrap2(size_t n, UniformGenerator &ran );
+        
+        //! trial shuffle
+        /**
+         
+         */
+        void trial_shuffle(size_t n, UniformGenerator &ran );
         
         //! display, for debugging
         friend std::ostream & operator<<( std::ostream &, const drawing & );
