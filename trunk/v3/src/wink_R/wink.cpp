@@ -753,3 +753,72 @@ SEXP wink_single_boot(SEXP RN1,
     return R_NilValue;
 }
 
+
+extern "C"
+SEXP wink_single_TS(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RB)
+{
+    try
+    {
+        
+        //----------------------------------------------------------------------
+        //-- parse arguments
+        //----------------------------------------------------------------------
+        const RMatrix<double> M1(RN1);
+        RNeuron               N1(M1);
+        const RMatrix<double> M2(RN2);
+        RNeuron               N2(M2);
+        const double          a     = R2Scalar<double>(Ra);
+        const double          b     = R2Scalar<double>(Rb);
+        const double          delta = R2Scalar<double>(Rdelta);
+        const size_t          nb    = R2Scalar<int>(RB);
+        neurons              &xp    = shared_neurons();
+        const statistic_value  S    = __check_stat_val(Ropt);
+        
+        //----------------------------------------------------------------------
+        //-- initialize window
+        //----------------------------------------------------------------------
+        const count_t    T = xp.true_coincidences( S, N1, N2, a, b, delta);
+        C_Array<count_t> Tp(nb);
+        
+        //----------------------------------------------------------------------
+        //-- mix'em all, trial shuffling style
+        //----------------------------------------------------------------------
+        xp.eval_coincidences(S,Tp,mix_shuf);
+        
+        
+        //----------------------------------------------------------------------
+        //-- sort
+        //----------------------------------------------------------------------
+        Sort( &Tp[0], nb );
+        
+        //----------------------------------------------------------------------
+        //-- make a list S/Sp
+        //----------------------------------------------------------------------
+        const char *names[] = { "S", "Sts" };
+        
+        //-- first element: Satistic Value
+        RVector<double> rT(1);
+        rT[0] = T;
+        
+        //-- second element: Permutation Counts
+        RVector<double> rTp(nb);
+        for( size_t j=0; j < nb; ++j )
+            rTp[j] = double( Tp[j] );
+        
+        RList L(names,sizeof(names)/sizeof(names[0]));
+        L.set(0,rT);
+        L.set(1,rTp);
+        return *L;
+        
+    }
+    catch( const Exception &e )
+    {
+        Rprintf("*** wink_single_TS: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("*** unhanled exception in wink_single_TS\n");
+    }
+    return R_NilValue;
+}
+

@@ -55,7 +55,7 @@ namespace wink
          */
         void permutation( size_t n, UniformGenerator &ran );
         
-        //! drawing with replacement
+        //! drawing with replacement (marginal)
         /**
          couple->first  = random([0..n-1])
          couple->second = random([0..n-1])
@@ -83,6 +83,7 @@ namespace wink
         couple::pool    pool;
         drawing(const drawing &);
         drawing&operator=(const drawing &);
+        
     public:
         C_Array<size_t> arr; //!< for fast permutations
     };
