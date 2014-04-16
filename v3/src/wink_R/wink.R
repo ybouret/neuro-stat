@@ -154,7 +154,7 @@ wink_single_perm <- function(S,N1,N2,a,b,delta,B)
 ## b    : window end
 ## delta: time lag
 ## B    : bootstrap count
-## mix_name: "" --> Pn, "tau" --> tau(Pn)
+## mix_name: "" --> Pn, "tau" --> tau(Pn), "TS" --> Trial Shuffling
 ##
 ########################################################################
 wink_single_boot <- function(N1,N2,a,b,delta,B,mix_name="")
@@ -166,5 +166,31 @@ wink_single_boot <- function(N1,N2,a,b,delta,B,mix_name="")
     if( !is.double(delta)) stop("delta must be a real");
     if( !is.double(B) )    stop("B must be a real");
     .Call("wink_single_boot",N1,N2,a,b,delta,B,mix_name);
+}
+
+########################################################################
+##
+## return a list L with: L$S = S(N1,N2) and L$Sts = S^*(N1,N2) (SORTED)
+## for B iterations and S="T" or S="H"
+##
+##
+## S    : "T" or "H:
+## N1   :first Neuron
+## N2   : second Neuron
+## a    : window start
+## b    : window end
+## delta: time lag
+## B    : number of iterations
+##
+########################################################################
+wink_single_TS <- function(S,N1,N2,a,b,delta,B)
+{
+    if( !is.matrix(N1) )       stop("N1 must be a matrix");
+    if( !is.matrix(N2) )       stop("N2 must be a matrix");
+    if( !is.double(delta) )    stop("delta must be a real");
+    if( !is.double(a) )        stop("delta must be a real");
+    if( !is.double(b) )        stop("delta must be a real");
+    if( !is.double(B) )        stop("B must be a real");
+    .Call("wink_single_TS",S,N1,N2,a,b,delta,B);
 }
 

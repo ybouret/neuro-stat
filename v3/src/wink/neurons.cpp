@@ -148,11 +148,14 @@ namespace wink
         }
         
         return 2 * ( (n-1) * direct - crossed);
-        
-     
     }
     
-    count_t neurons:: true_coincidences(  statistic_value S, neuron &N1, neuron &N2, const double a, const double b, const double delta)
+    count_t neurons:: true_coincidences(statistic_value S,
+                                        neuron         &N1,
+                                        neuron         &N2,
+                                        const double    a,
+                                        const double    b,
+                                        const double    delta)
     {
         assert(N1.trials==N2.trials);
         
