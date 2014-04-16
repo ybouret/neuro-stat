@@ -35,10 +35,11 @@ TS_H=wink_single_TS("H",neurons[[1]],neurons[[2]],0.1,0.1+window_width,delta,B);
 count_plus_TS_H  = sum(TS_H$Sts>=TS_H$S);
 count_minus_TS_H = sum(TS_H$Sts<=TS_H$S);
 plot.ecdf(TS_H$Sts);
+print(TS_H$centering);
 
 TS_T=wink_single_TS("T",neurons[[1]],neurons[[2]],0.1,0.1+window_width,delta,B);
 
 count_plus_TS_T  = sum(TS_T$Sts>=TS_T$S);
 count_minus_TS_T = sum(TS_T$Sts<=TS_T$S);
 plot.ecdf(TS_T$Sts);
-
+print(TS_T$centering);

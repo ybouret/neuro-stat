@@ -794,7 +794,7 @@ SEXP wink_single_TS(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta
         //----------------------------------------------------------------------
         //-- make a list S/Sp
         //----------------------------------------------------------------------
-        const char *names[] = { "S", "Sts" };
+        const char *names[] = { "S", "Sts","centering" };
         
         //-- first element: Satistic Value
         RVector<double> rT(1);
@@ -805,9 +805,27 @@ SEXP wink_single_TS(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta
         for( size_t j=0; j < nb; ++j )
             rTp[j] = double( Tp[j] );
         
+        //--
+        C_Matrix<count_t> &M = xp.M;
+        count_t ncross = 0;
+        for(size_t i=0;i<M.rows;++i)
+        {
+            for(size_t j=0;j<M.cols;++j)
+            {
+                if(i!=j)
+                {
+                    ncross += M[i][j];
+                }
+            }
+        }
+        
+        RVector<double> centering(1);
+        centering[0] = double(ncross);
+        
         RList L(names,sizeof(names)/sizeof(names[0]));
         L.set(0,rT);
         L.set(1,rTp);
+        L.set(2,centering);
         return *L;
         
     }
