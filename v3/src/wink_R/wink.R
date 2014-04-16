@@ -171,6 +171,7 @@ wink_single_boot <- function(N1,N2,a,b,delta,B,mix_name="")
 ########################################################################
 ##
 ## return a list L with: L$S = S(N1,N2) and L$Sts = S^*(N1,N2) (SORTED)
+## and L$centering = the_centering_value
 ## for B iterations and S="T" or S="H"
 ##
 ##
