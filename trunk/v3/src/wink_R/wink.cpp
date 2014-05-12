@@ -315,7 +315,7 @@ namespace
                     //----------------------------------------------------------
                     //-- evaluate pvalues
                     //----------------------------------------------------------
-
+                    
                     xp.compute_pvalues(alpha[i][0],alpha[i][1],coinc,TrueS);
                 }
                 
@@ -378,7 +378,7 @@ namespace
                     //----------------------------------------------------------
                     xp.eval_coincidences( statistic_H, coinc, kind);
                     
-
+                    
 					//----------------------------------------------------------
                     //-- evaluate counts
                     //----------------------------------------------------------
@@ -547,7 +547,7 @@ SEXP wink_bootstrap_counts(SEXP RN1,
         RMatrix<double>        M2(RN2); __show_neuron(2,M2);
         RIntervals             intervals(RI);
         const double           delta         = R2Scalar<double>(Rdelta);
-        const size_t           B             = R2Scalar<int>(RB);        
+        const size_t           B             = R2Scalar<int>(RB);
         const mix_method       kind          = __parse_mix(Rmix);
         
         //----------------------------------------------------------------------
@@ -840,3 +840,50 @@ SEXP wink_single_TS(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta
     return R_NilValue;
 }
 
+
+extern "C"
+SEXP wink_coincmat(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta)
+{
+    try
+    {
+        
+        //----------------------------------------------------------------------
+        //-- parse arguments
+        //----------------------------------------------------------------------
+        const RMatrix<double> M1(RN1);
+        RNeuron               N1(M1);
+        const RMatrix<double> M2(RN2);
+        RNeuron               N2(M2);
+        const double          a     = R2Scalar<double>(Ra);
+        const double          b     = R2Scalar<double>(Rb);
+        const double          delta = R2Scalar<double>(Rdelta);
+        neurons              &xp    = shared_neurons();
+        
+        
+        xp.initialize_correlations(N1,N2,a,b,delta);
+        C_Matrix<count_t> &M = xp.M;
+        
+        M.save_ascii("cm.dat");
+        
+        RMatrix<double>  RM(M.rows,M.cols);
+        for(size_t i=0;i<M.rows;++i)
+        {
+            for(size_t j=0;j<M.cols;++j)
+            {
+                RM[j][i] = double(M[i][j]);
+            }
+            
+        }
+        
+        return *RM;
+    }
+    catch( const Exception &e )
+    {
+        Rprintf("*** wink_coincmat: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("*** unhanled exception in wink_coincmat\n");
+    }
+    return R_NilValue;
+}
