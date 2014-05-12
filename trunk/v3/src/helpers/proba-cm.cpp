@@ -6,6 +6,7 @@
 #include "yocto/string/conv.hpp"
 #include "yocto/ordered/sorted-vector.hpp"
 #include "yocto/associative/map.hpp"
+#include "yocto/mpa/rational.hpp"
 
 using namespace yocto;
 using namespace math;
@@ -15,6 +16,9 @@ typedef vector<count_t>        ivector_t;
 typedef matrix<count_t>        imatrix_t;
 typedef sorted_vector<count_t> isorted_t;
 typedef map<count_t,count_t>   imap_t;
+typedef vector<mpq>            qvector_t;
+
+
 
 static inline
 bool get_next_line( string &line, ios::istream &fp )
@@ -91,26 +95,66 @@ void build_classes(isorted_t       &lam,
     
 }
 
+class Context
+{
+public:
+    
+    explicit Context() {}
+    virtual ~Context() throw() {}
+    
+    imatrix_t A;    //!< matrix of coincidences
+    size_t    M;    //!< matrix size
+    isorted_t lam;  //!< all the different #coincidences
+    ivector_t num;   //!< #occurences of lambda
+    size_t    nmax;  //!< lam/num size
+    qvector_t prob;  //!< single proba
+    
+    bool get_next( ios::istream &fp )
+    {
+        if( load_matrix(A,fp) )
+        {
+            M = A.rows;
+            build_classes(lam, num, A);
+            nmax = lam.size();
+            prob.free();
+            prob.ensure(nmax);
+            const size_t __den = M * (M-1);
+            for(size_t i=1;i<=nmax;++i)
+            {
+                const mpq p(num[i],__den);
+                prob.push_back(p);
+            }
+            std::cerr << "prob=" << prob << std::endl;
+            mpq sum;
+            for(size_t i=1;i<=nmax;++i)
+            {
+                sum += prob[i];
+            }
+            return true;
+        }
+        else
+            return false;
+        
+    }
+    
+private:
+    
+};
+
+
 
 int main(int argc, char *argv[] )
 {
     const char *progname = vfs::get_base_name(argv[0]);
     try
     {
-        imatrix_t M;
-        isorted_t lam;
-        ivector_t num;
+        Context ctx;
         for(int iarg=1;iarg<argc;++iarg)
         {
             const string  fn = argv[iarg];
             ios::icstream fp(fn);
-            while(load_matrix(M,fp))
+            while( ctx.get_next(fp) )
             {
-                std::cerr << "loaded " << M.rows << "x" << M.cols << " matrix..." << std::endl;
-                build_classes(lam,num,M);
-                const size_t nmax = lam.size();
-                if(!nmax)
-                    continue;
             }
         }
         
