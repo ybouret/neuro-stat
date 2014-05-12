@@ -11,5 +11,7 @@ INCLUDE(../../share/rules.cmake)
 ADD_SUBDIRECTORY(pyck)
 ADD_SUBDIRECTORY(wink)
 ADD_SUBDIRECTORY(wink_R)
+ADD_SUBDIRECTORY(helpers)
+
 
 

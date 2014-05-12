@@ -56,7 +56,7 @@ namespace wink
                             const count_t           Tcoinc) const throw();
         
         
-        //! prepare the neurons for window [a,b] and fill the diagonal part of the count matrix.
+        //! prepare the neurons for window [a,b] and fill the count matrix.
         /**
          \param N1 first  neuron
          \param N2 second neuron

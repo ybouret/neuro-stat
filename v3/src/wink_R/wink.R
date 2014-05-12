@@ -189,9 +189,23 @@ wink_single_TS <- function(S,N1,N2,a,b,delta,B)
     if( !is.matrix(N1) )       stop("N1 must be a matrix");
     if( !is.matrix(N2) )       stop("N2 must be a matrix");
     if( !is.double(delta) )    stop("delta must be a real");
-    if( !is.double(a) )        stop("delta must be a real");
-    if( !is.double(b) )        stop("delta must be a real");
+    if( !is.double(a) )        stop("a must be a real");
+    if( !is.double(b) )        stop("b must be a real");
     if( !is.double(B) )        stop("B must be a real");
     .Call("wink_single_TS",S,N1,N2,a,b,delta,B);
 }
 
+########################################################################
+##
+## return the coincidence matrix
+##
+########################################################################
+wink_coincmat <- function(N1,N2,a,b,delta)
+{
+    if( !is.matrix(N1) )       stop("N1 must be a matrix");
+    if( !is.matrix(N2) )       stop("N2 must be a matrix");
+    if( !is.double(delta) )    stop("delta must be a real");
+    if( !is.double(a) )        stop("a must be a real");
+    if( !is.double(b) )        stop("b must be a real");
+    .Call("wink_coincmat",N1,N2,a,b,delta);
+}
