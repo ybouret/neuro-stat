@@ -54,7 +54,18 @@ class Context
 {
 public:
     
-    explicit Context() : A(), M(0), lam(), num(), nmax(0), ratio(), lmin(0), lmax(0){}
+    explicit Context() :
+    A(),
+    M(0),
+    lam(),
+    num(),
+    nmax(0),
+    ratio(),
+    lmin(0),
+    lmax(0),
+    cmax(0)
+    {}
+    
     virtual ~Context() throw() {}
     
     imatrix_t A;      //!< matrix of coincidences
@@ -65,6 +76,7 @@ public:
     qvector_t ratio;  //!< single proba
     count_t   lmin;
     count_t   lmax;
+    count_t   cmax;
     
     bool get_next( ios::istream &fp )
     {
@@ -136,13 +148,18 @@ private:
         {
             throw exception("unexpected sum of ratio failure");
         }
-
+        
         
         std::cerr << "lam=" << lam << std::endl;
         std::cerr << "num="  << num << std::endl;
         std::cerr << "ratio=" << ratio << std::endl;
 
-        
+        lmin = lam[1];
+        lmax = lam[nmax];
+        cmax = lmax * M;
+        std::cerr << "lambda_min=" << lmin << std::endl;
+        std::cerr << "lambda_max=" << lmax << std::endl;
+        std::cerr << "max_coinc =" << cmax << std::endl;
     }
     
     
