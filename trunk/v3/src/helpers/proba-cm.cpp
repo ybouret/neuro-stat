@@ -66,7 +66,14 @@ public:
     lmin(0),
     lmax(0),
     cmax(0),
-    Proba()
+    pdf(),
+    cdf(),
+    socks(0),
+    drawers(0),
+    meta(0),
+    walls(0),
+    wall(),
+    factM()
     {}
     
     virtual ~Context() throw() {}
@@ -81,13 +88,15 @@ public:
     count_t        lmin;
     count_t        lmax;
     count_t        cmax;
-    qvector_t      Proba;
+    qvector_t      pdf;
+    qvector_t      cdf;
     size_t         socks;
     size_t         drawers;
     size_t         meta;
     size_t         walls;
     vector<size_t> wall;
     mpn            factM;
+    vector<double> rcdf;
     
     bool get_next( ios::istream &fp )
     {
@@ -170,6 +179,7 @@ private:
             throw exception("unexpected sum of ratio failure");
         }
         
+        std::cerr << "M       = " << M      << std::endl;
         std::cerr << "nu      = " << nu     << std::endl;
         std::cerr << "lambda  = " << lambda << std::endl;
         std::cerr << "occurs  = " << occurs << std::endl;
@@ -178,11 +188,12 @@ private:
         lmin = lambda[1];
         lmax = lambda[nu];
         cmax = lmax * M;
-        std::cerr << "lambda_min=" << lmin << std::endl;
-        std::cerr << "lambda_max=" << lmax << std::endl;
-        std::cerr << "max_coinc =" << cmax << std::endl;
+        std::cerr << "lambda_min = " << lmin << std::endl;
+        std::cerr << "lambda_max = " << lmax << std::endl;
+        std::cerr << "max_coinc  = " << cmax << std::endl;
         mpq zero;
-        Proba.make(cmax+1,zero);
+        pdf.make(cmax+1,zero);
+        cdf.make(cmax+1,zero);
     }
     
     //__________________________________________________________________________
@@ -204,51 +215,55 @@ private:
         mpn nk;
         do
         {
-            gen_kappa(C);
-            ++nk;
+            gen_kappa(C,nk);
             update_proba();
         }
         while( C.next() );
         
+        std::cerr << std::endl;
         std::cerr << "generated " << nk << "/" << combi << std::endl;
-        std::cerr << "Proba=" << Proba << std::endl;
-        mpq sum;
-        for(size_t i=1;i<=Proba.size();++i)
+        std::cerr << "pdf=" << pdf << std::endl;
+        cdf[1] = pdf[1];
+        for(size_t i=2;i<=pdf.size();++i)
         {
-            sum += Proba[i];
+            cdf[i] = cdf[i-1] + pdf[i];
         }
-        std::cerr << "sum=" << sum << std::endl;
+        std::cerr << "cdf=" << cdf << std::endl;
+        const mpq &sum = cdf.back();
+        if( !(sum.num==1&&sum.den==1) )
+            throw exception("error in probabilities!");
         
-        std::cerr << "nu      = " << nu     << std::endl;
-        std::cerr << "lambda  = " << lambda << std::endl;
-        std::cerr << "occurs  = " << occurs << std::endl;
-        std::cerr << "ratio   = " << ratio  << std::endl;
-        std::cerr << "lambda_min=" << lmin << std::endl;
-        std::cerr << "lambda_max=" << lmax << std::endl;
-        std::cerr << "max_coinc =" << cmax << std::endl;
+        rcdf.make(cdf.size(), 0);
+        for(size_t i=1;i<=cdf.size();++i)
+        {
+            rcdf[i] = cdf[i].to_double();
+        }
+        std::cerr << "rcdf=" << rcdf << std::endl;
     }
     
     
-    
-    
-    inline void gen_kappa( const combination &C )
+    inline void gen_kappa( const combination &C, mpn &nk)
     {
         for(size_t j=0,i=1;i<=walls;++i,++j)
         {
             wall[i] = C[j]+1;
         }
         kappa[1] = wall[1]-1;
-        for(size_t i=2;i<=walls;++i)
+        for(size_t i=2,j=1;i<=walls;++i,++j)
         {
-            kappa[i] = (wall[i] - wall[i-1])-1;
+            kappa[i] = (wall[i] - wall[j])-1;
         }
-        kappa[nu] = meta - wall[walls];
+        kappa[nu]  = meta - wall[walls];
         size_t sum = 0;
         for(size_t i=1;i<=nu;++i)
         {
             sum += kappa[i];
         }
-        std::cerr << "kappa=" << kappa << " / sum=" << sum << "/" << M << std::endl;
+        if(sum!=M)
+            throw exception("invalid combination!");
+        ++nk;
+        std::cerr << "kappa=" << kappa << " #" << nk << "  \r";
+        std::cerr.flush();
     }
     
     inline void update_proba()
@@ -263,8 +278,7 @@ private:
             proba /= mpn::factorial( kappa[i] );
         }
         
-        //std::cerr << "#coinc=" << ncoinc << std::endl;
-        Proba[ncoinc+1] += proba;
+        pdf[ncoinc+1] += proba;
     }
     
 };
