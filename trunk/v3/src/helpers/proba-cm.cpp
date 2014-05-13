@@ -87,6 +87,7 @@ public:
     size_t         meta;
     size_t         walls;
     vector<size_t> wall;
+    mpn            factM;
     
     bool get_next( ios::istream &fp )
     {
@@ -98,7 +99,6 @@ public:
         }
         else
             return false;
-        
     }
     
 private:
@@ -143,6 +143,7 @@ private:
         occurs.ensure(nu);
         ratio.ensure(nu);
         kappa.ensure(nu);
+        factM = mpn::factorial(M);
         
         for( imap_t::iterator i = dict.begin();i!=dict.end();++i)
         {
@@ -200,16 +201,31 @@ private:
         wall.make(walls,0);
         combination C(meta,walls);
         
-        
         mpn nk;
         do
         {
             gen_kappa(C);
             ++nk;
+            update_proba();
         }
         while( C.next() );
         
         std::cerr << "generated " << nk << "/" << combi << std::endl;
+        std::cerr << "Proba=" << Proba << std::endl;
+        mpq sum;
+        for(size_t i=1;i<=Proba.size();++i)
+        {
+            sum += Proba[i];
+        }
+        std::cerr << "sum=" << sum << std::endl;
+        
+        std::cerr << "nu      = " << nu     << std::endl;
+        std::cerr << "lambda  = " << lambda << std::endl;
+        std::cerr << "occurs  = " << occurs << std::endl;
+        std::cerr << "ratio   = " << ratio  << std::endl;
+        std::cerr << "lambda_min=" << lmin << std::endl;
+        std::cerr << "lambda_max=" << lmax << std::endl;
+        std::cerr << "max_coinc =" << cmax << std::endl;
     }
     
     
@@ -235,6 +251,21 @@ private:
         std::cerr << "kappa=" << kappa << " / sum=" << sum << "/" << M << std::endl;
     }
     
+    inline void update_proba()
+    {
+        size_t ncoinc = 0;
+       
+        mpq    proba  = factM;
+        for(size_t i=1;i<=nu;++i)
+        {
+            ncoinc += lambda[i] * kappa[i];
+            proba *= mpq::power(ratio[i], kappa[i]);
+            proba /= mpn::factorial( kappa[i] );
+        }
+        
+        //std::cerr << "#coinc=" << ncoinc << std::endl;
+        Proba[ncoinc+1] += proba;
+    }
     
 };
 
