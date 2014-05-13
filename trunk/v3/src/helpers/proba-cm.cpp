@@ -61,9 +61,11 @@ public:
     num(),
     nmax(0),
     ratio(),
+    idx(),
     lmin(0),
     lmax(0),
-    cmax(0)
+    cmax(0),
+    Proba()
     {}
     
     virtual ~Context() throw() {}
@@ -74,9 +76,11 @@ public:
     ivector_t num;    //!< #occurences of lambda
     size_t    nmax;   //!< lam/num size
     qvector_t ratio;  //!< single proba
+    ivector_t idx;    //!< indices to build proba
     count_t   lmin;
     count_t   lmax;
     count_t   cmax;
+    qvector_t Proba;
     
     bool get_next( ios::istream &fp )
     {
@@ -91,12 +95,19 @@ public:
     }
     
 private:
+    
+    //__________________________________________________________________________
+    //
+    // build all useful information to perform the computation
+    //__________________________________________________________________________
+
     inline void build_classes()
     {
         M = A.rows;
         lam.free();
         num.free();
         ratio.free();
+        idx.free();
         imap_t dict;
         
         for(size_t i=1;i<=M;++i)
@@ -124,6 +135,7 @@ private:
         lam.ensure(nmax);
         num.ensure(nmax);
         ratio.ensure(nmax);
+        idx.ensure(nmax);
         
         for( imap_t::iterator i = dict.begin();i!=dict.end();++i)
         {
@@ -149,10 +161,10 @@ private:
             throw exception("unexpected sum of ratio failure");
         }
         
-        
-        std::cerr << "lam=" << lam << std::endl;
-        std::cerr << "num="  << num << std::endl;
-        std::cerr << "ratio=" << ratio << std::endl;
+        std::cerr << "nmax = " << nmax  << std::endl;
+        std::cerr << "lam  = " << lam   << std::endl;
+        std::cerr << "num  = " << num   << std::endl;
+        std::cerr << "ratio= " << ratio << std::endl;
 
         lmin = lam[1];
         lmax = lam[nmax];
@@ -160,7 +172,15 @@ private:
         std::cerr << "lambda_min=" << lmin << std::endl;
         std::cerr << "lambda_max=" << lmax << std::endl;
         std::cerr << "max_coinc =" << cmax << std::endl;
+        mpq zero;
+        Proba.make(cmax+1,zero);
     }
+    
+    //__________________________________________________________________________
+    //
+    // combinatorics...
+    //__________________________________________________________________________
+
     
     
 };
