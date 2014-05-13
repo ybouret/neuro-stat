@@ -4,9 +4,9 @@
 #include "yocto/math/kernel/matrix.hpp"
 #include "yocto/ios/icstream.hpp"
 #include "yocto/string/conv.hpp"
-#include "yocto/ordered/sorted-vector.hpp"
 #include "yocto/associative/map.hpp"
 #include "yocto/mpa/rational.hpp"
+#include "yocto/sort/quick.hpp"
 
 using namespace yocto;
 using namespace math;
@@ -14,7 +14,6 @@ using namespace math;
 typedef ptrdiff_t              count_t;
 typedef vector<count_t>        ivector_t;
 typedef matrix<count_t>        imatrix_t;
-typedef sorted_vector<count_t> isorted_t;
 typedef map<count_t,count_t>   imap_t;
 typedef vector<mpq>            qvector_t;
 
@@ -55,22 +54,23 @@ class Context
 {
 public:
     
-    explicit Context() {}
+    explicit Context() : A(), M(0), lam(), num(), nmax(0), ratio(), lmin(0), lmax(0){}
     virtual ~Context() throw() {}
     
     imatrix_t A;      //!< matrix of coincidences
     size_t    M;      //!< matrix size
-    isorted_t lam;    //!< all the different #coincidences
+    ivector_t lam;    //!< all the different #coincidences
     ivector_t num;    //!< #occurences of lambda
     size_t    nmax;   //!< lam/num size
     qvector_t ratio;  //!< single proba
+    count_t   lmin;
+    count_t   lmax;
     
     bool get_next( ios::istream &fp )
     {
         if( load_matrix(A,fp) )
         {
             build_classes();
-            compute_ratios();
             return true;
         }
         else
@@ -84,6 +84,7 @@ private:
         M = A.rows;
         lam.free();
         num.free();
+        ratio.free();
         imap_t dict;
         
         for(size_t i=1;i<=M;++i)
@@ -110,28 +111,22 @@ private:
         nmax = dict.size();
         lam.ensure(nmax);
         num.ensure(nmax);
+        ratio.ensure(nmax);
+        
         for( imap_t::iterator i = dict.begin();i!=dict.end();++i)
         {
             const count_t k = i->key;
-            if(!lam.insert(k))
-                throw exception("unexpected insert failure level-2");
+            lam.push_back(k);
             num.push_back(*i);
         }
-        std::cerr << "lam=" << lam << std::endl;
-        std::cerr << "num=" << num << std::endl;
-    }
-    
-    inline void compute_ratios()
-    {
-        ratio.free();
-        ratio.ensure(nmax);
+        co_qsort(lam, num);
         const size_t __den = M * (M-1);
         for(size_t i=1;i<=nmax;++i)
         {
             const mpq p(num[i],__den);
             ratio.push_back(p);
         }
-        std::cerr << "ratio=" << ratio << std::endl;
+        
         mpq sum;
         for(size_t i=1;i<=nmax;++i)
         {
@@ -141,7 +136,15 @@ private:
         {
             throw exception("unexpected sum of ratio failure");
         }
+
+        
+        std::cerr << "lam=" << lam << std::endl;
+        std::cerr << "num="  << num << std::endl;
+        std::cerr << "ratio=" << ratio << std::endl;
+
+        
     }
+    
     
 };
 
