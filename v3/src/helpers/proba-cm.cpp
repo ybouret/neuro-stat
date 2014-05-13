@@ -7,6 +7,7 @@
 #include "yocto/associative/map.hpp"
 #include "yocto/mpa/rational.hpp"
 #include "yocto/sort/quick.hpp"
+#include "yocto/code/combination.hpp"
 
 using namespace yocto;
 using namespace math;
@@ -74,19 +75,25 @@ public:
     size_t         M;         //!< matrix size
     ivector_t      lambda;    //!< all the different #coincidences
     ivector_t      occurs;    //!< #occurences of lambda
-    size_t         nu;        //!< lambda and occurs size: number of classes
+    size_t         nu;         //!< lambda and occurs size: number of classes
     qvector_t      ratio;     //!< single proba
     vector<size_t> kappa;     //!< indices to build proba
     count_t        lmin;
     count_t        lmax;
     count_t        cmax;
     qvector_t      Proba;
+    size_t         socks;
+    size_t         drawers;
+    size_t         meta;
+    size_t         walls;
+    vector<size_t> wall;
     
     bool get_next( ios::istream &fp )
     {
         if( load_matrix(A,fp) )
         {
             build_classes();
+            compute_proba();
             return true;
         }
         else
@@ -100,7 +107,7 @@ private:
     //
     // build all useful information to perform the computation
     //__________________________________________________________________________
-
+    
     inline void build_classes()
     {
         M = A.rows;
@@ -166,7 +173,7 @@ private:
         std::cerr << "lambda  = " << lambda << std::endl;
         std::cerr << "occurs  = " << occurs << std::endl;
         std::cerr << "ratio   = " << ratio  << std::endl;
-
+        
         lmin = lambda[1];
         lmax = lambda[nu];
         cmax = lmax * M;
@@ -184,6 +191,48 @@ private:
     inline void compute_proba()
     {
         kappa.make(nu,0);
+        socks   = M;
+        drawers = nu;
+        meta    = socks + drawers - 1;
+        walls   = drawers-1;
+        const mpn      combi   = mpn::binomial(meta,walls);
+        std::cerr << "building " << combi << " combinations" << std::endl;
+        wall.make(walls,0);
+        combination C(meta,walls);
+        
+        
+        mpn nk;
+        do
+        {
+            gen_kappa(C);
+            ++nk;
+        }
+        while( C.next() );
+        
+        std::cerr << "generated " << nk << "/" << combi << std::endl;
+    }
+    
+    
+    
+    
+    inline void gen_kappa( const combination &C )
+    {
+        for(size_t j=0,i=1;i<=walls;++i,++j)
+        {
+            wall[i] = C[j]+1;
+        }
+        kappa[1] = wall[1]-1;
+        for(size_t i=2;i<=walls;++i)
+        {
+            kappa[i] = (wall[i] - wall[i-1])-1;
+        }
+        kappa[nu] = meta - wall[walls];
+        size_t sum = 0;
+        for(size_t i=1;i<=nu;++i)
+        {
+            sum += kappa[i];
+        }
+        std::cerr << "kappa=" << kappa << " / sum=" << sum << "/" << M << std::endl;
     }
     
     
