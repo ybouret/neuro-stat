@@ -7,7 +7,7 @@
 #include "yocto/associative/map.hpp"
 #include "yocto/mpa/rational.hpp"
 #include "yocto/sort/quick.hpp"
-#include "yocto/code/combination.hpp"
+#include "yocto/counting/dispatch.hpp"
 
 using namespace yocto;
 using namespace math;
@@ -62,7 +62,6 @@ public:
     occurs(),
     nu(0),
     ratio(),
-    kappa(),
     lmin(0),
     lmax(0),
     cmax(0),
@@ -82,9 +81,8 @@ public:
     size_t         M;         //!< matrix size
     ivector_t      lambda;    //!< all the different #coincidences
     ivector_t      occurs;    //!< #occurences of lambda
-    size_t         nu;         //!< lambda and occurs size: number of classes
+    size_t         nu;        //!< lambda and occurs size: number of classes
     qvector_t      ratio;     //!< single proba
-    vector<size_t> kappa;     //!< indices to build proba
     count_t        lmin;
     count_t        lmax;
     count_t        cmax;
@@ -96,6 +94,7 @@ public:
     size_t         walls;
     vector<size_t> wall;
     mpn            factM;
+    vector<mpq>    factK;
     vector<double> rcdf;
     
     bool get_next( ios::istream &fp )
@@ -103,7 +102,7 @@ public:
         if( load_matrix(A,fp) )
         {
             build_classes();
-            compute_proba();
+            compute_proba2();
             return true;
         }
         else
@@ -119,13 +118,17 @@ private:
     
     inline void build_classes()
     {
-        M = A.rows;
+        M     = A.rows;
+        factM = mpn::factorial(M);
         lambda.free();
         occurs.free();
         ratio.free();
-        kappa.free();
         imap_t dict;
         
+        //______________________________________________________________________
+        //
+        // Get all the possible counts with their occurences
+        //______________________________________________________________________
         for(size_t i=1;i<=M;++i)
         {
             for(size_t j=1;j<=M;++j)
@@ -147,12 +150,15 @@ private:
                 }
             }
         }
+        
+        //______________________________________________________________________
+        //
+        // Register counts and their ocuurences
+        //______________________________________________________________________
         nu = dict.size();
         lambda.ensure(nu);
         occurs.ensure(nu);
         ratio.ensure(nu);
-        kappa.ensure(nu);
-        factM = mpn::factorial(M);
         
         for( imap_t::iterator i = dict.begin();i!=dict.end();++i)
         {
@@ -161,6 +167,11 @@ private:
             occurs.push_back(*i);
         }
         co_qsort(lambda, occurs);
+        
+        //______________________________________________________________________
+        //
+        // Compute the indididual proba of each occurence
+        //______________________________________________________________________
         const size_t __den = M * (M-1);
         for(size_t i=1;i<=nu;++i)
         {
@@ -168,6 +179,10 @@ private:
             ratio.push_back(p);
         }
         
+        //______________________________________________________________________
+        //
+        // Check we didn't mess up
+        //______________________________________________________________________
         mpq sum;
         for(size_t i=1;i<=nu;++i)
         {
@@ -179,6 +194,10 @@ private:
             throw exception("unexpected sum of ratio failure");
         }
         
+        //______________________________________________________________________
+        //
+        // Additional information
+        //______________________________________________________________________
         std::cerr << "M       = " << M      << std::endl;
         std::cerr << "nu      = " << nu     << std::endl;
         std::cerr << "lambda  = " << lambda << std::endl;
@@ -194,34 +213,62 @@ private:
         mpq zero;
         pdf.make(cmax+1,zero);
         cdf.make(cmax+1,zero);
+        
+        factK.free();
+        factK.ensure(M+1);
+        mpq K=1;
+        factK.push_back(K);
+        for(uint64_t i=1;i<=M;++i)
+        {
+            const mpq fK = factK.back()/int64_t(i);
+            factK.push_back(fK);
+        }
+        std::cerr << "M!   = " << factM << std::endl;
+        std::cerr << "1/K! = " << factK << std::endl;
     }
     
-    //__________________________________________________________________________
-    //
-    // combinatorics...
-    //__________________________________________________________________________
-    inline void compute_proba()
+    inline void compute_proba2()
     {
-        kappa.make(nu,0);
-        socks   = M;
-        drawers = nu;
-        meta    = socks + drawers - 1;
-        walls   = drawers-1;
-        const mpn      combi   = mpn::binomial(meta,walls);
-        std::cerr << "building " << combi << " combinations" << std::endl;
-        wall.make(walls,0);
-        combination C(meta,walls);
-        
-        mpn nk;
+        //______________________________________________________________________
+        //
+        // use a socks/drawer dispatcher
+        //______________________________________________________________________
+        dispatch D(M,nu);
+        const mpn combi = mpn::binomial(D.meta, D.walls);
+        std::cerr << "Generating " << combi << " combinations" << std::endl;
         do
         {
-            gen_kappa(C,nk);
-            update_proba();
+            //__________________________________________________________________
+            //
+            // the dispatcher contains the multiplicity of each occurence
+            //__________________________________________________________________
+            std::cerr << "k=" << D << " #" << D.id() << "  \r";
+            std::cerr.flush();
+            size_t ncoinc = 0;
+            
+            //__________________________________________________________________
+            //
+            // multinomial law
+            //__________________________________________________________________
+            mpq    proba  = factM;
+            for(size_t i=nu;i>0;--i)
+            {
+                const size_t K = D[i-1];
+                ncoinc += lambda[i] * K;
+                proba *= mpq::power(ratio[i], K);
+                proba *= factK[K+1];
+            }
+            pdf[ncoinc+1] += proba;
         }
-        while( C.next() );
-        
+        while( D.next() );
+        const mpn ngens = D.id();
         std::cerr << std::endl;
-        std::cerr << "generated " << nk << "/" << combi << std::endl;
+        std::cerr << std::endl;
+        std::cerr << "Generated " << ngens << "/" << combi << "..." << std::endl;
+        //______________________________________________________________________
+        //
+        // use a socks/drawer dispatcher
+        //______________________________________________________________________
         std::cerr << "pdf=" << pdf << std::endl;
         cdf[1] = pdf[1];
         for(size_t i=2;i<=pdf.size();++i)
@@ -232,7 +279,6 @@ private:
         const mpq &sum = cdf.back();
         if( !(sum.num==1&&sum.den==1) )
             throw exception("error in probabilities!");
-        
         rcdf.make(cdf.size(), 0);
         for(size_t i=1;i<=cdf.size();++i)
         {
@@ -241,45 +287,6 @@ private:
         std::cerr << "rcdf=" << rcdf << std::endl;
     }
     
-    
-    inline void gen_kappa( const combination &C, mpn &nk)
-    {
-        for(size_t j=0,i=1;i<=walls;++i,++j)
-        {
-            wall[i] = C[j]+1;
-        }
-        kappa[1] = wall[1]-1;
-        for(size_t i=2,j=1;i<=walls;++i,++j)
-        {
-            kappa[i] = (wall[i] - wall[j])-1;
-        }
-        kappa[nu]  = meta - wall[walls];
-        size_t sum = 0;
-        for(size_t i=1;i<=nu;++i)
-        {
-            sum += kappa[i];
-        }
-        if(sum!=M)
-            throw exception("invalid combination!");
-        ++nk;
-        std::cerr << "kappa=" << kappa << " #" << nk << "  \r";
-        std::cerr.flush();
-    }
-    
-    inline void update_proba()
-    {
-        size_t ncoinc = 0;
-       
-        mpq    proba  = factM;
-        for(size_t i=1;i<=nu;++i)
-        {
-            ncoinc += lambda[i] * kappa[i];
-            proba *= mpq::power(ratio[i], kappa[i]);
-            proba /= mpn::factorial( kappa[i] );
-        }
-        
-        pdf[ncoinc+1] += proba;
-    }
     
 };
 
@@ -301,6 +308,11 @@ int main(int argc, char *argv[] )
         }
         
         return 0;
+    }
+    catch(const exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cerr << e.when() << std::endl;
     }
     catch(...)
     {
