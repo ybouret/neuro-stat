@@ -8,6 +8,8 @@
 #include "yocto/mpa/rational.hpp"
 #include "yocto/sort/quick.hpp"
 #include "yocto/counting/dispatch.hpp"
+#include "yocto/container/tab2d.hpp"
+#include "yocto/sys/wtime.hpp"
 
 using namespace yocto;
 using namespace math;
@@ -229,6 +231,24 @@ private:
     
     inline void compute_proba2()
     {
+        
+        //______________________________________________________________________
+        //
+        // Pre-compute all the powers
+        //______________________________________________________________________
+        const mpq __qone(1);
+        Tableau2D<mpq> ratioPower(1,nu,0,M,__qone);
+        std::cerr << "Pre-computing powers..." << std::endl;
+        for(size_t i=1;i<=nu;++i)
+        {
+            const mpq           &q = ratio[i];
+            Tableau2D<mpq>::Row &R = ratioPower[i];
+            for(size_t p=1;p<=M;++p)
+            {
+                R[p] = mpq::mul(R[p-1],q);
+            }
+        }
+        
         //______________________________________________________________________
         //
         // use a socks/drawer dispatcher
@@ -236,14 +256,22 @@ private:
         dispatch D(M,nu);
         const mpn combi = mpn::binomial(D.meta, D.walls);
         std::cerr << "Generating " << combi << " combinations" << std::endl;
+        wtime chrono;
+        chrono.start();
+        double t_last = chrono.query();
         do
         {
             //__________________________________________________________________
             //
             // the dispatcher contains the multiplicity of each occurence
             //__________________________________________________________________
-            std::cerr << "k=" << D << " #" << D.id() << "  \r";
-            std::cerr.flush();
+            const double t_curr = chrono.query();
+            if(t_curr>=t_last+1)
+            {
+                std::cerr << "k=" << D << " #" << D.id() << "  \r";
+                std::cerr.flush();
+                t_last = t_curr;
+            }
             size_t ncoinc = 0;
             
             //__________________________________________________________________
@@ -255,13 +283,14 @@ private:
             {
                 const size_t K = D[i-1];
                 ncoinc += lambda[i] * K;
-                proba *= mpq::power(ratio[i], K);
+                proba *= ratioPower[i][K];
                 proba *= factK[K+1];
             }
             pdf[ncoinc+1] += proba;
         }
         while( D.next() );
         const mpn ngens = D.id();
+        
         std::cerr << std::endl;
         std::cerr << std::endl;
         std::cerr << "Generated " << ngens << "/" << combi << "..." << std::endl;
