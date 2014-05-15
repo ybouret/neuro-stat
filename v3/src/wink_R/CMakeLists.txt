@@ -35,7 +35,7 @@ ADD_CUSTOM_TARGET(wink_R ALL
 IF(EXISTS ${YOCTO_RULES})
 # eXact Trial Shuffling processing
 ADD_CUSTOM_TARGET(wink_XTS ALL
-	COMMAND ${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/${WINK_XTS_DLL} ${CMAKE_CURRENT_SOURCE_DIR}/wink_xts.cpp
+	COMMAND ${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/${WINK_XTS_DLL} ${CMAKE_CURRENT_SOURCE_DIR}/wink_xts.cpp -L${YROOT}/lib -ly-mpa -lyocto
 	COMMENT "Building eXact Trial Shuffling .Call module"
 	SOURCES wink_xts.cpp )
 ENDIF(EXISTS ${YOCTO_RULES})
