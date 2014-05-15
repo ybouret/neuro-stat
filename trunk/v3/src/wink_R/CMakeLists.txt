@@ -34,10 +34,13 @@ ADD_CUSTOM_TARGET(wink_R ALL
 
 IF(EXISTS ${YOCTO_RULES})
 # eXact Trial Shuffling processing
+FILE( WRITE ${CMAKE_CURRENT_SOURCE_DIR}/Makevars "PKG_CPPFLAGS=-I${YROOT}/include" )
 ADD_CUSTOM_TARGET(wink_XTS ALL
+    COMMAND ${CMAKE}
 	COMMAND ${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/${WINK_XTS_DLL} ${CMAKE_CURRENT_SOURCE_DIR}/wink_xts.cpp -L${YROOT}/lib -ly-mpa -lyocto
 	COMMENT "Building eXact Trial Shuffling .Call module"
-	SOURCES wink_xts.cpp )
+	SOURCES wink_xts.cpp
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 ENDIF(EXISTS ${YOCTO_RULES})
 
 ENABLE_TESTING()
