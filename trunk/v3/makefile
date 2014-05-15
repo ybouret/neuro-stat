@@ -23,6 +23,7 @@ clean:
 	@echo "-- cleaning auxiliary files"
 	@echo "-- cleaning wink_R"
 	@$(MAKE) -s -C src/wink_R clean
+	@echo "-- cleaning local binaries" && rm -Rf ./bin
 
 preclean:
 	@echo "-- removing out of sources builds" && cd forge && touch targets &&  ( ( cat targets | xargs rm -rf ) && rm -f targets )
