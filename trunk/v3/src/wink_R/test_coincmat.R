@@ -13,3 +13,5 @@ neurons <- simulPP(0,2,50,10);
 delta=0.005
 
 CM <- wink_coincmat(neurons[[1]],neurons[[2]],0,0.07,delta);
+wink_save_coincmat(CM,"cm.dat");
+

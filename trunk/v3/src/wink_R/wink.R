@@ -13,6 +13,10 @@ if( is.loaded("wink_version") ) dyn.unload(wink_dll);
 dyn.load(wink_dll)
 if( !is.loaded("wink_version") ) stop("WINK: Unable to find wink_version!");
 
+#wink_xts_dll <- paste("wink_xts",.Platform$dynlib.ext, sep="");
+#if( is.loaded("wink_xts") ) dyn.unload(wink_xts_dll);
+#dyn.load(wink_xts_dll);
+
 ################################################################################
 ##
 ## display the version
@@ -209,3 +213,11 @@ wink_coincmat <- function(N1,N2,a,b,delta)
     if( !is.double(b) )        stop("b must be a real");
     .Call("wink_coincmat",N1,N2,a,b,delta);
 }
+
+wink_save_coincmat <- function(CM,filename)
+{
+    if( !is.matrix(CM) )         stop("CM must be a matrix");
+    if( !is.character(filename)) stop("filename must be a string");
+    .Call("wink_save_coincmat",CM,filename);
+}
+
