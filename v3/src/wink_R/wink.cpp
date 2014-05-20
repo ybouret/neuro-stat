@@ -863,7 +863,7 @@ SEXP wink_coincmat(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta)
         xp.initialize_correlations(N1,N2,a,b,delta);
         C_Matrix<count_t> &M = xp.M;
         
-        M.save_ascii("cm.dat");
+        //M.save_ascii("cm.dat");
         
         RMatrix<double>  RM(M.rows,M.cols);
         for(size_t i=0;i<M.rows;++i)
@@ -887,3 +887,43 @@ SEXP wink_coincmat(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta)
     }
     return R_NilValue;
 }
+
+extern "C"
+SEXP wink_save_coincmat(SEXP RCM, SEXP Rfilename)
+{
+    try
+    {
+        
+        const RMatrix<double> CM(RCM);
+        const char *filename = R2String(Rfilename);
+        
+        FILE *fp = fopen(filename,"wb");
+        if(!fp)
+            throw Exception("can't open '%s'",filename);
+        
+        fprintf(fp,"%u\n", unsigned(CM.rows));
+        fprintf(fp,"%u\n", unsigned(CM.cols));
+        for(size_t i=0;i<CM.rows;++i)
+        {
+            for(size_t j=0;j<CM.cols;++j)
+            {
+                const RMatrix<double>::Column &col = CM[j];
+                fprintf(fp,"%u\n",unsigned(col[i]));
+            }
+        }
+        fclose(fp);
+        
+        return R_NilValue;
+    }
+    catch( const Exception &e )
+    {
+        Rprintf("*** wink_coincmat: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("*** unhanled exception in wink_coincmat\n");
+    }
+    return R_NilValue;
+
+}
+

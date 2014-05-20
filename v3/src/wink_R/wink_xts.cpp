@@ -55,10 +55,9 @@ SEXP wink_xts( SEXP RCM ) throw()
         const size_t nu = dict.size();
         Rprintf("#trials= %u\n", unsigned(M)  );
         Rprintf("#lambda= %u\n", unsigned(nu) );
-        
         //______________________________________________________________________
         //
-        // create the required lambda
+        // create the required lambda/ratio
         //______________________________________________________________________
         vector<size_t> lambda(nu,as_capacity);
         vector<mpq>    ratio(nu,as_capacity);
@@ -73,6 +72,22 @@ SEXP wink_xts( SEXP RCM ) throw()
                 ratio.push_back(proba);
             }
         }
+        dict.release();
+#if 1
+        {
+            mpq ratio_sum;
+            for(size_t i=nu;i>0;--i)
+            {
+                ratio_sum += ratio[i];
+            }
+            if( ratio_sum.num != 1 || ratio_sum.den != 1)
+                throw exception("Invalid Ratio Sum!");
+            
+        }
+#endif
+        std::cerr << "Lambda=" << lambda << std::endl;
+        std::cerr << "ratio =" << ratio  << std::endl;
+
         
         
     }

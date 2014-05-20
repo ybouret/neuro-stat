@@ -3,13 +3,16 @@
 #include "yocto/exception.hpp"
 #include "yocto/math/kernel/matrix.hpp"
 #include "yocto/ios/icstream.hpp"
+#include "yocto/ios/ocstream.hpp"
 #include "yocto/string/conv.hpp"
 #include "yocto/associative/map.hpp"
 #include "yocto/mpa/rational.hpp"
 #include "yocto/sort/quick.hpp"
 #include "yocto/counting/dispatch.hpp"
 #include "yocto/container/tab2d.hpp"
-#include "yocto/sys/wtime.hpp"
+
+#include "yocto/eta.hpp"
+#include "yocto/duration.hpp"
 
 using namespace yocto;
 using namespace math;
@@ -69,12 +72,9 @@ public:
     cmax(0),
     pdf(),
     cdf(),
-    socks(0),
-    drawers(0),
-    meta(0),
-    walls(0),
-    wall(),
-    factM()
+    factM(),
+    factK(),
+    rcdf()
     {}
     
     virtual ~Context() throw() {}
@@ -90,11 +90,6 @@ public:
     count_t        cmax;
     qvector_t      pdf;
     qvector_t      cdf;
-    size_t         socks;
-    size_t         drawers;
-    size_t         meta;
-    size_t         walls;
-    vector<size_t> wall;
     mpn            factM;
     vector<mpq>    factK;
     vector<double> rcdf;
@@ -256,22 +251,17 @@ private:
         dispatch D(M,nu);
         const mpn combi = mpn::binomial(D.meta, D.walls);
         std::cerr << "Generating " << combi << " combinations" << std::endl;
-        wtime chrono;
-        chrono.start();
-        double t_last = chrono.query();
+        eta chrono;
+        chrono.reset();
+        double t_last = chrono.now()-1000;
+        mpz I;
+        std::cerr.flush();
         do
         {
             //__________________________________________________________________
             //
             // the dispatcher contains the multiplicity of each occurence
             //__________________________________________________________________
-            const double t_curr = chrono.query();
-            if(t_curr>=t_last+1)
-            {
-                std::cerr << "k=" << D << " #" << D.id() << "  \r";
-                std::cerr.flush();
-                t_last = t_curr;
-            }
             size_t ncoinc = 0;
             
             //__________________________________________________________________
@@ -287,6 +277,24 @@ private:
                 proba *= factK[K+1];
             }
             pdf[ncoinc+1] += proba;
+            
+            ++I;
+            const mpq ratio(I,combi);
+            const double t_curr = chrono.now();
+            if(t_curr>=t_last+2)
+            {
+                chrono( ratio.to_double() );
+                const duration d( chrono.time_left );
+                std::cerr << "k=" << D << " #";
+                {
+                    const string s_count = vformat("%16llu", (unsigned long long)D.id());
+                    std::cerr << s_count;
+                }
+                std::cerr << " | ETA= " << d <<  "    \r";
+                std::cerr.flush();
+                t_last = t_curr;
+            }
+            
         }
         while( D.next() );
         const mpn ngens = D.id();
@@ -331,8 +339,15 @@ int main(int argc, char *argv[] )
         {
             const string  fn = argv[iarg];
             ios::icstream fp(fn);
-            while( ctx.get_next(fp) )
+            if( ctx.get_next(fp) )
             {
+                const string outname = fn + "_xts.txt";
+                const vector<double> &cdf = ctx.rcdf;
+                ios::ocstream         out(outname,false);
+                for(size_t i=1;i<=cdf.size();++i)
+                {
+                    out("%u %g\n", unsigned(i-1), cdf[i]);
+                }
             }
         }
         
