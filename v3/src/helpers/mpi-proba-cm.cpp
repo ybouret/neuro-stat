@@ -4,7 +4,7 @@
 #include "yocto/string/conv.hpp"
 #include "yocto/exception.hpp"
 #include "yocto/math/kernel/matrix.hpp"
-#include "yocto/mpi/mpi.hpp"
+#include "yocto/mpa/mpi.hpp"
 
 #include "yocto/mpa/rational.hpp"
 #include "yocto/associative/map.hpp"
@@ -319,17 +319,62 @@ int main(int argc, char *argv[] )
         if( done.n != length )
             throw exception("invalid combination count...");
 
-        //__________________________________________________________________
+        //______________________________________________________________________
         //
-        // reduction of rational numbers
-        //__________________________________________________________________
-        if( MPI.IsFirst )
+        // reduction of rational numbers in root
+        //______________________________________________________________________
+        if( MPI.IsParallel )
         {
-            
+            if(MPI.IsFirst)
+            {
+                for(size_t r=1;r<MPI.CommWorldSize;++r)
+                {
+                    for(size_t i=1;i<=psize;++i)
+                    {
+                        const mpq rq = mpa::mpi_io::recv_q(MPI,r,MPI_COMM_WORLD);
+                        pdf[i] += rq;
+                    }
+                }
+            }
+            else
+            {
+                for(size_t i=1;i<=psize;++i)
+                {
+                    mpa::mpi_io::send(MPI,pdf[i],0,MPI_COMM_WORLD);
+                }
+            }
         }
-        else
+        
+        //______________________________________________________________________
+        //
+        // in root: cdf, real cdf and saving...
+        //______________________________________________________________________
+        if(MPI.IsFirst)
         {
+            std::cerr << "pdf=" << pdf << std::endl;
+            qvector_t qcdf(psize,__qzero);
+            qcdf[1] = pdf[1];
+            for(size_t i=2;i<=pdf.size();++i)
+            {
+                qcdf[i] = qcdf[i-1] + pdf[i];
+            }
+            std::cerr << "qcdf=" << qcdf << std::endl;
+            const mpq &sum = qcdf.back();
+            if( !(sum.num==1&&sum.den==1) )
+                throw exception("error in probabilities!");
             
+            vector<double> cdf(psize,0);
+            for(size_t i=1;i<=psize;++i)
+            {
+                cdf[i] = qcdf[i].to_double();
+            }
+            const string outname = filename + "_xts.txt";
+            ios::ocstream         out(outname,false);
+            for(size_t i=1;i<=cdf.size();++i)
+            {
+                out("%u %g\n", unsigned(i-1), cdf[i]);
+            }
+
         }
         
         
