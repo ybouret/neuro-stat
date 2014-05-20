@@ -372,7 +372,7 @@ int main(int argc, char *argv[] )
             ios::ocstream         out(outname,false);
             for(size_t i=1;i<=cdf.size();++i)
             {
-                out("%u %g\n", unsigned(i-1), cdf[i]);
+                out("%u %.10e\n", unsigned(i-1), cdf[i]);
             }
 
         }
