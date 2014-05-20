@@ -61,7 +61,7 @@ void eta_callback( const mpi &MPI, const eta &ETA )
     const duration done(ETA.time_done);
     const duration left(ETA.time_left);
     const double   pc = ETA.ratio_done * 100.0;
-    MPI.Printf0(stderr, "%7.2f%% | %02uD%02uH%02uM%02.0f | %02uD%02uH%02uM%02.0f  \r",
+    MPI.Printf0(stderr, "%7.2f%% | %02uD%02uH%02uM%02.0fs | %02uD%02uH%02uM%02.0fs  \r",
                 pc,
                 done.d, done.h, done.m, done.s,
                 left.d, left.h, left.m, left.s);
@@ -73,7 +73,7 @@ int main(int argc, char *argv[] )
     const char *progname = vfs::get_base_name(argv[0]);
     try
     {
-        YOCTO_MPI;
+        YOCTO_MPI(SINGLE);
         MPI.CloseStdIO();
         MPI.Printf(stderr, "Starting %d.%d\n", MPI.CommWorldSize, MPI.CommWorldRank);
         
