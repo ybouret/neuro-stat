@@ -14,6 +14,11 @@ ELSE(WIN32)
         SET(YROOT $ENV{HOME}/program/yocto4/sdk)
 ENDIF(WIN32)
 
+IF(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
+	SET(ON_LINUX ON)
+ENDIF()
+
+
 SET(YOCTO_RULES ${YROOT}/share/yocto/rules.cmake)
 
 ADD_SUBDIRECTORY(pyck)

@@ -327,7 +327,7 @@ int main(int argc, char *argv[] )
         {
             if(MPI.IsFirst)
             {
-                for(size_t r=1;r<MPI.CommWorldSize;++r)
+                for(int r=1;r<MPI.CommWorldSize;++r)
                 {
                     for(size_t i=1;i<=psize;++i)
                     {
