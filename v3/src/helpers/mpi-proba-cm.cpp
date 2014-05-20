@@ -13,6 +13,8 @@
 
 #include "yocto/counting/dispatch.hpp"
 #include "yocto/core/mpi-split.hpp"
+#include "yocto/eta.hpp"
+#include "yocto/duration.hpp"
 
 using namespace yocto;
 using namespace math;
@@ -51,6 +53,19 @@ bool load_matrix( imatrix_t &M, ios::istream &fp )
     }
     
     return true;
+}
+
+static inline
+void eta_callback( const mpi &MPI, const eta &ETA )
+{
+    const duration done(ETA.time_done);
+    const duration left(ETA.time_left);
+    const double   pc = ETA.ratio_done * 100.0;
+    MPI.Printf0(stderr, "%7.2f%% | %02uD%02uH%02uM%02.0f | %02uD%02uH%02uM%02.0f  \r",
+                pc,
+                done.d, done.h, done.m, done.s,
+                left.d, left.h, left.m, left.s);
+    
 }
 
 int main(int argc, char *argv[] )
@@ -244,7 +259,10 @@ int main(int argc, char *argv[] )
         //
         // Evaluating the combinations
         //______________________________________________________________________
-        mpn done;
+        eta ETA;
+        mpz done;
+        ETA.reset();
+        double t_last = ETA.now()-1000;
         for(mpn ic;ic<length;++ic)
         {
             //__________________________________________________________________
@@ -281,10 +299,39 @@ int main(int argc, char *argv[] )
             {
                 break;
             }
+            
+            if(MPI.IsFirst)
+            {
+                const double t_curr = ETA.now();
+                if( t_curr >= t_last + 1)
+                {
+                    const mpq rr(done,length);
+                    ETA(rr.to_double());
+                    eta_callback(MPI, ETA);
+                    t_last = t_curr;
+                }
+            }
         }
-        MPI.Printf(stderr, "Done= %8u\n", done.to<unsigned>() );
-        if( done != length )
+        ETA(1);
+        eta_callback(MPI,ETA);
+        MPI.Printf0(stderr, "\n");
+        MPI.Printf0(stderr, "Synchronizing...\n");
+        if( done.n != length )
             throw exception("invalid combination count...");
+
+        //__________________________________________________________________
+        //
+        // reduction of rational numbers
+        //__________________________________________________________________
+        if( MPI.IsFirst )
+        {
+            
+        }
+        else
+        {
+            
+        }
+        
         
         return 0;
     }
