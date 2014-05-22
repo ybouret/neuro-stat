@@ -360,7 +360,7 @@ namespace
             {
                 //==============================================================
                 //
-                // Loops on my share or work...
+                // Loops on my share of work...
                 //
                 //==============================================================
                 for( size_t i=ini,j=0;j<num;++i,++j)
@@ -399,6 +399,71 @@ namespace
     private:
         WorkerBoot(const WorkerBoot &);
         WorkerBoot&operator=(const WorkerBoot &);
+    };
+    
+    
+    class WorkerTS : public Worker
+    {
+    public:
+        explicit WorkerTS(Mutex            &m,
+                          const WorkerArgs &args ) :
+        Worker(m,args)
+        {
+        }
+        
+        virtual ~WorkerTS() throw()
+        {
+            
+        }
+        
+        virtual
+        void run() throw()
+        {
+            RMatrix<double> &counts = output;
+            //const size_t     nb     = coinc.size;
+            try
+            {
+                //==============================================================
+                //
+                // Loops on my share of work...
+                //
+                //==============================================================
+                for( size_t i=ini,j=0;j<num;++i,++j)
+                {
+                    const double a = intervals[i][0];
+                    const double b = intervals[i][1];
+                    
+                    //----------------------------------------------------------
+                    //-- initialize with true coincidences
+                    //----------------------------------------------------------
+                    const size_t T  = double(xp.true_coincidences( statistic_T, N1, N2, a, b, delta));
+                    
+                    //----------------------------------------------------------
+                    //-- mix'em all, TS kind
+                    //----------------------------------------------------------
+                    xp.eval_coincidences( statistic_T, coinc, mix_shuf);
+                    
+                    
+					//----------------------------------------------------------
+                    //-- evaluate counts
+                    //----------------------------------------------------------
+                    xp.compute_counts(counts[i][0],counts[i][1],coinc,T);
+                }
+            }
+            catch( const std::exception &e )
+            {
+                Rprintf("***wink_TS_counts/thread: %\n", e.what());
+            }
+            catch (...)
+            {
+                Rprintf("*** unhandled error in wink_TS_counts/thread\n");
+            }
+        }
+        
+        
+    private:
+        WorkerTS(const WorkerTS &);
+        WorkerTS&operator=(const WorkerTS &);
     };
     
     
@@ -603,6 +668,88 @@ SEXP wink_bootstrap_counts(SEXP RN1,
     }
     return R_NilValue;
 }
+
+extern "C"
+SEXP wink_TS_counts(SEXP RN1,
+                    SEXP RN2,
+                    SEXP RI,
+                    SEXP Rdelta,
+                    SEXP RB,
+                    SEXP RNumThreads)
+{
+    try
+    {
+        //----------------------------------------------------------------------
+        //
+        // Parsing Arguments Once
+        //
+        //----------------------------------------------------------------------
+        const size_t           num_threads   = R2Scalar<int>(RNumThreads);
+        if( num_threads <= 0 )
+            throw Exception("Invalid #num_threads");
+        Rprintf("\tWINK: Bootstrap Counts [%u thread%c]\n", unsigned(num_threads), num_threads>1 ? 's' : ' ' );
+        
+        RMatrix<double>        M1(RN1); __show_neuron(1,M1);
+        RMatrix<double>        M2(RN2); __show_neuron(2,M2);
+        RIntervals             intervals(RI);
+        const double           delta         = R2Scalar<double>(Rdelta);
+        const size_t           B             = R2Scalar<int>(RB);
+        const mix_method       kind          = mix_shuf;
+        
+        //----------------------------------------------------------------------
+        //-- prepare answer
+        //-- first  row: count_minus
+        //-- second row: count_plus
+        //----------------------------------------------------------------------
+        const size_t    num  = intervals.cols;
+        RMatrix<double> counts(2,num);
+        
+        Rprintf("\tWINK: #intervals  = %6u\n", unsigned(num));
+        Rprintf("\tWINK: #bootstraps = %6u\n", unsigned(B));
+        //Rprintf("\tWINK: Mix method  = <%s>\n",R2String(Rmix));
+        
+        //----------------------------------------------------------------------
+        //
+        // Launching the team
+        //
+        //----------------------------------------------------------------------
+        WorkerArgs       args = { &M1, &M2, statistic_T, &intervals, delta, B, kind, &counts, num_threads,0 };
+        
+        if( num_threads > 1 )
+        {
+            Team<WorkerTS> team(num_threads);
+            Rprintf("\tWINK: <PARALLEL CODE>\n");
+            for(size_t i=0;i<num_threads;++i)
+            {
+                args.thread_rank = i;
+                team.enqueue( args );
+            }
+            team.finish();
+        }
+        else
+        {
+            WorkerTS worker( shared_mutex(), args );
+            Rprintf("\tWINK: <SERIAL CODE>\n");
+            worker.run();
+        }
+        //----------------------------------------------------------------------
+        //
+        // All done
+        //
+        //----------------------------------------------------------------------
+        return *counts;
+    }
+    catch( const Exception &e )
+    {
+        Rprintf("*** wink_TS_counts: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("*** unhanled exception in wink_TS_counts\n");
+    }
+    return R_NilValue;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -924,6 +1071,6 @@ SEXP wink_save_coincmat(SEXP RCM, SEXP Rfilename)
         Rprintf("*** unhanled exception in wink_coincmat\n");
     }
     return R_NilValue;
-
+    
 }
 
