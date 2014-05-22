@@ -121,6 +121,36 @@ wink_bootstrap_counts <- function(N1,N2,intervals,delta,B,num_threads,mix_name="
 
 ########################################################################
 ##
+## Evaluate bootstrap counts by Trial Shuffling
+##
+## N1:        first neuron
+## N2:        second neuron
+## intervals: matrix, two rows , each colum is [a,b]
+## delta:     time lag
+## B:         number of bootstraps
+## num_threads: 1 --> serial code, >1 --> parallel code
+##
+## return: the MATRIX with row[1]= counts^-
+##                         row[2]= counts^+
+##
+## REMARK: the drawing is always "TS"
+##
+########################################################################
+wink_TS_counts <- function(N1,N2,intervals,delta,B,num_threads)
+{
+    if( !is.matrix(N1) )         stop("N1 must be a matrix");
+    if( !is.matrix(N2) )         stop("N2 must be a matrix");
+    if( !is.matrix(intervals))   stop("intervals must be a matrix");
+    if( !is.double(delta) )      stop("delta must be a real");
+    if( !is.double(B) )          stop("B must be a real");
+    if( !is.double(num_threads)) stop("num_threads must be a real");
+    #if( !is.character(mix_name)) stop("mix must be a string");
+    .Call("wink_TS_counts",N1,N2,intervals,delta,B,num_threads);
+}
+
+
+########################################################################
+##
 ## return a list L with: L$S = S(N1,N2) and L$Sp = S^*(N1,N2) (SORTED)
 ## for B iterations and S="T" or S="H"
 ##
