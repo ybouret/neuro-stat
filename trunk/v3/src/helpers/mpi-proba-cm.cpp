@@ -73,7 +73,7 @@ int main(int argc, char *argv[] )
     const char *progname = vfs::get_base_name(argv[0]);
     try
     {
-        YOCTO_MPI(SINGLE);
+        YOCTO_MPI(MPI_THREAD_SINGLE);
         MPI.CloseStdIO();
         MPI.Printf(stderr, "Starting %d.%d\n", MPI.CommWorldSize, MPI.CommWorldRank);
         
