@@ -43,13 +43,13 @@ SEXP wink_perm( SEXP Rn )
     try
     {
         static DefaultUniformGenerator &ran = shared_neurons().ran;
-
+        
         const size_t n = R2Scalar<int>(Rn);
         if( n <= 0 )
         {
             throw Exception("required length is negative!");
         }
-
+        
         RVector<int> ans(n);
         for(size_t i=0; i<n;++i)
         {
@@ -82,7 +82,7 @@ namespace
     {
         Rprintf("\tWINK: Neuron %d | #trials=%4u | max_tops=%5u\n", id, unsigned(r.rows), unsigned(r.cols-1) );
     }
-
+    
     //! make a neuron from a R matrix
     class RNeuron :  public neuron
     {
@@ -92,12 +92,12 @@ namespace
         {
             loadR( &self[0][0], self.rows, self.cols);
         }
-
+        
         virtual ~RNeuron() throw()
         {
         }
-
-
+        
+        
     private:
         static inline
         size_t col2dat(size_t nc )
@@ -106,12 +106,12 @@ namespace
                 throw Exception("RNeuron: invalid #cols");
             return nc-1;
         }
-
+        
         RNeuron(const RNeuron &);
         RNeuron&operator=(const RNeuron &);
-
+        
     };
-
+    
     //! make intervals from R intervals argument
     class RIntervals : public RMatrix<double>
     {
@@ -122,38 +122,38 @@ namespace
             if( rows != 2 )
                 throw Exception("RIntervals: invalid #rows=%u", unsigned(rows));
         }
-
+        
         virtual ~RIntervals() throw()
         {
         }
-
+        
     private:
         RIntervals(const RIntervals &);
         RIntervals&operator=(const RIntervals &);
-
+        
     };
-
+    
     //! Validate the statistic name
     static inline
     statistic_value __check_stat_val( SEXP Rvalue )
     {
         const char *value = R2String(Rvalue);
         if(!value) throw Exception("NULL statistic_value");
-
+        
         if(strcmp(value,"T")==0)
         {
             return statistic_T;
         }
-
+        
         if(strcmp(value,"H")==0)
         {
             return statistic_H;
         }
-
+        
         throw Exception("Unknown option '%s'", value);
     }
-
-
+    
+    
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ SEXP wink_true_coincidences(SEXP Rvalue,
         const double          delta = R2Scalar<double>(Rdelta);
         const statistic_value S     = __check_stat_val(Rvalue);
         const size_t          num   = intervals.cols;
-
+        
         //----------------------------------------------------------------------
         //-- prepare answer
         //----------------------------------------------------------------------
@@ -193,7 +193,7 @@ SEXP wink_true_coincidences(SEXP Rvalue,
             const double b = intervals[i][1];
             ans[i] = double(xp.true_coincidences( S,  N1, N2, a, b, delta));
         }
-
+        
         //----------------------------------------------------------------------
         //-- done
         //----------------------------------------------------------------------
@@ -234,7 +234,7 @@ namespace
         size_t                 num_threads;
         size_t                 thread_rank;
     };
-
+    
     class Worker : public Runnable
     {
     public:
@@ -249,7 +249,7 @@ namespace
         size_t                 ini;
         size_t                 num;
         neurons                xp;
-
+        
         explicit Worker(Mutex            &m,
                         const WorkerArgs &args ) :
         Runnable(m),
@@ -267,26 +267,26 @@ namespace
         {
             TeamBalance( intervals.cols, ini, num, args.thread_rank, args.num_threads);
         }
-
+        
         virtual ~Worker() throw()
         {
         }
-
+        
     private:
         Worker( const Worker & );
         Worker&operator=(const Worker &);
     };
-
-
+    
+    
     class WorkerPerm : public Worker
     {
     public:
         explicit WorkerPerm( Mutex            &m,
                             const WorkerArgs &args ) :
         Worker(m,args) {}
-
+        
         virtual ~WorkerPerm() throw() {}
-
+        
         virtual void run() throw()
         {
             RMatrix<double> &alpha = output;
@@ -301,24 +301,24 @@ namespace
                 {
                     const double a = intervals[i][0];
                     const double b = intervals[i][1];
-
+                    
                     //----------------------------------------------------------
                     //-- initialize with true coincidences
                     //----------------------------------------------------------
                     const count_t TrueS = xp.true_coincidences(S, N1, N2, a, b, delta);
-
+                    
                     //----------------------------------------------------------
                     //-- permutations
                     //----------------------------------------------------------
                     xp.eval_coincidences(S,coinc,kind);
-
+                    
                     //----------------------------------------------------------
                     //-- evaluate pvalues
                     //----------------------------------------------------------
-
+                    
                     xp.compute_pvalues(alpha[i][0],alpha[i][1],coinc,TrueS);
                 }
-
+                
             }
             catch( const std::exception &e )
             {
@@ -329,14 +329,14 @@ namespace
                 Rprintf("*** unhandled error in wink_permutation/thread\n");
             }
         }
-
-
+        
+        
     private:
         WorkerPerm(const WorkerPerm &);
         WorkerPerm&operator=(const WorkerPerm &);
     };
-
-
+    
+    
     class WorkerBoot : public Worker
     {
     public:
@@ -345,12 +345,12 @@ namespace
         Worker(m,args)
         {
         }
-
+        
         virtual ~WorkerBoot() throw()
         {
-
+            
         }
-
+        
         virtual
         void run() throw()
         {
@@ -367,18 +367,18 @@ namespace
                 {
                     const double a = intervals[i][0];
                     const double b = intervals[i][1];
-
+                    
                     //----------------------------------------------------------
                     //-- initialize with true coincidences
                     //----------------------------------------------------------
                     const size_t H  = double(xp.true_coincidences( statistic_H, N1, N2, a, b, delta));
-
+                    
                     //----------------------------------------------------------
                     //-- mix'em all, bootstrap kind
                     //----------------------------------------------------------
                     xp.eval_coincidences( statistic_H, coinc, kind);
-
-
+                    
+                    
                     //----------------------------------------------------------
                     //-- evaluate counts
                     //----------------------------------------------------------
@@ -394,14 +394,14 @@ namespace
                 Rprintf("*** unhandled error in wink_bootstrap_counts/thread\n");
             }
         }
-
-
+        
+        
     private:
         WorkerBoot(const WorkerBoot &);
         WorkerBoot&operator=(const WorkerBoot &);
     };
-
-
+    
+    
     class WorkerTS : public Worker
     {
     public:
@@ -410,12 +410,12 @@ namespace
         Worker(m,args)
         {
         }
-
+        
         virtual ~WorkerTS() throw()
         {
-
+            
         }
-
+        
         virtual
         void run() throw()
         {
@@ -432,18 +432,18 @@ namespace
                 {
                     const double a = intervals[i][0];
                     const double b = intervals[i][1];
-
+                    
                     //----------------------------------------------------------
                     //-- initialize with true coincidences
                     //----------------------------------------------------------
                     const size_t T  = double(xp.true_coincidences( statistic_T, N1, N2, a, b, delta));
-
+                    
                     //----------------------------------------------------------
                     //-- mix'em all, TS kind
                     //----------------------------------------------------------
                     xp.eval_coincidences( statistic_T, coinc, mix_shuf);
-
-
+                    
+                    
                     //----------------------------------------------------------
                     //-- evaluate counts
                     //----------------------------------------------------------
@@ -459,14 +459,14 @@ namespace
                 Rprintf("*** unhandled error in wink_TS_counts/thread\n");
             }
         }
-
-
+        
+        
     private:
         WorkerTS(const WorkerTS &);
         WorkerTS&operator=(const WorkerTS &);
     };
-
-
+    
+    
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -494,7 +494,7 @@ SEXP wink_permutation_pvalues(SEXP Ropt,
         if( num_threads <= 0 )
             throw Exception("Invalid #num_threads");
         Rprintf("\tWINK: Permutation[%u thread%c]\n", unsigned(num_threads), num_threads>1 ? 's' : ' ' );
-
+        
         const mix_method       kind  = mix_perm;
         const statistic_value  S     = __check_stat_val(Ropt);
         RMatrix<double>        M1(RN1); __show_neuron(1,M1);
@@ -502,8 +502,8 @@ SEXP wink_permutation_pvalues(SEXP Ropt,
         RIntervals             intervals(RI);
         const double           delta = R2Scalar<double>(Rdelta);
         const size_t           B     = R2Scalar<int>(RB);
-
-
+        
+        
         //----------------------------------------------------------------------
         //-- prepare answer
         //-- first  row: alpha_minus
@@ -511,17 +511,17 @@ SEXP wink_permutation_pvalues(SEXP Ropt,
         //----------------------------------------------------------------------
         const size_t    num  = intervals.cols;
         RMatrix<double> alpha(2,num);
-
+        
         Rprintf("\tWINK: #intervals  = %u\n", unsigned(num));
         Rprintf("\tWINK: #bootstraps = %u\n", unsigned(B));
-
+        
         //----------------------------------------------------------------------
         //
         // Preparing the arguments
         //
         //----------------------------------------------------------------------
         WorkerArgs       args = { &M1, &M2, S, &intervals, delta, B, kind, &alpha, num_threads, 0 };
-
+        
         if( num_threads > 1 )
         {
             //-- parallel
@@ -573,17 +573,17 @@ mix_method __parse_mix( SEXP Rmix )
     {
         return mix_boot;
     }
-
+    
     if( 0 == strcmp("tau",mix_name) )
     {
         return mix_repl;
     }
-
+    
     if( 0 == strcmp("TS",mix_name) )
     {
         return mix_shuf;
     }
-
+    
     throw Exception("Invalid mix_name=%s",mix_name);
 }
 
@@ -607,14 +607,14 @@ SEXP wink_bootstrap_counts(SEXP RN1,
         if( num_threads <= 0 )
             throw Exception("Invalid #num_threads");
         Rprintf("\tWINK: Bootstrap Counts [%u thread%c]\n", unsigned(num_threads), num_threads>1 ? 's' : ' ' );
-
+        
         RMatrix<double>        M1(RN1); __show_neuron(1,M1);
         RMatrix<double>        M2(RN2); __show_neuron(2,M2);
         RIntervals             intervals(RI);
         const double           delta         = R2Scalar<double>(Rdelta);
         const size_t           B             = R2Scalar<int>(RB);
         const mix_method       kind          = __parse_mix(Rmix);
-
+        
         //----------------------------------------------------------------------
         //-- prepare answer
         //-- first  row: count_minus
@@ -622,18 +622,18 @@ SEXP wink_bootstrap_counts(SEXP RN1,
         //----------------------------------------------------------------------
         const size_t    num  = intervals.cols;
         RMatrix<double> counts(2,num);
-
+        
         Rprintf("\tWINK: #intervals  = %6u\n", unsigned(num));
         Rprintf("\tWINK: #bootstraps = %6u\n", unsigned(B));
         Rprintf("\tWINK: Mix method  = <%s>\n",R2String(Rmix));
-
+        
         //----------------------------------------------------------------------
         //
         // Launching the team
         //
         //----------------------------------------------------------------------
         WorkerArgs       args = { &M1, &M2, statistic_H, &intervals, delta, B, kind, &counts, num_threads,0 };
-
+        
         if( num_threads > 1 )
         {
             Team<WorkerBoot> team(num_threads);
@@ -688,14 +688,14 @@ SEXP wink_TS_counts(SEXP RN1,
         if( num_threads <= 0 )
             throw Exception("Invalid #num_threads");
         Rprintf("\tWINK: Bootstrap Counts [%u thread%c]\n", unsigned(num_threads), num_threads>1 ? 's' : ' ' );
-
+        
         RMatrix<double>        M1(RN1); __show_neuron(1,M1);
         RMatrix<double>        M2(RN2); __show_neuron(2,M2);
         RIntervals             intervals(RI);
         const double           delta         = R2Scalar<double>(Rdelta);
         const size_t           B             = R2Scalar<int>(RB);
         const mix_method       kind          = mix_shuf;
-
+        
         //----------------------------------------------------------------------
         //-- prepare answer
         //-- first  row: count_minus
@@ -703,18 +703,18 @@ SEXP wink_TS_counts(SEXP RN1,
         //----------------------------------------------------------------------
         const size_t    num  = intervals.cols;
         RMatrix<double> counts(2,num);
-
+        
         Rprintf("\tWINK: #intervals  = %6u\n", unsigned(num));
         Rprintf("\tWINK: #bootstraps = %6u\n", unsigned(B));
         //Rprintf("\tWINK: Mix method  = <%s>\n",R2String(Rmix));
-
+        
         //----------------------------------------------------------------------
         //
         // Launching the team
         //
         //----------------------------------------------------------------------
         WorkerArgs       args = { &M1, &M2, statistic_T, &intervals, delta, B, kind, &counts, num_threads,0 };
-
+        
         if( num_threads > 1 )
         {
             Team<WorkerTS> team(num_threads);
@@ -763,7 +763,7 @@ SEXP wink_single_perm(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdel
 {
     try
     {
-
+        
         //----------------------------------------------------------------------
         //-- parse arguments
         //----------------------------------------------------------------------
@@ -777,43 +777,43 @@ SEXP wink_single_perm(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdel
         const size_t          nb    = R2Scalar<int>(RB);
         neurons              &xp    = shared_neurons();
         const statistic_value  S    = __check_stat_val(Ropt);
-
+        
         //----------------------------------------------------------------------
         //-- initialize window
         //----------------------------------------------------------------------
         const count_t    T = xp.true_coincidences( S, N1, N2, a, b, delta);
         C_Array<count_t> Tp(nb);
-
+        
         //----------------------------------------------------------------------
         //-- mix'em all, permutation kind
         //----------------------------------------------------------------------
         xp.eval_coincidences(S,Tp,mix_perm);
-
-
+        
+        
         //----------------------------------------------------------------------
         //-- sort
         //----------------------------------------------------------------------
         Sort( &Tp[0], nb );
-
+        
         //----------------------------------------------------------------------
         //-- make a list S/Sp
         //----------------------------------------------------------------------
         const char *names[] = { "S", "Sp" };
-
+        
         //-- first element: Satistic Value
         RVector<double> rT(1);
         rT[0] = T;
-
+        
         //-- second element: Permutation Counts
         RVector<double> rTp(nb);
         for( size_t j=0; j < nb; ++j )
             rTp[j] = double( Tp[j] );
-
+        
         RList L(names,sizeof(names)/sizeof(names[0]));
         L.set(0,rT);
         L.set(1,rTp);
         return *L;
-
+        
     }
     catch( const Exception &e )
     {
@@ -837,7 +837,7 @@ SEXP wink_single_boot(SEXP RN1,
 {
     try
     {
-
+        
         //----------------------------------------------------------------------
         //-- parse arguments
         //----------------------------------------------------------------------
@@ -851,43 +851,43 @@ SEXP wink_single_boot(SEXP RN1,
         const size_t          nb    = R2Scalar<int>(RB);
         neurons              &xp    = shared_neurons();
         const mix_method      kind  = __parse_mix(Rmix);
-
+        
         //----------------------------------------------------------------------
         //-- initialize window
         //----------------------------------------------------------------------
         const count_t    H = xp.true_coincidences( statistic_H, N1, N2, a, b, delta);
         C_Array<count_t> Hc(nb);
-
+        
         //----------------------------------------------------------------------
         //-- mix'em all, bootstrap kind
         //----------------------------------------------------------------------
         xp.eval_coincidences( statistic_H,Hc,kind);
-
-
+        
+        
         //----------------------------------------------------------------------
         //-- sort
         //----------------------------------------------------------------------
         Sort( &Hc[0], nb );
-
+        
         //----------------------------------------------------------------------
         //-- make a list H/Hc
         //----------------------------------------------------------------------
         const char *names[] = { "H", "Hc" };
-
+        
         //-- first element: H
         RVector<double> rH(1);
         rH[0] = H;
-
+        
         //-- second element: H centered
         RVector<double> rHc(nb);
         for( size_t j=0; j < nb; ++j )
             rHc[j] = double( Hc[j] );
-
+        
         RList L(names,sizeof(names)/sizeof(names[0]));
         L.set(0,rH);
         L.set(1,rHc);
         return *L;
-
+        
     }
     catch( const Exception &e )
     {
@@ -906,7 +906,7 @@ SEXP wink_single_TS(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta
 {
     try
     {
-
+        
         //----------------------------------------------------------------------
         //-- parse arguments
         //----------------------------------------------------------------------
@@ -920,38 +920,38 @@ SEXP wink_single_TS(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta
         const size_t          nb    = R2Scalar<int>(RB);
         neurons              &xp    = shared_neurons();
         const statistic_value  S    = __check_stat_val(Ropt);
-
+        
         //----------------------------------------------------------------------
         //-- initialize window
         //----------------------------------------------------------------------
         const count_t    T = xp.true_coincidences( S, N1, N2, a, b, delta);
         C_Array<count_t> Tp(nb);
-
+        
         //----------------------------------------------------------------------
         //-- mix'em all, trial shuffling style
         //----------------------------------------------------------------------
         xp.eval_coincidences(S,Tp,mix_shuf);
-
-
+        
+        
         //----------------------------------------------------------------------
         //-- sort
         //----------------------------------------------------------------------
         Sort( &Tp[0], nb );
-
+        
         //----------------------------------------------------------------------
         //-- make a list S/Sp
         //----------------------------------------------------------------------
         const char *names[] = { "S", "Sts","centering" };
-
+        
         //-- first element: Satistic Value
         RVector<double> rT(1);
         rT[0] = T;
-
+        
         //-- second element: Permutation Counts
         RVector<double> rTp(nb);
         for( size_t j=0; j < nb; ++j )
             rTp[j] = double( Tp[j] );
-
+        
         //--
         C_Matrix<count_t> &M = xp.M;
         count_t ncross = 0;
@@ -965,16 +965,16 @@ SEXP wink_single_TS(SEXP Ropt, SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta
                 }
             }
         }
-
+        
         RVector<double> centering(1);
         centering[0] = double(ncross);
-
+        
         RList L(names,sizeof(names)/sizeof(names[0]));
         L.set(0,rT);
         L.set(1,rTp);
         L.set(2,centering);
         return *L;
-
+        
     }
     catch( const Exception &e )
     {
@@ -993,7 +993,7 @@ SEXP wink_coincmat(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta)
 {
     try
     {
-
+        
         //----------------------------------------------------------------------
         //-- parse arguments
         //----------------------------------------------------------------------
@@ -1005,13 +1005,13 @@ SEXP wink_coincmat(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta)
         const double          b     = R2Scalar<double>(Rb);
         const double          delta = R2Scalar<double>(Rdelta);
         neurons              &xp    = shared_neurons();
-
-
+        
+        
         xp.initialize_correlations(N1,N2,a,b,delta);
         C_Matrix<count_t> &M = xp.M;
-
+        
         //M.save_ascii("cm.dat");
-
+        
         RMatrix<double>  RM(M.rows,M.cols);
         for(size_t i=0;i<M.rows;++i)
         {
@@ -1019,9 +1019,9 @@ SEXP wink_coincmat(SEXP RN1, SEXP RN2, SEXP Ra, SEXP Rb, SEXP Rdelta)
             {
                 RM[j][i] = double(M[i][j]);
             }
-
+            
         }
-
+        
         return *RM;
     }
     catch( const Exception &e )
@@ -1040,14 +1040,14 @@ SEXP wink_save_coincmat(SEXP RCM, SEXP Rfilename)
 {
     try
     {
-
+        
         const RMatrix<double> CM(RCM);
         const char *filename = R2String(Rfilename);
-
+        
         FILE *fp = fopen(filename,"wb");
         if(!fp)
             throw Exception("can't open '%s'",filename);
-
+        
         fprintf(fp,"%u\n", unsigned(CM.rows));
         fprintf(fp,"%u\n", unsigned(CM.cols));
         for(size_t i=0;i<CM.rows;++i)
@@ -1059,7 +1059,7 @@ SEXP wink_save_coincmat(SEXP RCM, SEXP Rfilename)
             }
         }
         fclose(fp);
-
+        
         return R_NilValue;
     }
     catch( const Exception &e )
@@ -1071,7 +1071,7 @@ SEXP wink_save_coincmat(SEXP RCM, SEXP Rfilename)
         Rprintf("*** unhanled exception in wink_coincmat\n");
     }
     return R_NilValue;
-
+    
 }
 
 ///////////////////////////////////////////////////////////
@@ -1082,7 +1082,7 @@ SEXP wink_save_coincmat(SEXP RCM, SEXP Rfilename)
 
 
 /*  return lambda chapeau
-
+ 
  \On utilise les prepare directement sur le record (cad N[i]) pour eviter
  \ de faire 2 fois la meme boucle
  */
@@ -1103,7 +1103,7 @@ SEXP lambdaChapeau1(SEXP Ra, SEXP Rb, SEXP RN1){
     //on lles convertis en double
     const double a=R2Scalar<double>(Ra);
     const double b=R2Scalar<double>(Rb);
-
+    
     //Construit un neurone a partir des données de RN1
     const RMatrix<double> M1(RN1);
     RNeuron N1(M1);
@@ -1124,7 +1124,7 @@ double m0Chapeau(double a, double b, double delta, neuron& N1, neuron& N2){
     double lbda1=lambdaChapeau(a,b,N1);
     double lbda2=lambdaChapeau(a,b,N2);
     double T = b-a;
-
+    
     return lbda1*lbda2*(2.0*delta*T-pow(delta,2));
 }
 
@@ -1140,14 +1140,14 @@ SEXP m0Chapeau1(SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RN1, SEXP RN2){
     RNeuron N1(M1);
     const RMatrix<double> M2(RN2);
     RNeuron N2(M2);
-
-
+    
+    
     double lbda1=lambdaChapeau(a,b,N1);
     double lbda2=lambdaChapeau(a,b,N2);
     double T = b-a;
-
+    
     result[0]=lbda1*lbda2*(2.0*delta*T-pow(delta,2));
-
+    
     return *result;
 }
 
@@ -1155,7 +1155,7 @@ double vCarreChapeau (double a, double b, double delta, neuron& N1, neuron& N2){
     double lbda1=lambdaChapeau(a,b,N1);
     double lbda2=lambdaChapeau(a,b,N2);
     double T = b-a;
-
+    
     return lbda1*lbda2*(2.0*delta*T-pow(delta,2)) +
     lbda1*lbda2*(lbda1+lbda2)*((2.0/3.0)*pow(delta,3)-(1.0/T)*pow(delta,4));
 }
@@ -1164,7 +1164,7 @@ double sigmaCarreChapeau (double a, double b, double delta, neuron& N1, neuron& 
     double lbda1=lambdaChapeau(a,b,N1);
     double lbda2=lambdaChapeau(a,b,N2);
     double T = b-a;
-
+    
     return lbda1*lbda2*(2*delta*T-pow(delta,2)) + (pow(lbda1,2)*lbda2 +
                                                    pow(lbda2,2)*lbda1)*(4*pow(delta,2)*T - (10.0/3.0)*pow(delta,3));
 }
@@ -1188,18 +1188,18 @@ double phi (double t){
 
 double pValue(double a, double b, const double delta, neuron& N1, neuron& N2, int test){
     assert(test>=1 && test<=3);
-
-    double m0=m0Chapeau(a,b,delta,N1,N2);
-    double mBarre=mBar(a,b,delta,N1,N2);
-    double v2=vCarreChapeau(a,b,delta,N1,N2);
-    size_t M = std::min(N1.trials,N2.trials);
-
+    
+    double m0    = m0Chapeau(a,b,delta,N1,N2);
+    double mBarre= mBar(a,b,delta,N1,N2);
+    double v2    = vCarreChapeau(a,b,delta,N1,N2);
+    size_t M     = std::min(N1.trials,N2.trials);
+    
     double param=0;
     switch(test){
             //symetrical test
         case 1:
             param=fabs(mBarre-m0)/(sqrt(v2/M));
-            Rprintf("param=%g mBarre=%g m0=%g v2=%g\n",param,mBarre,m0,v2);
+            //Rprintf("param=%g mBarre=%g m0=%g v2=%g\n",param,mBarre,m0,v2);
             return 2.0-2.0*phi(param);
             //unilateral upper value
         case 2:
@@ -1211,6 +1211,8 @@ double pValue(double a, double b, const double delta, neuron& N1, neuron& N2, in
             return 1.0-phi(param);
     }
 }
+
+
 
 //Verssion R
 extern "C"
@@ -1226,13 +1228,13 @@ SEXP pValue1(SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RN1, SEXP RN2, SEXP Rtest){
     RNeuron N1(M1);
     const RMatrix<double> M2(RN2);
     RNeuron N2(M2);
-
+    
     //Données
     double m0=m0Chapeau(a,b,delta,N1,N2);
     double mBarre=mBar(a,b,delta,N1,N2);
     double v2=vCarreChapeau(a,b,delta,N1,N2);
     size_t M = std::min(N1.trials,N2.trials);
-
+    
     //Les differents tests
     double param=0;
     switch(test){
@@ -1253,7 +1255,7 @@ SEXP pValue1(SEXP Ra, SEXP Rb, SEXP Rdelta, SEXP RN1, SEXP RN2, SEXP Rtest){
             break;
     }
     return *result;
-
+    
 }
 
 
@@ -1263,7 +1265,7 @@ SEXP pValues(SEXP RMat, SEXP Rdelta, SEXP RN1, SEXP RN2, SEXP Rtest){
     const RMatrix<double> Mat(RMat);
     const size_t taille = Mat.cols;
     RVector<double> result(taille);
-
+    
     const double delta=R2Scalar<double>(Rdelta);
     const int test = R2Scalar<int>(Rtest);
     //Construit un neurone a partir des données de RN1
@@ -1271,7 +1273,7 @@ SEXP pValues(SEXP RMat, SEXP Rdelta, SEXP RN1, SEXP RN2, SEXP Rtest){
     RNeuron N1(M1);
     const RMatrix<double> M2(RN2);
     RNeuron N2(M2);
-
+    
     for (size_t i=0; i<taille;i++){
         const double a = Mat[i][0];
         const double b = Mat[i][1];
@@ -1288,48 +1290,152 @@ SEXP pValues(SEXP RMat, SEXP Rdelta, SEXP RN1, SEXP RN2, SEXP Rtest){
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+namespace
+{
+    
+    // Parameters to construct a compute Agent
+    struct AgentData
+    {
+        const RMatrix<double> *M1;
+        const RMatrix<double> *M2;
+        
+        const size_t   num_threads;
+        size_t         thread_rank;
+        
+        const RMatrix<double> *I;
+        RVector<double>       *output;
+        const double           delta;
+        const int              test;
+    };
+    
+    
+    // a compute Agent
+    class Agent : public Runnable
+    {
+    public:
+        RNeuron                N1;
+        RNeuron                N2;
+        const RMatrix<double> &intervals;
+        const size_t           taille;
+        size_t                 debut;
+        size_t                 longueur;
+        RVector<double>       &result;
+        const double           delta;
+        const int              test;
+        
+        explicit Agent( Mutex &m, const AgentData &args ) :
+        Runnable(m),
+        N1( *args.M1 ),
+        N2( *args.M2 ),
+        intervals( *args.I ),
+        taille( intervals.cols ),
+        debut(0),
+        longueur(0),
+        result( *args.output ),
+        delta(   args.delta  ),
+        test(    args.test   )
+        {
+            // compute what has to be done in this thread: debut->debut+longueur
+            TeamBalance(taille,debut,longueur, args.thread_rank, args.num_threads );
+            
+            // write things, locking for the access to the output
+            ScopedLock guard(mutex);
+            Rprintf("thread %2u/%2u: debut=%6u, longueur=%6u\n", args.thread_rank+1, args.num_threads, debut, longueur);
+        }
+        
+        
+        virtual ~Agent() throw()
+        {
+        }
+        
+        virtual void run() throw()
+        {
+            
+            for(size_t j=0,i=debut;j<longueur;++i,++j)
+            {
+                const double a = intervals[i][0];
+                const double b = intervals[i][1];
+                result[i]=pValue(a,b,delta,N1,N2,test);
+            }
+            
+        }
+        
+        
+    private:
+        Agent(const Agent &);
+        Agent &operator=( const Agent &);
+        
+    };
+    
+}
 
 
 extern "C"
 SEXP pValuesPara(SEXP RMat, SEXP Rdelta, SEXP RN1, SEXP RN2, SEXP Rtest, SEXP RNumThreads)
 {
-    //__________________________________________________________________________
-    //
-    // Parse Arguments
-    //__________________________________________________________________________
-
-    //-- matrix of intervals a,b
-    const RMatrix<double> Mat(RMat);
-    const size_t taille = Mat.cols;
-
-    //-- detection range
-    const double delta = R2Scalar<double>(Rdelta);
-
-    //-- kind of test
-    const int    test  = R2Scalar<int>(Rtest);
-
-    //-- Construit un neurone a partir des données de RN1
-    const RMatrix<double> M1(RN1);
-    RNeuron N1(M1);
-
-    //-- Construit un neurone a partir des données de RN2
-    const RMatrix<double> M2(RN2);
-    RNeuron N2(M2);
-
-    //-- Read
-
-    //-- prepare output
-    RVector<double> result(taille);
-
-
-    for (size_t i=0; i<taille;i++){
-        const double a = Mat[i][0];
-        const double b = Mat[i][1];
-        result[i]=pValue(a,b,delta,N1,N2,test);
-        Rprintf("i=%u a=%g b=%g p=%g\n",i,a,b,result[i]);
+    try
+    {
+        //__________________________________________________________________________
+        //
+        // Parse Arguments
+        //__________________________________________________________________________
         
+        //-- matrix of intervals a,b
+        const RMatrix<double> Mat(RMat);
+        const size_t taille = Mat.cols;
+        
+        //-- detection range
+        const double delta = R2Scalar<double>(Rdelta);
+        
+        //-- kind of test
+        const int    test  = R2Scalar<int>(Rtest);
+        
+        //-- Construit une matrice à partir des données de RN1
+        const RMatrix<double> M1(RN1);
+        
+        //-- Construit un neurone à partir des données de RN2
+        const RMatrix<double> M2(RN2);
+        
+        //-- Read #threads
+        const size_t num_threads = R2Scalar<int>(RNumThreads);
+        
+        
+        //-- prepare output
+        RVector<double> result(taille);
+        
+        //-- prepare arguments to build Agent(s), default rank=0
+        AgentData agent_data = { &M1, &M2, num_threads, 0, &Mat, &result, delta, test };
+        
+        
+        // run agents...
+        if(num_threads<=1)
+        {
+            Agent agent( shared_mutex(), agent_data );
+            agent.run();
+        }
+        else
+        {
+            Team<Agent> team(num_threads);
+            for(size_t rank=0;rank<num_threads;++rank)
+            {
+                agent_data.thread_rank = rank;
+                team.enqueue(agent_data);
+            }
+            team.finish();
+        }
+        
+        return *result;
     }
-    return *result;
+    catch(const std::exception &e )
+    {
+        Rprintf("exception: %s\n", e.what());
+    }
+    catch(...)
+    {
+        Rprintf("Unhandled exception\n");
+    }
+    return R_NilValue;
+    
 }
 
 
