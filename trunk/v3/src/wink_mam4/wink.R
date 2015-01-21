@@ -334,7 +334,8 @@ pValuesPara <- function (intervals,delta,N1,N2,testName,num_threads)
     if( !is.double(delta) )       stop("delta must be a real");
     if( !is.matrix(intervals) )   stop("M must be a Matrix");
     if( !is.character(testName) ) stop("testName must be a string");
-    
+    if( !is.double(num_threads) ) stop("num_threads must be a number");
+
     if( testName!="symetric" && testName!="upper" && testName!="lower")        stop("testName must be \"symetric\" or \"upper\" or \"lower\"");
     if ( testName=="symetric" )  {   .Call("pValuesPara",intervals,delta,N1,N2,1,num_threads);}
     else if ( testName=="upper" ){   .Call("pValuesPara",intervals,delta,N1,N2,2,num_threads);}
