@@ -1278,7 +1278,7 @@ SEXP pValues(SEXP RMat, SEXP Rdelta, SEXP RN1, SEXP RN2, SEXP Rtest){
         const double a = Mat[i][0];
         const double b = Mat[i][1];
         result[i]=pValue(a,b,delta,N1,N2,test);
-        Rprintf("i=%u a=%g b=%g p=%g\n",i,a,b,result[i]);
+        //Rprintf("i=%u a=%g b=%g p=%g\n",i,a,b,result[i]);
         
     }
     return *result;
