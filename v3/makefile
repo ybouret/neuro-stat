@@ -9,7 +9,7 @@ update:
 	@echo "*** Updating Files: core"
 	@svn up
 	@echo "*** Updating Files: Portable Yocto C++ Kernel"
-	@test -d src/pyck || svn co http://yocto4.googlecode.com/svn/trunk/pyck/pyck src/pyck
+	@test -d src/pyck || svn co https://github.com/ybouret/yocto4/trunk/pyck/pyck src/pyck
 	@svn up src/pyck
 	@echo "*** Updating Files: done"
 	@echo "**"
