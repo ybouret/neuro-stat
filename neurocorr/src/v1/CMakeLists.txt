@@ -19,3 +19,4 @@ ENABLE_TESTING()
 ADD_TEST(Records test-nc records)
 
 
+ADD_CUSTOM_TARGET(check-nc COMMAND ${CMAKE_CTEST_COMMAND} -V DEPENDS test-nc )
