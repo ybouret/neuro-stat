@@ -1,3 +1,5 @@
+
+
 all:
 
 fetch_yocto:
@@ -9,7 +11,7 @@ fetch_yocto:
 	fi
 
 build_yocto:
-	@cd yocto4 && sh build-main+r.sh	
+	@cd yocto4 && sh build-main+r.sh
 	
 clean:
 
