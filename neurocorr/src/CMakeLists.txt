@@ -1,6 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(neurocorr)
-INCLUDE(../yocto/sdk/share/yocto/rules.cmake)
+SET(SDK ${PROJECT_SOURCE_DIR}/../yocto/sdk)
+INCLUDE(${SDK}/share/yocto/rules.cmake)
+INCLUDE_DIRECTORIES(${SDK}/include)
+LINK_DIRECTORIES(${SDK}/lib)
+
 ADD_SUBDIRECTORY(v1)
 
 
