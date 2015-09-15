@@ -4,6 +4,12 @@ CREATE="${YOCTO_ROOT}/src/share/create.sh"
 
 all:
 
+update_svn: update
+	svn up
+
+update_git: update
+	git pull
+
 update:
 	@sh ./setup.sh
 	
