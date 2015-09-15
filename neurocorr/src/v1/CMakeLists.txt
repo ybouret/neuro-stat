@@ -2,6 +2,8 @@
 ADD_LIBRARY(neurocorr STATIC
 	record.hpp
 	record.cpp
+	neuron.hpp
+	neuron.cpp
 	experiment.hpp
 	experiment.cpp)
 
