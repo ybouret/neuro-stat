@@ -23,8 +23,8 @@ TARGET_LINK_YOCTO(test-nc mk)
 
 ENABLE_TESTING()
 
-ADD_TEST(Records test-nc records)
-ADD_TEST(Records test-nc neurodata)
+ADD_TEST(Records   test-nc records)
+ADD_TEST(NeuroData test-nc neurodata)
 
 
 ADD_CUSTOM_TARGET(check-nc COMMAND ${CMAKE_CTEST_COMMAND} -V DEPENDS test-nc )

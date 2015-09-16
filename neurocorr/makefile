@@ -11,7 +11,7 @@ update_git: update
 	git pull
 
 update:
-	@sh ./setup.sh
+	@bash ./setup.sh
 	
 clean:
 
@@ -19,11 +19,11 @@ veryclean: clean
 	@echo "-- removing out of sources builds" && cd forge && touch targets && ( cat targets | xargs rm -rf ) && rm -f targets
 
 xcode:
-	@sh $(CREATE) src xcode ${BUILD_TYPE}
+	@bash $(CREATE) src xcode ${BUILD_TYPE}
 	
 gnu:
-	@sh $(CREATE) src gnu ${BUILD_TYPE}
+	@bash $(CREATE) src gnu ${BUILD_TYPE}
 	
 clang:
-	@sh $(CREATE) src clang ${BUILD_TYPE}
+	@bash $(CREATE) src clang ${BUILD_TYPE}
 
