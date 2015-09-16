@@ -7,9 +7,9 @@
 YOCTO_UNIT_TEST_IMPL(records)
 {
 
-    for(size_t iter=0;iter<1000;++iter)
+    for(size_t iter=0;iter<10000;++iter)
     {
-        const size_t nr = 1+alea_lt(10);
+        const size_t nr = 1+alea_lt(100);
         const size_t nc = 1+alea_leq(100);
 
         CMatrix<double> data(nr,nc);
