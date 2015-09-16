@@ -39,7 +39,7 @@ Records:: ~Records() throw()
 
 }
 
-Records:: Records(size_t M) : slots_of<Record>(M)
+Records:: Records(size_t M) : RecordsBase(M)
 {
 }
 

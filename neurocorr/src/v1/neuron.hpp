@@ -3,6 +3,9 @@
 
 #include "record.hpp"
 
+//! forward declaration
+class NeuroData;
+
 //! Neuron : each Record is a Trial.
 class Neuron : public Records
 {
@@ -12,6 +15,8 @@ public:
 
     const size_t &trials; //!< alias Records::size
 
+    void buildFrom( NeuroData &data, const size_t neuronIndex );
+    
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Neuron);
 };

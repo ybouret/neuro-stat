@@ -20,7 +20,9 @@ private:
 
 #include "yocto/container/slots.hpp"
 
-class Records : public slots_of<Record>
+typedef dynamic_slots<Record> RecordsBase;
+
+class Records : public RecordsBase
 {
 public:
     explicit Records(size_t M);
