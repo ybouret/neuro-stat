@@ -34,6 +34,17 @@ YOCTO_UNIT_TEST_IMPL(neurodata)
         }
 
         ND.setup();
+        for(size_t i=0;i<ND.neurons;++i)
+        {
+            const Neuron &n = ND.neuron[i];
+            std::cerr << "Neuron[" << i << "] : #trials=" << n.trials << std::endl;
+        }
+
+        for(size_t i=0;i<ND.trials;++i)
+        {
+            const Trial &t = ND.trial[i];
+            std::cerr << "Trial[" << i << "] : #neurons=" << t.neurons << std::endl;
+        }
     }
 
 

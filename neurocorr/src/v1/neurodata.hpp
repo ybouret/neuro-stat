@@ -6,7 +6,10 @@
 #include "trial.hpp"
 
 
-//! Neuronal Data: big input matrix + info
+//! Neuronal Data: input matrix
+/**
+ Once the matrix is loaded, call setup
+ */
 class NeuroData
 {
 public:
