@@ -49,7 +49,7 @@ NeuroData *CreateNeuroData(SEXP & _neuroData, SEXP & _numNeurons )
     const size_t nc = RND.cols;
     auto_ptr<NeuroData> ND( new NeuroData(numNeurons,numTrials,nc-1) );
 
-    // transfert data
+    // transfer data
     for(size_t i=0; i < numTrains; ++i)
     {
         RArray<double> &arr = ND->get_raw_input(i);
@@ -59,6 +59,12 @@ NeuroData *CreateNeuroData(SEXP & _neuroData, SEXP & _numNeurons )
         }
     }
 
+    Rprintf("[NeuroCorr]: #neurons= %6d\n", int(ND->neurons));
+    Rprintf("[NeuroCorr]: #trials = %6d\n", int(ND->trials) );
+    Rprintf("[NeuroCorr]: #max_spt= %6d\n", int(ND->max_spikes_per_train) );
+
+    ND->setup();
+
     // done
     return ND.yield();
 }
@@ -66,14 +72,23 @@ NeuroData *CreateNeuroData(SEXP & _neuroData, SEXP & _numNeurons )
 extern "C"
 SEXP NeuroCorr_CheckNeuroData(SEXP _neuroData, SEXP _numNeurons )
 {
-    try
+    YOCTO_R_PROLOG()
     {
         auto_ptr<NeuroData> ND( CreateNeuroData(_neuroData,_numNeurons) );
 
+        for(size_t i=0;i<ND->neurons;++i)
+        {
+            const Neuron &n = ND->neuron[i];
+            Rprintf("neuron[%6d]: #trials=%d\n", int(i), int(n.trials) );
+            for(size_t j=0;j<n.trials;++j)
+            {
+                const Record &tr = n[j];
+                Rprintf("      |_trial#%6d: %d\n", int(j), int(tr.size()));
+            }
+        }
+
+
         return R_NilValue;
     }
-    catch(...)
-    {
-        return R_NilValue;
-    }
+    YOCTO_R_EPILOG()
 }

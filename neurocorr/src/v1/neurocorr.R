@@ -33,7 +33,7 @@ NeuroCorr_Version <- function()
 NeuroCorr_CheckNeuroData <- function( neuroData, numNeurons )
 {
     if( !is.matrix(neuroData)   ) stop("CheckNeuroData: neuroData is not a matrix");
-    if( !is.integer(numNeurons) ) stop("CheckNeuroData: numNeurons is not an integer");
+    if( !is.double(numNeurons)  ) stop("CheckNeuroData: numNeurons is not an integer");
 
-    .Call("NeuroCorr_CheckNeuroData", NeuroData, NumNeurons);
+    .Call("NeuroCorr_CheckNeuroData", neuroData, numNeurons);
 }

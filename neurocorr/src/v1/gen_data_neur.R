@@ -2,7 +2,7 @@
 # - it generates the data , depending on the box, the behavior may change. In particular several boxes may have the same behavior, for the moment there is only one trial
 # - it applies the Lasso procedure to produce the estimate and plot it
 
-rm(list=ls()) # clear everything
+#rm(list=ls()) # clear everything
 
 # programs for the simulations
 
@@ -34,7 +34,7 @@ library(lassoshooting)
 ########################################################################################################
 
 Nneur=2  # number of neurons
-Ntrial=1 # number of trials
+Ntrial=5 # number of trials
 Ncomp = 2 # number of comportments, for the moment just one relaxation state and one exciting state
 
 delay=0 # time in second during which the process warms up
