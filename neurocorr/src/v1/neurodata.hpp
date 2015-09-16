@@ -2,7 +2,9 @@
 #define NC_NEURODATA_INCLUDED 1
 
 #include "yocto/R/IR.hpp"
-using namespace yocto;
+#include "neuron.hpp"
+#include "trial.hpp"
+
 
 //! Neuronal Data: big input matrix + info
 class NeuroData
@@ -23,7 +25,7 @@ public:
 
     RArray<double> & get_raw_input(size_t neuronIndex, size_t trialIndex) throw();
     RArray<double> & get_raw_input(size_t trainIndex) throw();
-
+    
 private:
     CMatrix<double>       raw_input;
     YOCTO_DISABLE_COPY_AND_ASSIGN(NeuroData);

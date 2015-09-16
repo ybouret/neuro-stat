@@ -21,6 +21,22 @@ private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Neuron);
 };
 
+typedef dynamic_slots<Neuron> NeuronsBase;
+
+//! holding multiple neurons
+class Neurons : public NeuronsBase
+{
+public:
+    explicit Neurons(const size_t numNeurons);
+    virtual ~Neurons() throw();
+
+    void buildFrom( NeuroData &data );
+
+
+private:
+    YOCTO_DISABLE_COPY_AND_ASSIGN(Neurons);
+};
+
 
 #endif
 

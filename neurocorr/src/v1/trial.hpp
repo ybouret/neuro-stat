@@ -21,5 +21,19 @@ private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Trial);
 };
 
+typedef dynamic_slots<Trial> TrialsBase;
+
+class Trials : public TrialsBase
+{
+public:
+    explicit Trials(const size_t nTrials);
+    virtual ~Trials() throw();
+
+    void buildFrom(NeuroData &data);
+    
+private:
+    YOCTO_DISABLE_COPY_AND_ASSIGN(Trials);
+};
+
 #endif
 

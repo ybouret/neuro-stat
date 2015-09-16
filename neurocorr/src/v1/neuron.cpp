@@ -8,3 +8,12 @@ Records(nTrials),
 trials(size)
 {
 }
+
+
+Neurons:: ~Neurons() throw() {}
+
+Neurons:: Neurons(size_t numNeurons) : NeuronsBase(numNeurons)
+{
+
+}
+

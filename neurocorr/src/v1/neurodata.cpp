@@ -48,7 +48,8 @@ RArray<double> & NeuroData:: get_raw_input(size_t trainIndex) throw()
     return raw_input[trainIndex];
 }
 
-#include "neuron.hpp"
+////////////////////////////////////////////////////////////////////////////////
+
 
 void Neuron:: buildFrom( NeuroData &data, const size_t neuronIndex )
 {
@@ -68,7 +69,25 @@ void Neuron:: buildFrom( NeuroData &data, const size_t neuronIndex )
     assert(trials==num_trials);
 }
 
-#include "trial.hpp"
+
+void Neurons:: buildFrom( NeuroData &data )
+{
+    const size_t num_neurons = data.neurons;
+    NeuronsBase &self        = *this;
+
+    self.free();
+    self.resize_empty_to(num_neurons);
+
+    for(size_t i=0;i<num_neurons;++i)
+    {
+        self.append<size_t>(data.trials);
+        self[i].buildFrom(data,i);
+    }
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 void Trial:: buildFrom(NeuroData &data, const size_t trialIndex)
 {
@@ -88,4 +107,19 @@ void Trial:: buildFrom(NeuroData &data, const size_t trialIndex)
     assert(neurons==num_neurons);
 }
 
+void Trials:: buildFrom(NeuroData &data)
+{
+    const size_t num_trials = data.trials;
+    TrialsBase  &self       = *this;
+
+    self.free();
+    self.resize_empty_to(num_trials);
+
+    for(size_t i=0;i<num_trials;++i)
+    {
+        self.append<size_t>(data.neurons);
+        self[i].buildFrom(data,i);
+    }
+
+}
 
