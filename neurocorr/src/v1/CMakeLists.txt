@@ -23,7 +23,7 @@ ADD_EXECUTABLE(test-nc
 )
 
 TARGET_LINK_LIBRARIES(test-nc neurocorr)
-TARGET_LINK_YOCTO(test-nc mk)
+TARGET_LINK_YOCTO(test-nc)
 
 ENABLE_TESTING()
 
