@@ -9,7 +9,7 @@
 source('../../codes/SimuHawkes.R',chdir=TRUE)
 
 # package for Lasso
-library(lassoshooting)
+#library(lassoshooting)
 
 # programs for the computation of the least-square contrast
 
