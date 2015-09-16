@@ -1,4 +1,6 @@
 
+
+
 ADD_LIBRARY(neurocorr STATIC
 	record.hpp
 	record.cpp
@@ -28,3 +30,15 @@ ADD_TEST(NeuroData test-nc neurodata)
 
 
 ADD_CUSTOM_TARGET(check-nc COMMAND ${CMAKE_CTEST_COMMAND} -V DEPENDS test-nc )
+
+IF(R_FOUND)
+
+IF(WIN32)
+SET(THE_DLL "neurocorr.dll")
+ELSE()
+SET(THE_DLL "neurocorr.so")
+ENDIF()
+
+MESSAGE( STATUS "Will Compile R Code..." )
+
+ENDIF()

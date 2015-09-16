@@ -22,11 +22,12 @@ static inline size_t CheckTrials(const size_t numTrials)
 
 NeuroData:: NeuroData(const size_t numNeurons,
                       const size_t numTrials,
-                      const size_t maxInput) :
+                      const size_t maxInputs) :
 neurons(CheckNeurons(numNeurons)),
 trials(CheckTrials(numTrials)),
 trains(neurons*trials),
-raw_input(trains,1+maxInput)
+max_spikes_per_train(maxInputs),
+raw_input(trains,1+maxInputs)
 {
 
 }
@@ -36,9 +37,16 @@ RArray<double> & NeuroData:: get_raw_input(size_t neuronIndex, size_t trialIndex
     assert(neuronIndex<neurons);
     assert(trialIndex <trials);
 
-    return raw_input[ neuronIndex * trials + trialIndex ];
+    const size_t trainIndex = neuronIndex*trials + trialIndex;
+    assert(trainIndex<trains);
+    return raw_input[trainIndex];
 }
 
+RArray<double> & NeuroData:: get_raw_input(size_t trainIndex) throw()
+{
+    assert(trainIndex<trains);
+    return raw_input[trainIndex];
+}
 
 #include "neuron.hpp"
 
