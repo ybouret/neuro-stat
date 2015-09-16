@@ -24,3 +24,6 @@ xcode:
 gnu:
 	@sh $(CREATE) src gnu ${BUILD_TYPE}
 	
+clang:
+	@sh $(CREATE) src clang ${BUILD_TYPE}
+

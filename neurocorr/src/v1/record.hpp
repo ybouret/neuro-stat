@@ -2,16 +2,16 @@
 #define NC_RECORD_INCLUDED 1
 
 
-#include "yocto/sequence/lw-array.hpp"
+#include "yocto/R/IR.hpp"
 
 using namespace yocto;
 
 //! a single record
-class Record : public lw_array<double>
+class Record : public LArray<double>
 {
 public:
     //! extract data
-    explicit Record(array<double> &data);
+    explicit Record(RArray<double> &data);
     virtual ~Record() throw();
     
 private:
@@ -26,7 +26,7 @@ public:
     explicit Records(size_t M);
     virtual ~Records() throw();
 
-    void Append( array<double> &data );
+    void Append( RArray<double> &data );
     
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Records);
