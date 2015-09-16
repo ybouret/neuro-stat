@@ -1,17 +1,19 @@
 
 
+SET(c_srcs
+record.hpp
+record.cpp
+neuron.hpp
+neuron.cpp
+trial.hpp
+trial.cpp
+neurodata.hpp
+neurodata.cpp
+experiment.hpp
+experiment.cpp)
 
 ADD_LIBRARY(neurocorr STATIC
-	record.hpp
-	record.cpp
-	neuron.hpp
-	neuron.cpp
-	trial.hpp
-	trial.cpp
-	neurodata.hpp
-	neurodata.cpp
-	experiment.hpp
-	experiment.cpp)
+${c_srcs})
 
 ADD_EXECUTABLE(test-nc
 	test-main.cpp
@@ -40,5 +42,13 @@ SET(THE_DLL "neurocorr.so")
 ENDIF()
 
 MESSAGE( STATUS "Will Compile R Code..." )
+
+ADD_CUSTOM_TARGET(rlib ALL
+COMMAND
+${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/${THE_DLL} ${CMAKE_CURRENT_SOURCE_DIR}/neurocorr.cpp -L${SDK}/lib -lyocto
+COMMENT "Building .Call module: ${THE_DLL}"
+SOURCES neurocorr.cpp neurocorr.R ${c_srcs}
+DEPENDS
+WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
 ENDIF()

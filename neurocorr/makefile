@@ -14,6 +14,7 @@ update:
 	@bash ./setup.sh
 	
 clean:
+	@echo "-- removing compiled libraries" && rm -f src/v1/neurocorr.so src/v1/neurocorr.dll
 
 veryclean: clean
 	@echo "-- removing out of sources builds" && cd forge && touch targets && ( cat targets | xargs rm -rf ) && rm -f targets
