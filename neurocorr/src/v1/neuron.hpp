@@ -21,6 +21,7 @@ private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Neuron);
 };
 
+//! base class for Neurons
 typedef dynamic_slots<Neuron> NeuronsBase;
 
 //! holding multiple neurons

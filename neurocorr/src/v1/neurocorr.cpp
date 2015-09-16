@@ -12,7 +12,9 @@ using namespace yocto;
 
 //______________________________________________________________________________
 //
+//
 // Used to check I/O
+//
 //______________________________________________________________________________
 extern "C"
 SEXP NeuroCorr_Version()
@@ -22,6 +24,12 @@ SEXP NeuroCorr_Version()
 }
 
 
+//______________________________________________________________________________
+//
+//
+// Fetching R Data into Neurons and Trials in a NeuroData class...
+//
+//______________________________________________________________________________
 static inline
 NeuroData *CreateNeuroData(SEXP & _neuroData, SEXP & _numNeurons )
 {
@@ -59,18 +67,21 @@ NeuroData *CreateNeuroData(SEXP & _neuroData, SEXP & _numNeurons )
         }
     }
 
-    Rprintf("[NeuroCorr]: #neurons= %6d\n", int(ND->neurons));
-    Rprintf("[NeuroCorr]: #trials = %6d\n", int(ND->trials) );
+    Rprintf("[NeuroCorr]: #neurons= %4d\n", int(ND->neurons));
+    Rprintf("[NeuroCorr]: #trials = %4d\n", int(ND->trials) );
     Rprintf("[NeuroCorr]: #max_spt= %6d\n", int(ND->max_spikes_per_train) );
 
+    // compile data
     ND->setup();
 
     // done
     return ND.yield();
 }
 
+#include "yocto/code/utils.hpp"
+
 extern "C"
-SEXP NeuroCorr_CheckNeuroData(SEXP _neuroData, SEXP _numNeurons )
+SEXP NeuroCorr_CheckNeuroData(SEXP _neuroData, SEXP _numNeurons ) throw()
 {
     YOCTO_R_PROLOG()
     {
@@ -79,11 +90,17 @@ SEXP NeuroCorr_CheckNeuroData(SEXP _neuroData, SEXP _numNeurons )
         for(size_t i=0;i<ND->neurons;++i)
         {
             const Neuron &n = ND->neuron[i];
-            Rprintf("neuron[%6d]: #trials=%d\n", int(i), int(n.trials) );
+            Rprintf("neuron[%4d]: #trials=%4d\n", int(i), int(n.trials) );
             for(size_t j=0;j<n.trials;++j)
             {
                 const Record &tr = n[j];
-                Rprintf("      |_trial#%6d: %d\n", int(j), int(tr.size()));
+                Rprintf("      |_trial[%4d] %d: ", int(j), int(tr.size()));
+                const size_t nk = min_of<size_t>(4,tr.size());
+                for(size_t k=0;k<nk;++k)
+                {
+                    Rprintf("%.6f ", tr[k]);
+                }
+                Rprintf("....\n");
             }
         }
 

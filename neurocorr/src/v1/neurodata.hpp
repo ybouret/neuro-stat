@@ -8,7 +8,7 @@
 
 //! Neuronal Data: input matrix
 /**
- Once the matrix is loaded, call setup
+ Once the matrix is loaded, call setup to gather Neurons and Trials.
  */
 class NeuroData
 {
@@ -26,8 +26,8 @@ public:
     const size_t          trains;                //!< neurons*trials
     const size_t          max_spikes_per_train;  //!< max spikes per train
 
-    const Neurons         neuron;                //!< database of neurons, dynamic
-    const Trials          trial;                 //!< database of trials,  dynamic
+    const Neurons         neuron;                //!< database of neurons, computed by setup()
+    const Trials          trial;                 //!< database of trials,  computed by setup()
 
     void setup(); //!< build neurons and trials
 

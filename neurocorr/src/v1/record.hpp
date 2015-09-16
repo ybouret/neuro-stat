@@ -7,11 +7,17 @@
 using namespace yocto;
 
 //! a single record
+/**
+ - Record.size() : #spikes in the record
+ - Record[0..size()-1]: spikes timings
+ */
 class Record : public LArray<double>
 {
 public:
-    //! extract data
+    //! extract #spikes and timings from data
     explicit Record(RArray<double> &data);
+
+    //! destructor
     virtual ~Record() throw();
     
 private:
@@ -20,8 +26,10 @@ private:
 
 #include "yocto/container/slots.hpp"
 
+//! base class for records
 typedef dynamic_slots<Record> RecordsBase;
 
+//! a set of Records
 class Records : public RecordsBase
 {
 public:
