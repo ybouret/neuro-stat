@@ -45,7 +45,6 @@ void StepFunction:: insert(const double x, const double y)
             break;
         }
     }
-    
    
 }
 
