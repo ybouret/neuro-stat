@@ -27,6 +27,8 @@ neurons(CheckNeurons(numNeurons)),
 trials(CheckTrials(numTrials)),
 trains(neurons*trials),
 max_spikes_per_train(maxInputs),
+neuron(neurons),
+trial(trials),
 raw_input(trains,1+maxInputs)
 {
 
@@ -46,6 +48,13 @@ RArray<double> & NeuroData:: get_raw_input(size_t trainIndex) throw()
 {
     assert(trainIndex<trains);
     return raw_input[trainIndex];
+}
+
+
+void NeuroData:: setup()
+{
+    ((Neurons&)neuron).buildFrom(*this);
+    ((Trials &)trial ).buildFrom(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,4 +131,6 @@ void Trials:: buildFrom(NeuroData &data)
     }
 
 }
+
+
 

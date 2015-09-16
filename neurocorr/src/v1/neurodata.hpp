@@ -18,12 +18,20 @@ public:
     //! default destructor
     virtual ~NeuroData() throw();
 
-    const size_t          neurons;
-    const size_t          trials;
+    const size_t          neurons;               //!< #neurons in this data
+    const size_t          trials;                //!< #trials  in this data
     const size_t          trains;                //!< neurons*trials
     const size_t          max_spikes_per_train;  //!< max spikes per train
 
+    const Neurons         neuron;                //!< database of neurons, dynamic
+    const Trials          trial;                 //!< database of trials,  dynamic
+
+    void setup(); //!< build neurons and trials
+
+    //! low level access to raw data
     RArray<double> & get_raw_input(size_t neuronIndex, size_t trialIndex) throw();
+
+    //! low level access to raw data
     RArray<double> & get_raw_input(size_t trainIndex) throw();
     
 private:

@@ -7,3 +7,10 @@ Records(N),
 neurons(size)
 {
 }
+
+
+Trials:: ~Trials() throw()
+{
+}
+
+Trials:: Trials(const size_t numTrials) : TrialsBase(numTrials) {}

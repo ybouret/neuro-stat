@@ -32,6 +32,8 @@ YOCTO_UNIT_TEST_IMPL(neurodata)
                 input[i] = alea<double>();
             }
         }
+
+        ND.setup();
     }
 
 
