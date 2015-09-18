@@ -1,4 +1,4 @@
-#include "neurodata.hpp"
+#include "../neurodata.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
 

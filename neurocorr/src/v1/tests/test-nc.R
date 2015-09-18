@@ -4,7 +4,7 @@
 ##
 ################################################################################
 
-source("neurocorr.R");
+source("../neurocorr.R",chdir=TRUE);
 
 source("gen_data_neur.R");
 
