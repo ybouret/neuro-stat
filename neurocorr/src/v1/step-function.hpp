@@ -22,7 +22,7 @@ class StepFunction
 {
 public:
     virtual ~StepFunction() throw();
-    explicit StepFunction(size_t n);
+    explicit StepFunction(size_t n=0);
 
     double head; //!< initialized to 0, returned if size()<=0
     double tail; //!< initialized to 0
