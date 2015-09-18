@@ -1,6 +1,7 @@
 #include "../neurodata.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
+#include "yocto/sort/quick.hpp"
 
 //using namespace math;
 
@@ -31,11 +32,14 @@ YOCTO_UNIT_TEST_IMPL(neurodata)
             {
                 input[i] = alea<double>();
             }
+            Record rec(input);
+            RQSort(rec);
         }
 
         ND.setup();
         for(size_t i=0;i<ND.neurons;++i)
         {
+
             const Neuron &n = ND.neuron[i];
             std::cerr << "Neuron[" << i << "] : #trials=" << n.trials << std::endl;
         }

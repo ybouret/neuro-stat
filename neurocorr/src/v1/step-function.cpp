@@ -125,3 +125,69 @@ double StepFunction:: operator()(const double t) const throw()
         }
     }
 }
+
+const Coord & StepFunction:: operator[](const size_t indx) const throw()
+{
+    assert(indx>0);
+    assert(indx<size());
+    return coords[indx];
+}
+
+
+void StepFunction:: buildFromFull( const Record &train, const double delta)
+{
+    assert(delta>0);
+    std::cerr << "Building Step Function for #spikes=" << train.size() << std::endl;
+    const size_t num_spikes = train.size();
+    const size_t num_clicks = 2*num_spikes;
+
+    // make a copy
+    CVector<double> shift(num_spikes); assert(train.size()==shift.size());
+    for(size_t i=0;i<num_spikes;++i)
+    {
+        shift[i] = train[i] + delta;
+    }
+
+    // prepare data
+    coords.free();
+    coords.ensure(num_clicks);
+    head = tail = 0;
+
+    // optimized fusion sort
+    int    curr   = 0;
+    size_t iTrain = 0;
+    size_t iShift = 0;
+
+
+    while(iTrain<num_spikes)
+    {
+        const double tt = train[iTrain];
+        const double ts = shift[iShift];
+        if(tt<ts)
+        {
+            ++curr;
+            const Coord C(tt,curr);
+            coords.push_back(C);
+            ++iTrain;
+        }
+        else
+        {
+            --curr;
+            const Coord C(ts,curr);
+            coords.push_back(C);
+            ++iShift;
+        }
+    }
+
+    // end fusion with remaining shift
+    while(iShift<num_spikes)
+    {
+        --curr;
+        const Coord C(shift[iShift++],curr);
+        coords.push_back(C);
+    }
+
+
+
+}
+

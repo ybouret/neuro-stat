@@ -11,9 +11,11 @@ update_git: update
 	git pull
 
 update:
+	@echo "-- updating yocto"
 	@bash ./setup.sh
 	
 clean:
+	@echo "-- removing temporary files" && rm -f *.dat
 	@$(MAKE) -C src/v1 clean
 
 veryclean: clean

@@ -1,8 +1,8 @@
 #ifndef NC_STEP_FUNCTION_INCLUDED
 #define NC_STEP_FUNCTION_INCLUDED 1
 
+#include "record.hpp"
 #include "yocto/sequence/vector.hpp"
-#include "yocto/math/v2d.hpp"
 #include "yocto/comparator.hpp"
 #include "yocto/container/tuple.hpp"
 
@@ -46,7 +46,11 @@ public:
      - otherwise, find the partition and return the value
      */
     double operator()(const double t) const throw();
-    
+
+    void buildFromFull( const Record &train, const double delta);
+
+    const Coord & operator[](const size_t indx) const throw();
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(StepFunction);
     CoordVector coords; // assume sorted coordinates
