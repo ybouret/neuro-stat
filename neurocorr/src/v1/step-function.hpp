@@ -26,13 +26,13 @@ public:
     
     size_t size() const throw();
     
-    void insert(const double x, const double y);
+    void insert(const double t, const double v);
     
-    //! find location of x if size()>0
+    //! find location of t if size()>0
     /**
-     - if(j<=0), x is before fist point
-     - if(j>=size()), x is after last point
-     - otherwise, x[j] < x <= x[j+1]
+     - if(j<=0), t is before fist point (t<t[1])
+     - if(j>=size()), t is after last point
+     - otherwise, t[j] < x <= t[j+1]
      */
     size_t find_index(const double x) const throw();
     
