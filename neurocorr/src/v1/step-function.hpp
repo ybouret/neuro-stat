@@ -24,6 +24,11 @@ public:
     void insert(const double x, const double y);
     
     //! find location of x if size()>0
+    /**
+     - if(j<=0), x is before fist point
+     - if(j>=size()), x is after last point
+     - otherwise, x[j] < x <= x[j+1]
+     */
     size_t find_index(const double x) const throw();
     
     

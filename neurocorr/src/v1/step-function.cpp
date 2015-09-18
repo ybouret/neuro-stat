@@ -48,10 +48,13 @@ void StepFunction:: insert(const double x, const double y)
    
 }
 
+
+
 size_t StepFunction:: find_index(const double x) const throw()
 {
     const size_t n = coords.size();
     assert(n>0);
+    const Coord &C0 = coords.front();
     
     return 0;
 }
