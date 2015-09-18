@@ -12,7 +12,7 @@ update_git: update
 
 update:
 	@echo "-- updating yocto"
-	@bash ./setup.sh
+	@bash ./setup.sh ${BUILD_TYPE}
 	
 clean:
 	@echo "-- removing temporary files" && rm -f *.dat
