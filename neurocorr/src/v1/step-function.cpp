@@ -17,8 +17,7 @@ size_t StepFunction::size() const throw()
 }
 
 StepFunction:: StepFunction(size_t n) :
-head(0),
-tail(0),
+foot(0),
 coords(n,as_capacity)
 {
 
@@ -89,7 +88,6 @@ size_t StepFunction:: find_index(const double t) const throw()
     const Coord &C1 = coords.front();
     if(t<=C1.t)
     {
-
         return 0;
     }
     else
@@ -111,13 +109,14 @@ double StepFunction:: operator()(const double t) const throw()
 {
     if(t<=coords.front().t)
     {
-        return head;
+        return foot;
     }
     else
     {
-        if(t>coords.back().t)
+        const Coord &final = coords.back();
+        if(t>final.t)
         {
-            return tail;
+            return final.v;
         }
         else
         {
@@ -129,7 +128,7 @@ double StepFunction:: operator()(const double t) const throw()
 const Coord & StepFunction:: operator[](const size_t indx) const throw()
 {
     assert(indx>0);
-    assert(indx<size());
+    assert(indx<=size());
     return coords[indx];
 }
 
@@ -151,7 +150,7 @@ void StepFunction:: buildFromFull( const Record &train, const double delta)
     // prepare data
     coords.free();
     coords.ensure(num_clicks);
-    head = tail = 0;
+    foot = 0;
 
     // optimized fusion sort
     int    curr   = 0;

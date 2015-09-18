@@ -14,8 +14,7 @@ YOCTO_UNIT_TEST_IMPL(step)
             F.insert( alea<double>(), (alea<double>()-0.5) * 10.0 );
         }
 
-        F.head = alea<double>();
-        F.tail = -alea<double>();
+        F.foot = alea<double>();
 
         ios::wcstream fp("step.dat");
         for(double t=0;t<=1;t+=0.001)
@@ -28,7 +27,7 @@ YOCTO_UNIT_TEST_IMPL(step)
 
         const size_t nr = 1;// + alea_leq(20);
         const size_t nt = 1;// + alea_leq(100);
-        const size_t ni = 1 + alea_leq(20);
+        const size_t ni = 1 + alea_leq(50);
 
 
         NeuroData ND(nr,nt,ni);
@@ -68,13 +67,23 @@ YOCTO_UNIT_TEST_IMPL(step)
             }
         }
         StepFunction  Phi1;
-        const double delta = 1;
+        const double  delta = 1;
         Phi1.buildFromFull(train, delta);
 
         if(Phi1.size()>1)
         {
             ios::wcstream fp("phi1.dat");
-            fp("0 0\n%g 0\n\n", Phi1[1].t);
+            //fp("%g %g\n", Phi1[1].t-delta,Phi1.foot);
+            fp("%g %g\n", Phi1[1].t,Phi1.foot);
+            for(size_t i=1;i<Phi1.size();++i)
+            {
+                const Coord &C0 = Phi1[i];
+                const Coord &C1 = Phi1[i+1];
+                fp("%g %g\n", C0.t, C0.v);
+                fp("%g %g\n", C1.t, C0.v);
+            }
+            const Coord &C = Phi1[Phi1.size()];
+            fp("%g %g\n", C.t, C.v);
         }
     }
 }

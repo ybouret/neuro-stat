@@ -24,9 +24,8 @@ public:
     virtual ~StepFunction() throw();
     explicit StepFunction(size_t n=0);
 
-    double head; //!< initialized to 0, returned if size()<=0
-    double tail; //!< initialized to 0
-
+    double foot; //!< initialized to 0, returned if size()<=0
+    
     size_t size() const throw(); //! #coords
     
     void insert(const double t, const double v);
