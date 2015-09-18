@@ -23,23 +23,36 @@ class StepFunction
 public:
     virtual ~StepFunction() throw();
     explicit StepFunction(size_t n);
-    
-    size_t size() const throw();
+
+    double head; //!< initialized to 0, returned if size()<=0
+    double tail; //!< initialized to 0
+
+    size_t size() const throw(); //! #coords
     
     void insert(const double t, const double v);
     
     //! find location of t if size()>0
     /**
-     - if(j<=0), t is before fist point (t<t[1])
-     - if(j>=size()), t is after last point
-     - otherwise, t[j] < x <= t[j+1]
+     - if(j<=0), t is before fist point (t<=t[1])
+     - if(j>=size()), t is after last point (t>t[size()])
+     - otherwise, t[j] < t <= t[j+1]
      */
-    size_t find_index(const double x) const throw();
-    
+    size_t find_index(const double t) const throw();
+
+    //! Direct computation for size()>0
+    /**
+     - if(t<=t[1]), headValue
+     - if(t>t[size]), tailValue
+     - otherwise, find the partition and return the value
+     */
+    double operator()(const double t) const throw();
     
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(StepFunction);
     CoordVector coords; // assume sorted coordinates
+
+    //! find index for t>t[1] and t <=t[size]
+    size_t find_index_(const double t) const throw();
 };
 
 #endif

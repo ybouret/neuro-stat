@@ -17,6 +17,8 @@ size_t StepFunction::size() const throw()
 }
 
 StepFunction:: StepFunction(size_t n) :
+head(0),
+tail(0),
 coords(n,as_capacity)
 {
 
@@ -49,6 +51,36 @@ void StepFunction:: insert(const double t, const double v)
 }
 
 
+size_t StepFunction:: find_index_(const double t) const throw()
+{
+    assert(t>coords.front().t);
+    assert(t<=coords.back().t);
+    size_t jlo = 1;
+    size_t jhi = size();
+    while(jhi-jlo>1)
+    {
+        const size_t jmid = (jlo+jhi)>>1;
+        const double tmid = coords[jmid].t;
+        if(t<=tmid)
+        {
+            jhi = jmid;
+        }
+        else
+        {
+            if(t>tmid)
+            {
+                jlo = jmid;
+            }
+            else
+            {
+                return jmid; // special numeric case, t==tmid
+            }
+        }
+    }
+    return jlo;
+
+}
+
 
 size_t StepFunction:: find_index(const double t) const throw()
 {
@@ -69,17 +101,27 @@ size_t StepFunction:: find_index(const double t) const throw()
         }
         else
         {
-            // generic case
-            assert(n>1);
-            size_t jlo = 1;
-            size_t jhi = n;
-            while(jhi-jlo>1)
-            {
-                const size_t jmid = (jlo+jhi)>>1;
-                const double tmid = coords[jmid].t;
-            }
-            return jlo;
+            return find_index_(t);
         }
     }
 
+}
+
+double StepFunction:: operator()(const double t) const throw()
+{
+    if(t<=coords.front().t)
+    {
+        return head;
+    }
+    else
+    {
+        if(t>coords.back().t)
+        {
+            return tail;
+        }
+        else
+        {
+            return coords[ find_index_(t) ].v;
+        }
+    }
 }
