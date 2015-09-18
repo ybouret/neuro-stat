@@ -3,7 +3,7 @@
 
 int CompareCoords(const Coord &lhs, const Coord &rhs) throw()
 {
-    return __compare(lhs.x,rhs.x);
+    return __compare(lhs.t,rhs.t);
 }
 
 StepFunction:: ~StepFunction() throw()

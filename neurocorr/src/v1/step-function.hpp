@@ -4,10 +4,15 @@
 #include "yocto/sequence/vector.hpp"
 #include "yocto/math/v2d.hpp"
 #include "yocto/comparator.hpp"
+#include "yocto/container/tuple.hpp"
 
 using namespace yocto;
 
-typedef math::v2d<double> Coord;
+YOCTO_PAIR_DECL(Coord, double, t, double, v);
+YOCTO_PAIR_END();
+YOCTO_SUPPORT_C_STYLE_OPS(Coord);
+
+//typedef math::v2d<double> Coord;
 typedef vector<Coord>     CoordVector;
 
 int CompareCoords(const Coord &lhs, const Coord &rhs) throw();
