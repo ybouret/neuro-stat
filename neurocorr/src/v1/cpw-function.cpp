@@ -1,4 +1,4 @@
-#include "step-function.hpp"
+#include "cpw-function.hpp"
 
 
 int CompareCoords(const Coord &lhs, const Coord &rhs) throw()
@@ -6,17 +6,17 @@ int CompareCoords(const Coord &lhs, const Coord &rhs) throw()
     return __compare(lhs.t,rhs.t);
 }
 
-StepFunction:: ~StepFunction() throw()
+CPWFunction:: ~CPWFunction() throw()
 {
 }
 
 
-size_t StepFunction::size() const throw()
+size_t CPWFunction::size() const throw()
 {
     return coords.size();
 }
 
-StepFunction:: StepFunction(size_t n) :
+CPWFunction:: CPWFunction(size_t n) :
 foot(0),
 coords(n,as_capacity)
 {
@@ -24,7 +24,7 @@ coords(n,as_capacity)
 }
 
 
-void StepFunction:: insert(const double t, const double v)
+void CPWFunction:: insert(const double t, const double v)
 {
     // append the coordinate
     {
@@ -50,7 +50,7 @@ void StepFunction:: insert(const double t, const double v)
 }
 
 
-size_t StepFunction:: find_index_(const double t) const throw()
+size_t CPWFunction:: find_index_(const double t) const throw()
 {
     assert(t>coords.front().t);
     assert(t<=coords.back().t);
@@ -81,7 +81,7 @@ size_t StepFunction:: find_index_(const double t) const throw()
 }
 
 
-size_t StepFunction:: find_index(const double t) const throw()
+size_t CPWFunction:: find_index(const double t) const throw()
 {
     const size_t n = coords.size();
     assert(n>0);
@@ -105,7 +105,7 @@ size_t StepFunction:: find_index(const double t) const throw()
 
 }
 
-double StepFunction:: operator()(const double t) const throw()
+double CPWFunction:: operator()(const double t) const throw()
 {
     if(t<=coords.front().t)
     {
@@ -125,7 +125,7 @@ double StepFunction:: operator()(const double t) const throw()
     }
 }
 
-const Coord & StepFunction:: operator[](const size_t indx) const throw()
+const Coord & CPWFunction:: operator[](const size_t indx) const throw()
 {
     assert(indx>0);
     assert(indx<=size());
@@ -133,7 +133,7 @@ const Coord & StepFunction:: operator[](const size_t indx) const throw()
 }
 
 
-void StepFunction:: buildFromFull( const Record &train, const double delta)
+void CPWFunction:: buildFromFull( const Record &train, const double delta)
 {
     assert(delta>0);
     std::cerr << "Building Step Function for #spikes=" << train.size() << std::endl;

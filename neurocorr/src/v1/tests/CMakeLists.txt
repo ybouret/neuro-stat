@@ -4,7 +4,7 @@ ADD_EXECUTABLE(test-nc
 	test-experiment.cpp
 	test-records.cpp
     	test-neurodata.cpp
-	test-step.cpp
+	test-cpw.cpp
 )
 
 TARGET_LINK_LIBRARIES(test-nc neurocorr)
@@ -14,7 +14,7 @@ ENABLE_TESTING()
 
 ADD_TEST(Records      test-nc records)
 ADD_TEST(NeuroData    test-nc neurodata)
-ADD_TEST(StepFunction test-nc step)
+ADD_TEST(CPWFunction  test-nc cpw)
 
 
 IF(R_FOUND)

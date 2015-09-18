@@ -9,8 +9,8 @@ trial.hpp
 trial.cpp
 neurodata.hpp
 neurodata.cpp
-step-function.hpp
-step-function.cpp
+cpw-function.hpp
+cpw-function.cpp
 experiment.hpp
 experiment.cpp)
 

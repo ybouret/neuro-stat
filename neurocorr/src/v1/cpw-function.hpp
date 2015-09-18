@@ -17,12 +17,12 @@ typedef vector<Coord>     CoordVector;
 
 int CompareCoords(const Coord &lhs, const Coord &rhs) throw();
 
-//! Left-Continuous step function
-class StepFunction
+//! Left-Continuous, ConstantPieceWise Function
+class CPWFunction
 {
 public:
-    virtual ~StepFunction() throw();
-    explicit StepFunction(size_t n=0);
+    virtual ~CPWFunction() throw();
+    explicit CPWFunction(size_t n=0);
 
     double foot; //!< initialized to 0, returned if size()<=0
     
@@ -51,7 +51,7 @@ public:
     const Coord & operator[](const size_t indx) const throw();
 
 private:
-    YOCTO_DISABLE_COPY_AND_ASSIGN(StepFunction);
+    YOCTO_DISABLE_COPY_AND_ASSIGN(CPWFunction);
     CoordVector coords; // assume sorted coordinates
 
     //! find index for t>t[1] and t <=t[size]

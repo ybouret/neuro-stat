@@ -1,13 +1,13 @@
-#include "../step-function.hpp"
+#include "../cpw-function.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/code/rand.hpp"
 #include "../neurodata.hpp"
 
-YOCTO_UNIT_TEST_IMPL(step)
+YOCTO_UNIT_TEST_IMPL(cpw)
 {
     {
-        StepFunction F;
+        CPWFunction F;
 
         for(size_t i=1+alea_leq(10);i>0;--i)
         {
@@ -66,7 +66,7 @@ YOCTO_UNIT_TEST_IMPL(step)
                 fp("%g 0\n", train[i]);
             }
         }
-        StepFunction  Phi1;
+        CPWFunction   Phi1;
         const double  delta = 1;
         Phi1.buildFromFull(train, delta);
 
