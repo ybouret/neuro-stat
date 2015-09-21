@@ -12,6 +12,13 @@ coords(n,as_capacity)
 {
 }
 
+CPW_Function:: CPW_Function(const CPW_Function &fn) :
+Object(fn),
+foot(fn.foot),
+coords(fn.coords)
+{
+}
+
 
 void CPW_Function:: insert(const Unit tau, const Unit value)
 {
@@ -100,6 +107,19 @@ void CPW_Function:: buildFrom( const RArray<Unit> &train, const Unit deltaUnit )
 
     assert(2*n==coords.size());
 }
+
+
+CPW_Function:: CPW_Function(const CPW_Function &fn,  Unit tauLo,  Unit tauHi) :
+Object(fn),
+foot(0),
+coords()
+{
+    if(tauLo>tauHi)
+    {
+        cswap(tauLo,tauHi);
+    }
+}
+
 
 #include "yocto/ios/ocstream.hpp"
 
