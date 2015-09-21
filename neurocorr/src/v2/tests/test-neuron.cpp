@@ -5,7 +5,7 @@
 YOCTO_UNIT_TEST_IMPL(neuron)
 {
 
-    for(size_t iter=0;iter<1;++iter)
+    for(size_t iter=0;iter<100;++iter)
     {
         const size_t  num_neurons = 1+alea_leq(10);
         const size_t  num_trials  = 1+alea_leq(100);
