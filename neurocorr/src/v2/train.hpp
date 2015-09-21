@@ -4,9 +4,16 @@
 #include "types.hpp"
 #include "yocto/R/IR.hpp"
 
-class Train : public Object, public LArray<Unit>
+class Train : public Object, public CVector<Unit>
 {
 public:
+
+    //! fetch and convert data to Units
+    explicit Train(const Real          scale,
+                   const Matrix<Real> &neurodata,
+                   const size_t        iTrain);
+    
+
     virtual ~Train() throw();
     
 private:
