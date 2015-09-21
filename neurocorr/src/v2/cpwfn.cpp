@@ -109,15 +109,57 @@ void CPW_Function:: buildFrom( const RArray<Unit> &train, const Unit deltaUnit )
 }
 
 
+#include "yocto/exception.hpp"
+
+size_t CPW_Function:: find_index_for( const Unit tau ) const throw()
+{
+    assert(size()>0);
+    size_t jlo = 1;
+    size_t jhi = size();
+    while(jhi-jlo>1)
+    {
+
+    }
+    return jlo;
+}
+
 CPW_Function:: CPW_Function(const CPW_Function &fn,  Unit tauLo,  Unit tauHi) :
 Object(fn),
 foot(0),
 coords()
 {
+    // cleanup
     if(tauLo>tauHi)
     {
         cswap(tauLo,tauHi);
     }
+
+    // find closest representation
+
+    // check validity
+    const array<Coord> &crd = fn.coords;
+    const size_t        n   = crd.size();
+
+    if(n<=0)
+    {
+        throw exception("CPW Sub Function: empty source function");
+    }
+
+#if 0
+    if(tauLo<crd[1].tau)
+    {
+        throw exception("CPW Sub Function: tauLo=%ld<%ld", tauLo, crd[1].tau);
+    }
+
+    if(tauHi>crd[n].tau)
+    {
+        throw exception("CPW Sub Function: tauHi=%ld>%ld", tauHi, crd[n].tau);
+    }
+#endif
+
+    // extracting parameters
+
+
 }
 
 
