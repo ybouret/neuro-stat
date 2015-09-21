@@ -5,6 +5,8 @@ train.hpp
 train.cpp
 neuron.cpp
 neuron.hpp
+cpwfn.hpp
+cpwfn.cpp
 )
 
 ADD_LIBRARY(ncv2 STATIC ${c_srcs})
