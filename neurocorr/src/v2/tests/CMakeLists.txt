@@ -5,8 +5,8 @@ test-train.cpp
 test-neuron.cpp
 )
 
-TARGET_LINK_YOCTO(test-ncv2)
 TARGET_LINK_LIBRARIES(test-ncv2 ncv2)
+TARGET_LINK_YOCTO(test-ncv2)
 
 ENABLE_TESTING()
 ADD_TEST(Types  test-ncv2 types)

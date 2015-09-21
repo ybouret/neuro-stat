@@ -3,6 +3,7 @@
 
 #include "train.hpp"
 
+//! one neuron, with its trials
 class Neuron : public Object, public Trains
 {
 public:
@@ -17,12 +18,16 @@ private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Neuron);
 };
 
+
 typedef slots_of<Neuron> NeuronsBase;
 
 class Neurons : public Object, public NeuronsBase
 {
 public:
     virtual ~Neurons() throw();
+    explicit Neurons(const Real          usr_scale,
+                     const Matrix<Real> &neurodata,
+                     const size_t        num_neurons);
     
 
 private:

@@ -5,12 +5,16 @@
 YOCTO_UNIT_TEST_IMPL(neuron)
 {
 
-    for(size_t iter=0;iter<100;++iter)
+    for(size_t iter=0;iter<1;++iter)
     {
-        const size_t  nr = 1+alea_leq(10);
+        const size_t  num_neurons = 1+alea_leq(10);
+        const size_t  num_trials  = 1+alea_leq(100);
+        const size_t  nr = num_neurons*num_trials;
         const size_t  ns = alea_lt(100);
         const size_t  nc = 1 + ns;
 
+        std::cerr << "-- num_neurons=" << num_neurons << std::endl;
+        std::cerr << "-- num_trials =" << num_trials  << std::endl;
         std::cerr << "-- creating neuro data with " << nr << " rows" << std::endl;
         std::cerr << "-- max spikes=" << ns << std::endl;
         std::cerr << "-- columns   =" << nc << std::endl;
@@ -18,7 +22,7 @@ YOCTO_UNIT_TEST_IMPL(neuron)
         for(size_t i=0;i<nr;++i)
         {
             const size_t nj = alea_leq(ns);
-            std::cerr << "\ttrain #" << i << ": #spikes=" << nj << std::endl;
+            //std::cerr << "\ttrain #" << i << ": #spikes=" << nj << std::endl;
             neurodata[i][0] = nj;
             for(size_t j=1;j<=nj;++j)
             {
@@ -30,8 +34,20 @@ YOCTO_UNIT_TEST_IMPL(neuron)
                 RQSort(tr);
             }
         }
-        Trains trains(nr);
-        trains.buildFrom(1000.0,neurodata,0);
+
+        Neurons neurons(1000.0,neurodata,num_neurons);
+        std::cerr << "neurons.size=" << neurons.size << std::endl;
+        for(size_t i=0;i<neurons.size;++i)
+        {
+            const Neuron &nn = neurons[i];
+            std::cerr << "neuron #" << i << ": #trials=" << nn.trials << std::endl;
+            for(size_t j=0;j<nn.trials;++j)
+            {
+                const Train &tr = nn[j];
+                std::cerr << "/" << tr.size();
+            }
+            std::cerr << "." << std::endl;
+        }
     }
 
 }

@@ -34,7 +34,7 @@ Train:: Train(const Real          scale,
 Object(scale),
 CVector<Unit>( __get_length_of(neurodata,iTrain) )
 {
-    std::cerr << "Creating Train #" << iTrain << " with " << size() << " spikes" << std::endl;
+    //std::cerr << "Creating Train #" << iTrain << " with " << size() << " spikes" << std::endl;
     const size_t n = size();
     for(size_t i=0;i<n;++i)
     {
