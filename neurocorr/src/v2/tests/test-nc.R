@@ -10,7 +10,7 @@ source("gen_data_neur.R");
 
 DataNeur		= Hawkesmulti(Ntrial,delay,BoxComp,spontComp,interacComp);
 
-print(DataNeur);
+#print(DataNeur);
 print(Nneur);
 ND_rows = nrow(DataNeur);
 print(ND_rows);
@@ -22,4 +22,4 @@ for(i in 1:ND_rows)
     print(DataNeur[i,1]);
 }
 
-NeuroCorr_CheckNeuroData(DataNeur,Nneur);
+NeuroCorr_CheckNeuroData(DataNeur,Nneur,1.0e6);

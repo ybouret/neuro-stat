@@ -5,12 +5,15 @@
 #include "yocto/R/IR.hpp"
 #include "yocto/container/slots.hpp"
 
-
+//! data in Units
 class Train : public Object, public CVector<Unit>
 {
 public:
 
     //! fetch and convert data to Units
+    /**
+     Expecting a neuronal data format
+     */
     explicit Train(const Real          scale,
                    const Matrix<Real> &neurodata,
                    const size_t        iTrain);
@@ -30,8 +33,8 @@ public:
     explicit Trains( const size_t num_trials );
     virtual ~Trains() throw();
 
-    const size_t &trials;     //!< current stored trials
-    const size_t &max_trials; //!< from initial num_trials
+    const size_t &trials;     //!< current stored trials, alias to size
+    const size_t &max_trials; //!< from initial num_trials, alias to capacity
 
     void buildFrom(const double        scale,
                    const Matrix<Real> &neurodata,

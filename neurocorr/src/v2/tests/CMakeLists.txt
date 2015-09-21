@@ -13,3 +13,11 @@ ADD_TEST(Types  test-ncv2 types)
 ADD_TEST(Train  test-ncv2 train)
 ADD_TEST(Neuron test-ncv2 neuron)
 
+
+
+IF(R_FOUND)
+ADD_TEST(NAME test_nc_R WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND ${R_EXE} --no-save --slave -f test-nc.R)
+ENDIF()
+
+
+ADD_CUSTOM_TARGET(check-ncv2 COMMAND ${CMAKE_CTEST_COMMAND} -V DEPENDS test-ncv2 )

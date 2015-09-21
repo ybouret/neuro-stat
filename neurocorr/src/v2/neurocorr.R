@@ -5,7 +5,7 @@
 ################################################################################
 
 neurocorr_dll <- paste("neurocorr", .Platform$dynlib.ext, sep="")
-print(paste("NeuroCorr: Loading",neurocorr_dll) )
+print(paste("NeuroCorr: Loading NeuroCorr from ",neurocorr_dll) )
 
 ## load the dll only once
 if( is.loaded("NeuroCorr_Version") ) dyn.unload(neurocorr_dll);
@@ -30,10 +30,11 @@ NeuroCorr_Version <- function()
 ##
 ################################################################################
 
-NeuroCorr_CheckNeuroData <- function( neuroData, numNeurons )
+NeuroCorr_CheckNeuroData <- function( neuroData, numNeurons, scale )
 {
     if( !is.matrix(neuroData)   ) stop("CheckNeuroData: neuroData is not a matrix");
-    if( !is.double(numNeurons)  ) stop("CheckNeuroData: numNeurons is not an integer");
+    if( !is.double(numNeurons)  ) stop("CheckNeuroData: numNeurons is not a number");
+    if( !is.double(scale)       ) stop("CheckNeuroData: scale is not a number");
 
-    .Call("NeuroCorr_CheckNeuroData", neuroData, numNeurons);
+    .Call("NeuroCorr_CheckNeuroData", neuroData, numNeurons, scale);
 }

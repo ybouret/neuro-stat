@@ -27,3 +27,8 @@ Real Object:: toReal(const Unit u) const throw()
 {
     return Real(u)/scale;
 }
+
+int Object:: CompareUnit(const Unit &lhs, const Unit &rhs) throw()
+{
+    return lhs-rhs;
+}

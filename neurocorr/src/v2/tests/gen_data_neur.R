@@ -39,6 +39,7 @@ Ncomp = 2 # number of comportments, for the moment just one relaxation state and
 
 delay=0 # time in second during which the process warms up
 Tend = 100 # duration in second of the trial, each process is simulated on [0,Tend], here for this simulation should be a multiple of 10
+Tend = 10;
 
 ### spontaneous apparition rate in each comportment/behavior : line =neuron column = comportment
 spontComp=matrix(c(10,10,10,10), nrow=2)

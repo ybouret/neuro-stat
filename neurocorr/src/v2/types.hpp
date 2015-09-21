@@ -26,7 +26,9 @@ public:
     //! conversion
     Unit toUnit(const Real t) const throw();
     Real toReal(const Unit u) const throw();
-    
+
+    static int CompareUnit(const Unit &lhs, const Unit &rhs) throw();
+
 private:
     YOCTO_DISABLE_ASSIGN(Object);
 };

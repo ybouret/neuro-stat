@@ -28,7 +28,7 @@ public:
     explicit Neurons(const Real          usr_scale,
                      const Matrix<Real> &neurodata,
                      const size_t        num_neurons);
-    
+    const size_t trials; //!< trials per neuron
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Neurons);

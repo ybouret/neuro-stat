@@ -34,12 +34,23 @@ Train:: Train(const Real          scale,
 Object(scale),
 CVector<Unit>( __get_length_of(neurodata,iTrain) )
 {
-    //std::cerr << "Creating Train #" << iTrain << " with " << size() << " spikes" << std::endl;
     const size_t n = size();
+    CVector<Unit> &a = *this;
     for(size_t i=0;i<n;++i)
     {
-        (*this)[i] = toUnit(neurodata(iTrain,i+1));
+        const Real tmp = neurodata(iTrain,i+1);
+        a[i] = toUnit(tmp);
     }
+
+    // ensure ordered and strictly increasing
+    for(size_t i=0,ip=i+1;ip<n;++i,++ip)
+    {
+        if(a[ip]<=a[i])
+        {
+            throw exception("train %u: data are not ordered or scale is too small!!!", unsigned(iTrain));
+        }
+    }
+
 }
 
 Trains:: Trains(const size_t num_trials) :

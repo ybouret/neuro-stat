@@ -25,7 +25,8 @@ Neurons:: Neurons(const Real          usr_scale,
                   const Matrix<Real> &neurodata,
                   const size_t        num_neurons) :
 Object(usr_scale),
-NeuronsBase(num_neurons)
+NeuronsBase(num_neurons),
+trials(0)
 {
     const size_t num_trains = neurodata.rows;
     if(0 != (num_trains%num_neurons) )
@@ -35,6 +36,7 @@ NeuronsBase(num_neurons)
     if(trialCount<=0)
         throw exception("no valid trials for neurodata");
 
+    (size_t&)trials = trialCount;
     for(size_t i=0;i<num_neurons;++i)
     {
         const size_t trialStart = i*trialCount;
