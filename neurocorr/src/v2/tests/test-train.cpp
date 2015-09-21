@@ -22,7 +22,7 @@ YOCTO_UNIT_TEST_IMPL(train)
             neurodata[i][0] = nj;
             for(size_t j=1;j<=nj;++j)
             {
-                neurodata[i][j] = alea<double>();
+                neurodata[i][j] = j/100.0;
             }
             if(nj>1)
             {

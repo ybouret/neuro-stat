@@ -26,6 +26,8 @@ public:
     const Coord & front() const throw();
     const Coord & back() const throw();
 
+    void buildFrom( const RArray<Unit> &train, const Unit deltaUnit );
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(CPW_Function);
     vector<Coord> coords;

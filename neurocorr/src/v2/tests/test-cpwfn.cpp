@@ -27,5 +27,12 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
         fp("%ld %ld\n", fn.back().tau, fn.back().value);
     }
 
+
+    {
+        const size_t  nmax = 100;
+        CMatrix<Real> nd(1,1+nmax);
+
+    }
+
 }
 YOCTO_UNIT_TEST_DONE()
