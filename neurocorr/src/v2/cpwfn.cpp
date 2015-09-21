@@ -97,4 +97,29 @@ void CPW_Function:: buildFrom( const RArray<Unit> &train, const Unit deltaUnit )
         const Coord C(shift[iShift++],curr);
         coords.push_back(C);
     }
+
+    assert(2*n==coords.size());
 }
+
+#include "yocto/ios/ocstream.hpp"
+
+
+void CPW_Function:: saveTo(const char *filename) const
+{
+    ios::wcstream fp(filename);
+    const CPW_Function &fn = *this;
+    if(fn.size()>0)
+    {
+        fp("%ld %ld\n", fn[1].tau-1,fn.foot);
+        fp("%ld %ld\n", fn[1].tau, fn.foot);
+        for(size_t i=1;i<fn.size();++i)
+        {
+            fp("%ld %ld\n", fn[i].tau,   fn[i].value);
+            fp("%ld %ld\n", fn[i+1].tau, fn[i].value);
+        }
+        fp("%ld %ld\n", fn.back().tau,   fn.back().value);
+        fp("%ld %ld\n", fn.back().tau+1, fn.back().value);
+
+    }
+}
+

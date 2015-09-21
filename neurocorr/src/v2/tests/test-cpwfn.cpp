@@ -15,23 +15,35 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
         fn.insert(tmp,Unit(alea_leq(100))-50);
     }
 
-    if(fn.size()>0)
-    {
-        ios::wcstream fp("cpw.dat");
-        fp("%ld %ld\n", fn[1].tau, fn.foot);
-        for(size_t i=1;i<fn.size();++i)
-        {
-            fp("%ld %ld\n", fn[i].tau,   fn[i].value);
-            fp("%ld %ld\n", fn[i+1].tau, fn[i].value);
-        }
-        fp("%ld %ld\n", fn.back().tau, fn.back().value);
-    }
+    fn.saveTo("cpw.dat");
+    
 
 
+    //for(size_t iter=0;iter<10000;++iter)
     {
-        const size_t  nmax = 100;
+        const size_t  nmax = 10;
         CMatrix<Real> nd(1,1+nmax);
+        const size_t  ns = alea_leq(nmax);
+        nd[0][0] = ns;
+        size_t j = 0;
+        for(size_t i=1;i<=ns;++i)
+        {
+            j += 1+alea_lt(4);
+            nd[0][i] = j;
+        }
+        Train tr(1,nd,0);
+        {
+            ios::wcstream fp("train.dat");
+            for(size_t i=0;i<tr.size();++i)
+            {
+                fp("%ld 0\n", tr[i]);
+            }
+        }
 
+        fn.buildFrom(tr,1);
+        fn.saveTo("phi1.dat");
+        fn.buildFrom(tr,2);
+        fn.saveTo("phi2.dat");
     }
 
 }

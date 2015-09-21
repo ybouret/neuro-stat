@@ -28,6 +28,8 @@ public:
 
     void buildFrom( const RArray<Unit> &train, const Unit deltaUnit );
 
+    void saveTo(const char *filename) const;
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(CPW_Function);
     vector<Coord> coords;
