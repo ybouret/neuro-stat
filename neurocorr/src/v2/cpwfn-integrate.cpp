@@ -7,9 +7,8 @@ Real CPW_Function:: integrate(const Unit tauLo,
 
     //__________________________________________________________________________
     //
-    // Get rid or trivial cases
+    // Get rid or most trivial case
     //__________________________________________________________________________
-
     if(tauLo>=tauHi)
     {
         // trivial case 1
@@ -17,6 +16,10 @@ Real CPW_Function:: integrate(const Unit tauLo,
     }
 
 
+    //__________________________________________________________________________
+    //
+    // Get rid or  trivial cases
+    //__________________________________________________________________________
     const size_t n = coords.size();
 
     if(n<=0)
@@ -52,14 +55,15 @@ Real CPW_Function:: integrate(const Unit tauLo,
     //
     // Locate position for tauLo
     //__________________________________________________________________________
+    Real ans  = 0.0;
     assert(n>=2);
     size_t jlo = 0;
-    size_t jup = n;
-    std::cerr << "tauLo=" << tauLo << ", tau[1]=" << C1.tau << std::endl;
+    //std::cerr << "tauLo=" << tauLo << ", tau[1]=" << C1.tau << std::endl;
     if(tauLo>=C1.tau)
     {
         assert(tauLo<Cn.tau);
         jlo=1;
+        size_t jup = 1;
         while(jup-jlo>1)
         {
             const size_t jmid   = (jlo+jup)>>1;
@@ -76,12 +80,16 @@ Real CPW_Function:: integrate(const Unit tauLo,
         std::cerr << "lo:" << coords[jlo].tau << "<=" << tauLo << "<=" << coords[jup].tau << std::endl;
     }
 
+    //__________________________________________________________________________
+    //
+    // Locate position for tauHi
+    //__________________________________________________________________________
     size_t jhi = n;
-    size_t jbn = n;
     if(tauHi<=Cn.tau)
     {
         assert(tauHi>C1.tau);
-        jhi = jlo>0 ? jlo : 1;
+        jhi = (jlo>0) ? jlo : 1;
+        size_t jbn = n;
         while(jbn-jhi>1)
         {
             const size_t jmid   = (jhi+jbn)>>1;
@@ -98,7 +106,8 @@ Real CPW_Function:: integrate(const Unit tauLo,
         std::cerr << "hi:" << coords[jhi].tau << "<=" << tauHi << "<=" << coords[jbn].tau << std::endl;
     }
     
-    return 0.0;
+    
+    return ans;
 
 }
 
