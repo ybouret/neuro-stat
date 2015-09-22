@@ -9,11 +9,14 @@ class Phi : public PhiBase
 {
 public:
     virtual ~Phi() throw();
+
+    //! allocate memory and compute
     explicit Phi(const size_t extra,
                  const Real   scale,
                  const Train &train,
                  const Unit   deltaUnit);
 
+    //! use previous memory
     void update(const Train &train, const Unit deltaUnit);
 
     

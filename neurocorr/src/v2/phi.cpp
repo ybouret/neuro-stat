@@ -13,7 +13,7 @@ PhiBase(1+extra)
     PhiBase &self = *this;
 
     //create 'mother phi'
-    self.append<Real,size_t>(scale,0);
+    self.append<Real>(scale);
     CPW_Function &phi0 = self[0];
     phi0.buildFrom(train, deltaUnit, true);
 

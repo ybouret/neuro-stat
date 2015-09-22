@@ -5,10 +5,10 @@ CPW_Function:: ~CPW_Function() throw()
 {
 }
 
-CPW_Function:: CPW_Function(const Real usr_scale, const size_t n) :
+CPW_Function:: CPW_Function(const Real usr_scale) throw() :
 Object(usr_scale),
 foot(0),
-coords(n,as_capacity)
+coords()
 {
 }
 
@@ -174,7 +174,8 @@ static inline Real __check_same_scales(const CPW_Function &lhs,
     return lhs.scale;
 }
 
-void CPW_Function:: product(const CPW_Function &lhs, const CPW_Function &rhs)
+void CPW_Function:: product(const CPW_Function &lhs,
+                            const CPW_Function &rhs)
 {
     assert(this != &lhs );
     assert(this != &rhs );

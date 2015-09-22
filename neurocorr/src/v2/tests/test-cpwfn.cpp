@@ -9,7 +9,7 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
     const Real delta = 1000.0;
 
     {
-        CPW_Function fn(delta,100);
+        CPW_Function fn(delta);
 
         Unit tmp = 0;
         for(size_t i=1+alea_lt(100);i>0;--i)

@@ -22,8 +22,7 @@ class CPW_Function : public Object
 {
 public:
     //! a function with an intial capacity
-    explicit CPW_Function(const Real   usr_scale,
-                          const size_t usr_count = 0);
+    explicit CPW_Function(const Real usr_scale) throw();
     
     virtual ~CPW_Function() throw();
 

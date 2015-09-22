@@ -7,6 +7,9 @@ neuron.cpp
 neuron.hpp
 cpwfn.hpp
 cpwfn.cpp
+cpwfn-build.cpp
+cpwfn-product.cpp
+cpwfn-integrate.cpp
 phi.hpp
 phi.cpp
 )
