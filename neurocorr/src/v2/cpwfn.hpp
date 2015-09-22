@@ -56,8 +56,11 @@ public:
     //! reset all
     void clear() throw();
 
+    //! remove empty intervals
     void removeEmptyIntervals() throw();
 
+    //! product
+    CPW_Function(const CPW_Function &lhs, const CPW_Function &rhs);
 
 
 private:

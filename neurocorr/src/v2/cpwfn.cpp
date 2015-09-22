@@ -147,7 +147,79 @@ void CPW_Function:: clear() throw()
 }
 
 
+
+
 #include "yocto/exception.hpp"
+
+static inline Real __check_same_scales(const CPW_Function &lhs,
+                                       const CPW_Function &rhs)
+{
+    const Real l = lhs.scale;
+    const Real r = rhs.scale;
+    if( 0 != __compare(l,r) )
+    {
+        throw exception("CPW Functions have different scales !");
+    }
+    return lhs.scale;
+}
+
+CPW_Function:: CPW_Function(const CPW_Function &lhs,
+                            const CPW_Function &rhs ) :
+Object( __check_same_scales(lhs,rhs) ),
+foot(lhs.foot*rhs.foot),
+coords()
+{
+    const size_t nL = lhs.size();
+    const size_t nR = rhs.size();
+    coords.ensure(nL+nR);
+    Real lvalue = lhs.foot;
+    Real rvalue = rhs.foot;
+
+
+    // interleaved scan
+    size_t iL = 1;
+    size_t iR = 1;
+    while(iL<=nL&&iR<=nR)
+    {
+        const Coord & lC = lhs.coords[iL];
+        const Coord & rC = rhs.coords[iR];
+        const Unit    l  = lC.tau;
+        const Unit    r  = rC.tau;
+        if(l<r)
+        {
+            lvalue = lC.value;
+            const Coord C(l,lvalue*rvalue);
+            coords.push_back(C);
+            ++iL;
+        }
+        else
+        {
+            if(r<l)
+            {
+                rvalue = rC.value;
+                const Coord C(r,lvalue*rvalue);
+                coords.push_back(C);
+                ++iR;
+            }
+            else
+            {
+                lvalue = lC.value;
+                rvalue = rC.value;
+                const Coord C(l,lvalue*rvalue);
+                coords.push_back(C);
+                ++iL;
+                ++iR;
+            }
+        }
+    }
+    assert(iL>=nR||iR>=nR);
+
+    // append remaining values
+    
+
+
+}
+
 
 size_t CPW_Function:: find_index_for( const Unit tau ) const throw()
 {
