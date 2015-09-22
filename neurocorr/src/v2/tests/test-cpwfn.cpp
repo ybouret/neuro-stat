@@ -44,6 +44,8 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
         fn.saveTo("phi1.dat");
         fn.buildFrom(tr,2);
         fn.saveTo("phi2.dat");
+        fn.removeEmptyIntervals();
+        fn.saveTo("phi2b.dat");
     }
 
 }

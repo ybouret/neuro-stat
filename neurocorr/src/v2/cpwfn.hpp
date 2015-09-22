@@ -29,7 +29,7 @@ public:
     Unit foot; //!< value before first point
 
     //! insert any new coordinate
-    void insert(const Unit tau, const Unit value);
+    void insert(const Unit a_tau, const Unit a_value);
 
     //! number of coordinates
     size_t size() const throw();
@@ -52,8 +52,13 @@ public:
     //! copy constructor, with shift
     CPW_Function(const CPW_Function &fn,
                  const Unit          deltaUnit);
-    
-    
+
+    //! reset all
+    void clear() throw();
+
+    void removeEmptyIntervals() throw();
+
+
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(CPW_Function);

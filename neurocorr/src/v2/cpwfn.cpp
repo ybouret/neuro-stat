@@ -114,15 +114,47 @@ void CPW_Function:: buildFrom( const RArray<Unit> &train, const Unit deltaUnit )
     assert(2*n==coords.size());
 }
 
+void CPW_Function:: removeEmptyIntervals() throw()
+{
+    // the first and last point cannot be multiple
+    size_t i = size();
+    if(i>=3)
+    {
+        --i;
+        size_t im = i-1;
+        while(im>0)
+        {
+            Coord &Cm = coords[im];
+            Coord &C  = coords[i];
+            if(Cm.tau>=C.tau)
+            {
+                std::cerr << "Should remove tau=" << Cm.tau << std::endl;
+                const Coord &Cp = coords[i+1];
+                memmove(&Cm, &Cp, sizeof(Coord) * (coords.size()-i) );
+                coords.pop_back();
+                coords.pop_back();
+            }
+            --im;
+            --i;
+        }
+    }
+}
+
+void CPW_Function:: clear() throw()
+{
+    foot = 0;
+    coords.free();
+}
+
 
 #include "yocto/exception.hpp"
 
 size_t CPW_Function:: find_index_for( const Unit tau ) const throw()
 {
     assert(size()>1);
-    const size_t n = coords.size();
-    size_t jlo = 1;
-    size_t jhi = n;
+    const size_t n   = coords.size();
+    size_t       jlo = 1;
+    size_t       jhi = n;
     assert(tau  > coords[1].tau);
     assert(tau <= coords[n].tau);
     while(jhi-jlo>1)
