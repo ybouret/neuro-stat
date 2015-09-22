@@ -12,15 +12,21 @@ coords(n,as_capacity)
 {
 }
 
-CPW_Function:: CPW_Function(const CPW_Function &fn, const Unit deltaUnit) :
-Object(fn),
-foot(fn.foot),
-coords(fn.coords)
+
+void CPW_Function:: shiftBy(const Unit deltaUnit) throw()
 {
     for(size_t i=coords.size();i>0;--i)
     {
         coords[i].tau += deltaUnit;
     }
+}
+
+CPW_Function:: CPW_Function(const CPW_Function &fn, const Unit deltaUnit) :
+Object(fn),
+foot(fn.foot),
+coords(fn.coords)
+{
+    shiftBy(deltaUnit);
 }
 
 
@@ -67,7 +73,9 @@ const Coord & CPW_Function:: back() const throw()
 }
 
 
-void CPW_Function:: buildFrom( const RArray<Unit> &train, const Unit deltaUnit )
+void CPW_Function:: buildFrom(const RArray<Unit> &train,
+                              const Unit          deltaUnit,
+                              const bool          cleanUp)
 {
     assert(deltaUnit>0);
     const size_t n = train.size();
@@ -112,17 +120,19 @@ void CPW_Function:: buildFrom( const RArray<Unit> &train, const Unit deltaUnit )
     }
     
     assert(2*n==coords.size());
+
+    if(cleanUp) removeEmptyIntervals();
 }
 
 void CPW_Function:: removeEmptyIntervals() throw()
 {
     // the first and last point cannot be multiple
     size_t i = size();
-    if(i>=3)
+    if(i>3)
     {
         --i;
         size_t im = i-1;
-        while(im>0)
+        while(im>1)
         {
             Coord &Cm = coords[im];
             Coord &C  = coords[i];
@@ -163,23 +173,23 @@ static inline Real __check_same_scales(const CPW_Function &lhs,
     return lhs.scale;
 }
 
-CPW_Function:: CPW_Function(const CPW_Function &lhs,
-                            const CPW_Function &rhs ) :
-Object( __check_same_scales(lhs,rhs) ),
-foot(lhs.foot*rhs.foot),
-coords()
+void CPW_Function:: product(const CPW_Function &lhs, const CPW_Function &rhs)
 {
+    assert(this != &lhs );
+    assert(this != &rhs );
+    __check_same_scales(lhs,rhs);
+    coords.free();
     const size_t nL = lhs.size();
     const size_t nR = rhs.size();
     coords.ensure(nL+nR);
     Real lvalue = lhs.foot;
     Real rvalue = rhs.foot;
-
+    foot = lvalue*rvalue;
 
     // interleaved scan
     size_t iL = 1;
     size_t iR = 1;
-    while(iL<=nL&&iR<=nR)
+    while( (iL<=nL) && (iR<=nR) )
     {
         const Coord & lC = lhs.coords[iL];
         const Coord & rC = rhs.coords[iR];
@@ -212,12 +222,34 @@ coords()
             }
         }
     }
-    assert(iL>=nR||iR>=nR);
+    assert( (iL>=nL) || (iR>=nR) );
 
     // append remaining values
-    
+    for(;iL<=nL;++iL)
+    {
+        Coord C( lhs.coords[iL] );
+        C.value *= rvalue;
+        coords.push_back(C);
+    }
 
+    for(;iR<=nR;++iR)
+    {
+        Coord C( rhs.coords[iR] );
+        C.value *= lvalue;
+        coords.push_back(C);
+    }
 
+    assert(coords.size()<=nL+nR);
+
+}
+
+CPW_Function:: CPW_Function(const CPW_Function &lhs,
+                            const CPW_Function &rhs ) :
+Object( __check_same_scales(lhs,rhs) ),
+foot(0),
+coords()
+{
+    product(lhs,rhs);
 }
 
 

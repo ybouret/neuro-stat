@@ -23,7 +23,8 @@ class CPW_Function : public Object
 public:
     //! a function with an intial capacity
     explicit CPW_Function(const Real   usr_scale,
-                          const size_t n=0);
+                          const size_t usr_count = 0);
+    
     virtual ~CPW_Function() throw();
 
     Unit foot; //!< value before first point
@@ -43,11 +44,19 @@ public:
     //! Coord[size], size()>0
     const Coord & back() const throw();
 
-    //! raw value for a giben delta
-    void buildFrom(const RArray<Unit> &train,const Unit deltaUnit);
+    //! raw value for a given delta
+    /**
+     cost: less than train.size() comparison, train.size() temporary memory
+     */
+    void buildFrom(const RArray<Unit> &train,
+                   const Unit          deltaUnit,
+                   const bool          cleanUp=true);
 
     //! save in units
     void saveTo(const char *filename) const;
+
+
+    void shiftBy(const Unit deltaUnit) throw();
 
     //! copy constructor, with shift
     CPW_Function(const CPW_Function &fn,
@@ -58,6 +67,12 @@ public:
 
     //! remove empty intervals
     void removeEmptyIntervals() throw();
+
+    //! compute product by fusion
+    /**
+     cost: 2*min(lhs.size(),rhs.size()) comparisons...
+     */
+    void product(const CPW_Function &lhs, const CPW_Function &rhs);
 
     //! product
     CPW_Function(const CPW_Function &lhs, const CPW_Function &rhs);

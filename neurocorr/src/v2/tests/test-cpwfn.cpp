@@ -5,21 +5,25 @@
 
 YOCTO_UNIT_TEST_IMPL(cpwfn)
 {
-    CPW_Function fn(1000.0,100);
 
-    Unit tmp = 0;
-    for(size_t i=1+alea_lt(100);i>0;--i)
+    const Real delta = 1000.0;
+
     {
-        const Unit u = 1+alea_lt(100);
-        tmp += u;
-        fn.insert(tmp,Unit(alea_leq(100))-50);
+        CPW_Function fn(delta,100);
+
+        Unit tmp = 0;
+        for(size_t i=1+alea_lt(100);i>0;--i)
+        {
+            const Unit u = 1+alea_lt(100);
+            tmp += u;
+            fn.insert(tmp,Unit(alea_leq(100))-50);
+        }
+
+        fn.saveTo("cpw.dat");
     }
 
-    fn.saveTo("cpw.dat");
-    
 
-
-    //for(size_t iter=0;iter<10000;++iter)
+    for(size_t iter=0;iter<10000;++iter)
     {
         const size_t  nmax = 10;
         CMatrix<Real> nd(1,1+nmax);
@@ -32,6 +36,7 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
             nd[0][i] = j;
         }
         Train tr(1,nd,0);
+        if(iter<=0)
         {
             ios::wcstream fp("train.dat");
             for(size_t i=0;i<tr.size();++i)
@@ -40,13 +45,33 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
             }
         }
 
-        fn.buildFrom(tr,1);
-        fn.saveTo("phi1.dat");
-        fn.buildFrom(tr,2);
-        fn.saveTo("phi2.dat");
-        fn.removeEmptyIntervals();
-        fn.saveTo("phi2b.dat");
-    }
+        CPW_Function L(delta);
+        L.buildFrom(tr,1,false);
+        if(iter<=0)
+        {
+            L.saveTo("Lraw.dat");
+            L.removeEmptyIntervals();
+            L.saveTo("L.dat");
+        }
 
+
+        CPW_Function R(delta);
+        R.buildFrom(tr,2,false);
+        if(iter<=0)
+        {
+            R.saveTo("Rraw.dat");
+            R.removeEmptyIntervals();
+            R.saveTo("R.dat");
+            R.shiftBy(1);
+            R.saveTo("R1.dat");
+        }
+
+        CPW_Function prod(L,R);
+        if(iter<=0)
+        {
+            prod.saveTo("Prod.dat");
+        }
+    }
+    
 }
 YOCTO_UNIT_TEST_DONE()
