@@ -50,12 +50,8 @@ public:
 
     //! copy constructor
     CPW_Function(const CPW_Function &fn);
-
-    //! extraction constructor
-    /**
-     create sub function
-     */
-    CPW_Function(const CPW_Function &fn,  Unit tauLo,  Unit tauHi);
+    
+    
 
 private:
     YOCTO_DISABLE_ASSIGN(CPW_Function);

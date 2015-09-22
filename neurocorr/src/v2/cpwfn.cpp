@@ -24,7 +24,7 @@ void CPW_Function:: insert(const Unit tau, const Unit value)
 {
     const Coord C(tau,value);
     coords.push_back(C);
-
+    
     // move into place
     for(size_t i=coords.size(),im=i-1;im>0;--i,--im)
     {
@@ -67,13 +67,13 @@ void CPW_Function:: buildFrom( const RArray<Unit> &train, const Unit deltaUnit )
     const size_t n = train.size();
     coords.free();
     coords.ensure(2*n);
-
+    
     CVector<Unit> shift(n);
     for(size_t i=0;i<n;++i)
     {
         shift[i] = train[i] + deltaUnit;
     }
-
+    
     size_t iShift = 0;
     size_t iTrain = 0;
     Unit   curr   = 0;
@@ -97,14 +97,14 @@ void CPW_Function:: buildFrom( const RArray<Unit> &train, const Unit deltaUnit )
             ++iShift;
         }
     }
-
+    
     while(iShift<n)
     {
         --curr;
         const Coord C(shift[iShift++],curr);
         coords.push_back(C);
     }
-
+    
     assert(2*n==coords.size());
 }
 
@@ -113,53 +113,25 @@ void CPW_Function:: buildFrom( const RArray<Unit> &train, const Unit deltaUnit )
 
 size_t CPW_Function:: find_index_for( const Unit tau ) const throw()
 {
-    assert(size()>0);
+    assert(size()>1);
+    const size_t n = coords.size();
     size_t jlo = 1;
-    size_t jhi = size();
+    size_t jhi = n;
+    assert(tau  > coords[1].tau);
+    assert(tau <= coords[n].tau);
     while(jhi-jlo>1)
     {
-
+        const Unit jmid = (jlo+jhi)>>1;
+        if(tau<=coords[jmid].tau)
+        {
+            jhi = jmid;
+        }
+        else
+        {
+            jlo = jmid;
+        }
     }
     return jlo;
-}
-
-CPW_Function:: CPW_Function(const CPW_Function &fn,  Unit tauLo,  Unit tauHi) :
-Object(fn),
-foot(0),
-coords()
-{
-    // cleanup
-    if(tauLo>tauHi)
-    {
-        cswap(tauLo,tauHi);
-    }
-
-    // find closest representation
-
-    // check validity
-    const array<Coord> &crd = fn.coords;
-    const size_t        n   = crd.size();
-
-    if(n<=0)
-    {
-        throw exception("CPW Sub Function: empty source function");
-    }
-
-#if 0
-    if(tauLo<crd[1].tau)
-    {
-        throw exception("CPW Sub Function: tauLo=%ld<%ld", tauLo, crd[1].tau);
-    }
-
-    if(tauHi>crd[n].tau)
-    {
-        throw exception("CPW Sub Function: tauHi=%ld>%ld", tauHi, crd[n].tau);
-    }
-#endif
-
-    // extracting parameters
-
-
 }
 
 
@@ -181,7 +153,7 @@ void CPW_Function:: saveTo(const char *filename) const
         }
         fp("%ld %ld\n", fn.back().tau,   fn.back().value);
         fp("%ld %ld\n", fn.back().tau+1, fn.back().value);
-
+        
     }
 }
 
