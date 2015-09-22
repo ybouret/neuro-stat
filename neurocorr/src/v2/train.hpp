@@ -17,7 +17,9 @@ public:
     explicit Train(const Real          scale,
                    const Matrix<Real> &neurodata,
                    const size_t        iTrain);
-    
+
+    //! manually create 0 filled train
+    explicit Train(const Real scale, const size_t nSpike);
 
     virtual ~Train() throw();
     

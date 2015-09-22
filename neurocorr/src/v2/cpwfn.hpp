@@ -78,6 +78,9 @@ public:
     //! product
     CPW_Function(const CPW_Function &lhs, const CPW_Function &rhs);
 
+    //! integrate with tauLo<=tauHi
+    Real integrate(const Unit tauLo, const Unit tauHi) const throw();
+
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(CPW_Function);

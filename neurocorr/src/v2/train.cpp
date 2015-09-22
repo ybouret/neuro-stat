@@ -27,6 +27,13 @@ size_t __get_length_of(const Matrix<Real> &neurodata,
 }
 
 
+Train:: Train(const Real scale, const size_t nSpike) :
+Object(scale),
+CVector<Unit>(nSpike)
+{
+}
+
+
 
 Train:: Train(const Real          scale,
               const Matrix<Real> &neurodata,

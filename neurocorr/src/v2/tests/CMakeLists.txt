@@ -4,6 +4,7 @@ test-types.cpp
 test-train.cpp
 test-neuron.cpp
 test-cpwfn.cpp
+test-intg.cpp
 )
 
 TARGET_LINK_LIBRARIES(test-ncv2 ncv2)
@@ -14,6 +15,7 @@ ADD_TEST(Types  test-ncv2 types)
 ADD_TEST(Train  test-ncv2 train)
 ADD_TEST(Neuron test-ncv2 neuron)
 ADD_TEST(CPWFn  test-ncv2 cpwfn)
+ADD_TEST(Intg   test-ncv2 intg)
 
 
 IF(R_FOUND)
