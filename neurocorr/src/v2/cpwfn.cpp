@@ -30,11 +30,12 @@ coords(fn.coords)
 }
 
 
+
 void CPW_Function:: insert(const Unit tau, const Unit value)
 {
     const Coord C(tau,value);
     coords.push_back(C);
-    
+
     // move into place
     for(size_t i=coords.size(),im=i-1;im>0;--i,--im)
     {
@@ -81,13 +82,13 @@ void CPW_Function:: buildFrom(const RArray<Unit> &train,
     const size_t n = train.size();
     coords.free();
     coords.ensure(2*n);
-    
+
     CVector<Unit> shift(n);
     for(size_t i=0;i<n;++i)
     {
         shift[i] = train[i] + deltaUnit;
     }
-    
+
     size_t iShift = 0;
     size_t iTrain = 0;
     Unit   curr   = 0;
@@ -111,14 +112,14 @@ void CPW_Function:: buildFrom(const RArray<Unit> &train,
             ++iShift;
         }
     }
-    
+
     while(iShift<n)
     {
         --curr;
         const Coord C(shift[iShift++],curr);
         coords.push_back(C);
     }
-    
+
     assert(2*n==coords.size());
 
     if(cleanUp) removeEmptyIntervals();
@@ -242,6 +243,16 @@ void CPW_Function:: product(const CPW_Function &lhs, const CPW_Function &rhs)
     assert(coords.size()<=nL+nR);
 
 }
+
+void CPW_Function:: copyAndShift(const CPW_Function &fn,
+                                 const Unit          deltaUnit)
+{
+    assert(this != &fn );
+    __check_same_scales(*this,fn);
+    coords = fn.coords;
+    shiftBy(deltaUnit);
+}
+
 
 CPW_Function:: CPW_Function(const CPW_Function &lhs,
                             const CPW_Function &rhs ) :

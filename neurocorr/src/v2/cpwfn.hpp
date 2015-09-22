@@ -57,6 +57,8 @@ public:
 
 
     void shiftBy(const Unit deltaUnit) throw();
+    void copyAndShift(const CPW_Function &fn,
+                      const Unit          deltaUnit);
 
     //! copy constructor, with shift
     CPW_Function(const CPW_Function &fn,

@@ -10,9 +10,13 @@ class Phi : public PhiBase
 public:
     virtual ~Phi() throw();
     explicit Phi(const size_t extra,
+                 const Real   scale,
                  const Train &train,
-                 const Unit   deltaUnit );
+                 const Unit   deltaUnit);
 
+    void update(const Train &train, const Unit deltaUnit);
+
+    
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Phi);
 };
