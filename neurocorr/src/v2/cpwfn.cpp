@@ -12,11 +12,15 @@ coords(n,as_capacity)
 {
 }
 
-CPW_Function:: CPW_Function(const CPW_Function &fn) :
+CPW_Function:: CPW_Function(const CPW_Function &fn, const Unit deltaUnit) :
 Object(fn),
 foot(fn.foot),
 coords(fn.coords)
 {
+    for(size_t i=coords.size();i>0;--i)
+    {
+        coords[i].tau += deltaUnit;
+    }
 }
 
 
@@ -35,7 +39,9 @@ void CPW_Function:: insert(const Unit tau, const Unit value)
             bswap(C,Cm);
         }
         else
+        {
             break;
+        }
     }
 }
 
@@ -140,7 +146,7 @@ size_t CPW_Function:: find_index_for( const Unit tau ) const throw()
 
 void CPW_Function:: saveTo(const char *filename) const
 {
-    ios::wcstream fp(filename);
+    ios::wcstream       fp(filename);
     const CPW_Function &fn = *this;
     if(fn.size()>0)
     {

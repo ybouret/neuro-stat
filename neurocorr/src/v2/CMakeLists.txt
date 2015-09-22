@@ -7,6 +7,8 @@ neuron.cpp
 neuron.hpp
 cpwfn.hpp
 cpwfn.cpp
+phi.hpp
+phi.cpp
 )
 
 ADD_LIBRARY(ncv2 STATIC ${c_srcs})

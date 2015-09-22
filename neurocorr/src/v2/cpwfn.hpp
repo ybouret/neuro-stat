@@ -22,7 +22,8 @@ class CPW_Function : public Object
 {
 public:
     //! a function with an intial capacity
-    explicit CPW_Function(const Real usr_scale, const size_t n=0);
+    explicit CPW_Function(const Real   usr_scale,
+                          const size_t n=0);
     virtual ~CPW_Function() throw();
 
     Unit foot; //!< value before first point
@@ -48,13 +49,14 @@ public:
     //! save in units
     void saveTo(const char *filename) const;
 
-    //! copy constructor
-    CPW_Function(const CPW_Function &fn);
+    //! copy constructor, with shift
+    CPW_Function(const CPW_Function &fn,
+                 const Unit          deltaUnit);
     
     
 
 private:
-    YOCTO_DISABLE_ASSIGN(CPW_Function);
+    YOCTO_DISABLE_COPY_AND_ASSIGN(CPW_Function);
     vector<Coord> coords;
     //! find j such that tau[j] < tau < tau[size()]
     size_t find_index_for( const Unit tau ) const throw();
