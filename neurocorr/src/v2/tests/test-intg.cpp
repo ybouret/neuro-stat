@@ -10,13 +10,17 @@ void do_intg(const char         *filename,
 {
 
     ios::wcstream fp(filename);
-    const Unit w = (tauEnd-tauIni)/2;
+    //std::cerr << "tauIni=" << tauIni << ", tauEnd=" << tauEnd << std::endl;
+    const Unit w = 4;
     for(Unit tau=tauIni;tau<=tauEnd;++tau)
     {
         fp("%ld",tau);
         for(Unit h=1;h<=w;++h)
         {
-            const Real res = F.integrate(tau-h, tau+h);
+            const Unit tauLo = tau-h;
+            const Unit tauHi = tau+h;
+            //std::cerr << "\t tauLo=" << tauLo << "-> tauHi=" << tauHi << std::endl;
+            const Real res = F.integrate(tauLo,tauHi);
             fp(" %g", res);
         }
         fp("\n");
@@ -33,13 +37,18 @@ YOCTO_UNIT_TEST_IMPL(intg)
     fn.foot = 1;
 
     fn.saveTo("f0.dat");
-    do_intg("intg0.dat",fn,-5,5);
+    do_intg("intg0.dat",fn,-10,10);
 
     //! value = 0 before 0, 1 after
     fn.foot = 0;
     fn.insert(0, 1);
     fn.saveTo("f1.dat");
-    do_intg("intg1.dat",fn,-5,5);
+    do_intg("intg1.dat",fn,-10,10);
+
+    //! step finishing at 1
+    fn.insert(1,0);
+    fn.saveTo("f2.dat");
+    do_intg("intg2.dat",fn,-10,10);
 
 }
 YOCTO_UNIT_TEST_DONE()
