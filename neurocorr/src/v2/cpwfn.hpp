@@ -102,8 +102,6 @@ public:
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(CPW_Function);
     vector<Coord> coords;
-    //! find j such that tau[j] < tau < tau[size()]
-    size_t find_index_for( const Unit tau ) const throw();
 };
 
 #endif

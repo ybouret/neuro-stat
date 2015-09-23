@@ -14,6 +14,8 @@ public:
                     const size_t        trialStart,
                     const size_t        trialCount);
 
+    void displayInfo() const;
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Neuron);
 };

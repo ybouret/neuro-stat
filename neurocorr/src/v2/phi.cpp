@@ -1,16 +1,16 @@
 #include "phi.hpp"
 
-Phi:: ~Phi() throw()
+PhiPerTrain:: ~PhiPerTrain() throw()
 {
 }
 
-Phi:: Phi(const size_t extra,
-          const Real   scale,
-          const Train &train,
-          const Unit   deltaUnit) :
-PhiBase(1+extra)
+PhiPerTrain:: PhiPerTrain(const size_t extra,
+                          const Real   scale,
+                          const Train &train,
+                          const Unit   deltaUnit) :
+PhiPerTrainBase(1+extra)
 {
-    PhiBase &self = *this;
+    PhiPerTrainBase &self = *this;
 
     //create 'mother phi'
     self.append<Real>(scale);
@@ -27,30 +27,29 @@ PhiBase(1+extra)
 }
 
 
-void Phi:: update(const Train &train, const Unit deltaUnit)
+void PhiPerTrain:: update(const Train &train, const Unit deltaUnit)
 {
     assert(size>0);
-    PhiBase &self = *this;
-    CPW_Function &phi0 = self[0];
+    PhiPerTrainBase &self = *this;
+    CPW_Function    &phi0 = self[0];
     phi0.buildFrom(train, deltaUnit, true);
     for(size_t i=1;i<=size;++i)
     {
         const Unit    delta = i*deltaUnit;
-        CPW_Function &phi = self[i];
+        CPW_Function &phi   = self[i];
         phi.copyAndShift(phi0,delta);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-PhiSet:: ~PhiSet() throw()
+PhiPerNeuron:: ~PhiPerNeuron() throw()
 {
 }
 
-PhiSet:: PhiSet(const size_t extra,
-                const Neuron &nn,
-                const Unit   deltaUnit ) :
-PhiSetBase(nn.trials),
+PhiPerNeuron:: PhiPerNeuron(const size_t extra,
+                            const Neuron &nn,
+                            const Unit   deltaUnit ) :
+PhiPerNeuronBase(nn.trials),
 neuron(nn)
 {
     for(size_t i=0;i<neuron.trials;++i)
@@ -62,12 +61,32 @@ neuron(nn)
     }
 }
 
-void PhiSet:: update(const Unit deltaUnit)
+void PhiPerNeuron:: update(const Unit deltaUnit)
 {
     assert(neuron.trials==size);
-    PhiSetBase &self = *this;
+    PhiPerNeuronBase &self = *this;
     for(size_t i=0;i<size;++i)
     {
         self[i].update(neuron[i],deltaUnit);
     }
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+PhiPerNeurons:: ~PhiPerNeurons() throw()
+{
+
+}
+
+PhiPerNeurons:: PhiPerNeurons(const size_t extra, const Neurons &neurons, const Unit deltaUnit) :
+PhiPerNeuronsBase(neurons.size)
+{
+    PhiPerNeuronsBase &self = *this;
+    for(size_t i=0;i<neurons.size;++i)
+    {
+        const Neuron &neuron = neurons[i];
+        self.append<size_t,const Neuron &,Unit>(extra, neuron, deltaUnit);
+    }
+
+}
+

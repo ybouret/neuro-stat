@@ -97,28 +97,6 @@ void CPW_Function:: clear() throw()
 }
 
 
-size_t CPW_Function:: find_index_for( const Unit tau ) const throw()
-{
-    assert(size()>1);
-    const size_t n   = coords.size();
-    size_t       jlo = 1;
-    size_t       jhi = n;
-    assert(tau  > coords[1].tau);
-    assert(tau <= coords[n].tau);
-    while(jhi-jlo>1)
-    {
-        const Unit jmid = (jlo+jhi)>>1;
-        if(tau<=coords[jmid].tau)
-        {
-            jhi = jmid;
-        }
-        else
-        {
-            jlo = jmid;
-        }
-    }
-    return jlo;
-}
 
 
 #include "yocto/ios/ocstream.hpp"

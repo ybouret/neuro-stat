@@ -65,7 +65,7 @@ void CPW_Function:: removeEmptyIntervals() throw()
             Coord &C  = coords[i];
             if(Cm.tau>=C.tau)
             {
-                std::cerr << "Should remove tau=" << Cm.tau << std::endl;
+                //std::cerr << "Should remove tau=" << Cm.tau << std::endl;
                 const Coord &Cp = coords[i+1];
                 memmove(&Cm, &Cp, sizeof(Coord) * (coords.size()-i) );
                 coords.pop_back();

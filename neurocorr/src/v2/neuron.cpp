@@ -17,6 +17,19 @@ Neuron:: ~Neuron() throw()
 
 }
 
+void Neuron:: displayInfo() const
+{
+    std::cerr << "\t|#trials=" << trials << std::endl;
+    std::cerr << "\t|_";
+    for(size_t j=0;j<trials;++j)
+    {
+        const Train &tr = (*this)[j];
+        std::cerr << "/" << tr.size();
+    }
+    std::cerr << "." << std::endl;
+}
+
+
 Neurons:: ~Neurons() throw()
 {
 }
