@@ -17,6 +17,7 @@ update:
 clean:
 	@echo "-- removing temporary files" && rm -f *.dat
 	@$(MAKE) -C src/v1 clean
+	@$(MAKE) -C src/v2 clean
 
 veryclean: clean
 	@echo "-- removing out of sources builds" && cd forge && touch targets && ( cat targets | xargs rm -rf ) && rm -f targets
