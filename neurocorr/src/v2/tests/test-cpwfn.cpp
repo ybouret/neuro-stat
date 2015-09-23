@@ -2,13 +2,16 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
 #include "yocto/ios/ocstream.hpp"
+#include "yocto/sys/timings.hpp"
+
+#define TEST_TIME 2.0
 
 YOCTO_UNIT_TEST_IMPL(cpwfn)
 {
 
     const Real delta = 1000.0;
-
-    for(size_t iter=0;iter<100;++iter)
+    timings tmx;
+    for(size_t iter=0;iter<1000;++iter)
     {
         CPW_Function fn(delta);
 
@@ -42,9 +45,23 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
 
         const Unit uRaw = fn._sumValuesAtOrdered(points);
         const Unit uOpt = fn. sumValuesAtOrdered(points);
+        //std::cerr << uRaw << "/" << uOpt << std::endl;
         if(uRaw!=uOpt)
         {
+            throw exception("sumValuesAtOrdered failure!");
+        }
 
+        if(iter<=0)
+        {
+            std::cerr << "Timings Each method for " << TEST_TIME << " seconds..." << std::endl;
+            volatile Unit s = 0;
+            YOCTO_TIMINGS(tmx, TEST_TIME, s = fn._sumValuesAtOrdered(points));
+            const double rawSpeed = tmx.speed;
+            std::cerr << "rawSpeed=" << rawSpeed << std::endl;
+            YOCTO_TIMINGS(tmx, TEST_TIME, s = fn.sumValuesAtOrdered(points));
+            const double optSpeed = tmx.speed;
+            std::cerr << "optSpeed=" << optSpeed << std::endl;
+            std::cerr << "Speed Up=" << optSpeed/rawSpeed << std::endl;
         }
     }
 

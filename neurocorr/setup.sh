@@ -8,6 +8,17 @@ function xerror
     exit 1;
 }
 
+if (( $# < 1 )); then
+	xerror "Need Debug or Release";
+fi
+cmake -E cmake_echo_color --magenta "-- Building $1 Configuration";
+ 
+case $1 in
+	"Debug"|"Release") ;;
+	*) xerror "Invalid Configuration!";
+esac;
+
+
 YOCTO_ROOT="yocto"
 cmake -E cmake_echo_color --blue --bold "-- Checking yocto sources";
 
@@ -23,5 +34,5 @@ fi
 
 #(re)building SDK
 cmake -E cmake_echo_color --blue --bold "-- Building yocto SDK...";
-(cd $YOCTO_ROOT && $SHELL build-main+r.sh gnu Debug) || xerror "couldn't build yocto SDK!";
+(cd $YOCTO_ROOT && $SHELL build-main+r.sh gnu $1) || xerror "couldn't build yocto SDK!";
 
