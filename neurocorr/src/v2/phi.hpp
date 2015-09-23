@@ -47,9 +47,14 @@ typedef slots_of<PhiPerNeuron> PhiPerNeuronsBase;
 class PhiPerNeurons : public PhiPerNeuronsBase
 {
 public:
+    explicit PhiPerNeurons(size_t extra, const Neurons &neurons);
+    virtual ~PhiPerNeurons() throw();
+
+    size_t trains() const throw();
 
 private:
-    
+    YOCTO_DISABLE_COPY_AND_ASSIGN(PhiPerNeurons);
+    vector<PhiPerTrain*> phi;
 };
 
 

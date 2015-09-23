@@ -52,3 +52,40 @@ PhiPerNeuronBase(neuron.trials)
     }
 
 }
+
+////////////////////////////////////////////////////////////////////////////////
+PhiPerNeurons:: ~PhiPerNeurons() throw() {}
+
+
+
+PhiPerNeurons:: PhiPerNeurons(size_t extra, const Neurons &neurons) :
+PhiPerNeuronsBase(neurons.size),
+phi()
+{
+    size_t num_phi_per_train = 0;
+    for(size_t i=0;i<neurons.size;++i)
+    {
+        const Neuron &nn = neurons[i];
+        num_phi_per_train += nn.trials;
+        append<size_t,const Neuron &>(extra,nn);
+    }
+    assert(size==neurons.size);
+
+    phi.make(num_phi_per_train,NULL);
+    size_t j=0;
+    for(size_t i=0;i<size;++i)
+    {
+        PhiPerNeuron &sub = (*this)[i];
+        for(size_t k=0;k<sub.size;++k)
+        {
+            PhiPerTrain &pp = sub[k];
+            phi[++j] = &pp;
+        }
+    }
+    assert(num_phi_per_train==j);
+}
+
+size_t PhiPerNeurons:: trains() const throw()
+{
+    return phi.size();
+}
