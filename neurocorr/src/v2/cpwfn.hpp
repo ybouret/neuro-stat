@@ -53,6 +53,12 @@ public:
     //! one point sequential operator
     Unit  operator()(const Unit tau) const throw();
 
+    //! debug function
+    Unit  _sumValuesAtOrdered(const RArray<Unit> &Tau ) const throw();
+    
+    //! sum values of function at given ordered times
+    Unit  sumValuesAtOrdered( const RArray<Unit> &Tau ) const throw();
+
     
     //! raw value for a given delta
     /**

@@ -8,6 +8,7 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
 
     const Real delta = 1000.0;
 
+    for(size_t iter=0;iter<100;++iter)
     {
         CPW_Function fn(delta);
 
@@ -19,16 +20,31 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
             fn.insert(tmp,Unit(alea_leq(100))-50);
         }
 
-        fn.saveTo("cpw.dat");
         const Unit tauLo = fn.front().tau-5;
         const Unit tauHi = fn.back().tau +5;
-
+        if(iter<=0)
         {
+            fn.saveTo("cpw.dat");
+
             ios::wcstream fp("cpw_eval.dat");
             for(Unit tau=tauLo;tau<=tauHi;++tau)
             {
                 fp("%ld %ld\n", tau, fn(tau) );
             }
+        }
+
+        const size_t  np = tauHi-tauLo+1;
+        CVector<Unit> points(np);
+        for(Unit tau=tauLo,i=0;tau<=tauHi;++i,++tau)
+        {
+            points[i] = tau;
+        }
+
+        const Unit uRaw = fn._sumValuesAtOrdered(points);
+        const Unit uOpt = fn. sumValuesAtOrdered(points);
+        if(uRaw!=uOpt)
+        {
+
         }
     }
 

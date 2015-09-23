@@ -82,3 +82,27 @@ Unit  CPW_Function:: operator()(const Unit tau) const throw()
 
     return coords[j].value;
 }
+
+
+Unit  CPW_Function:: _sumValuesAtOrdered( const RArray<Unit> &Tau ) const throw()
+{
+    Unit         ans= 0;
+    const size_t np = Tau.size();
+
+    for(size_t i=0;i<np;++i)
+    {
+        ans += (*this)(Tau[i]);
+    }
+
+    return ans;
+}
+
+
+Unit  CPW_Function:: sumValuesAtOrdered( const RArray<Unit> &Tau ) const throw()
+{
+    Unit ans=0;
+
+
+    return ans;
+}
+
