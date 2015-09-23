@@ -108,15 +108,15 @@ void CPW_Function:: saveTo(const char *filename) const
     const CPW_Function &fn = *this;
     if(fn.size()>0)
     {
-        fp("%ld %ld\n", fn[1].tau-1,fn.foot);
-        fp("%ld %ld\n", fn[1].tau, fn.foot);
+        fp("%ld %ld\n", long(fn[1].tau-1),long(fn.foot));
+        fp("%ld %ld\n", long(fn[1].tau), long(fn.foot));
         for(size_t i=1;i<fn.size();++i)
         {
-            fp("%ld %ld\n", fn[i].tau,   fn[i].value);
-            fp("%ld %ld\n", fn[i+1].tau, fn[i].value);
+            fp("%ld %ld\n", long(fn[i].tau),   long(fn[i].value));
+            fp("%ld %ld\n", long(fn[i+1].tau), long(fn[i].value));
         }
-        fp("%ld %ld\n", fn.back().tau,   fn.back().value);
-        fp("%ld %ld\n", fn.back().tau+1, fn.back().value);
+        fp("%ld %ld\n", long(fn.back().tau),   long(fn.back().value));
+        fp("%ld %ld\n", long(fn.back().tau+1), long(fn.back().value));
         
     }
 }

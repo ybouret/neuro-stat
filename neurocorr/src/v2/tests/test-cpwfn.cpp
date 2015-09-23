@@ -32,7 +32,7 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
             ios::wcstream fp("cpw_eval.dat");
             for(Unit tau=tauLo;tau<=tauHi;++tau)
             {
-                fp("%ld %ld\n", tau, fn(tau) );
+                fp("%ld %ld\n", long(tau), long(fn(tau)) );
             }
         }
 
@@ -54,11 +54,11 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
         if(iter<=0)
         {
             std::cerr << "Timings Each method for " << TEST_TIME << " seconds..." << std::endl;
-            volatile Unit s = 0;
-            YOCTO_TIMINGS(tmx, TEST_TIME, s = fn._sumValuesAtOrdered(points));
+            volatile Unit theSum = 0;
+            YOCTO_TIMINGS(tmx, TEST_TIME, theSum += fn._sumValuesAtOrdered(points));
             const double rawSpeed = tmx.speed;
             std::cerr << "rawSpeed=" << rawSpeed << std::endl;
-            YOCTO_TIMINGS(tmx, TEST_TIME, s = fn.sumValuesAtOrdered(points));
+            YOCTO_TIMINGS(tmx, TEST_TIME, theSum += fn.sumValuesAtOrdered(points));
             const double optSpeed = tmx.speed;
             std::cerr << "optSpeed=" << optSpeed << std::endl;
             std::cerr << "Speed Up=" << optSpeed/rawSpeed << std::endl;
@@ -84,7 +84,7 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
             ios::wcstream fp("train.dat");
             for(size_t i=0;i<tr.size();++i)
             {
-                fp("%ld 0\n", tr[i]);
+                fp("%ld 0\n", long(tr[i]));
             }
         }
 
