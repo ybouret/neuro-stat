@@ -2,6 +2,7 @@
 #define NC_PHI_INCLUDED 1
 
 #include "cpwfn.hpp"
+#include "yocto/ptr/auto.hpp"
 
 typedef slots_of<CPW_Function> PhiPerTrainBase;
 
@@ -45,7 +46,8 @@ private:
 
 
 //! a set of Phi functions for SOME NEURONS
-typedef slots_of<PhiPerNeuron> PhiPerNeuronsBase;
+typedef auto_ptr<PhiPerNeuron>      PhiPerNeuronPtr;
+typedef slots_of< PhiPerNeuronPtr > PhiPerNeuronsBase;
 
 class PhiPerNeurons : public PhiPerNeuronsBase
 {

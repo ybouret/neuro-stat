@@ -82,16 +82,67 @@ PhiPerNeurons:: ~PhiPerNeurons() throw()
 
 }
 
-PhiPerNeurons:: PhiPerNeurons(const size_t extra, const Neurons &neurons, const Unit deltaUnit) :
+namespace
+{
+    class PhiProxy
+    {
+    public:
+        const size_t     extra;
+        const Neuron    &neuron;
+        const Unit       deltaUnit;
+        PhiPerNeuronPtr &handle;
+
+        inline PhiProxy(const size_t     _extra,
+                        const Neuron    &_neuron,
+                        const Unit       _deltaUnit,
+                        PhiPerNeuronPtr &_handle) throw() :
+        extra(_extra),
+        neuron(_neuron),
+        deltaUnit(_deltaUnit),
+        handle(_handle)
+        {
+        }
+
+        inline ~PhiProxy() throw()
+        {
+        }
+
+        PhiProxy(const PhiProxy &p) throw() :
+        extra(p.extra),
+        neuron(p.neuron),
+        deltaUnit(p.deltaUnit),
+        handle(p.handle)
+        {
+
+        }
+
+
+    private:
+        YOCTO_DISABLE_ASSIGN(PhiProxy);
+    };
+}
+
+PhiPerNeurons:: PhiPerNeurons(const size_t   extra,
+                              const Neurons &neurons,
+                              const Unit     deltaUnit) :
 PhiPerNeuronsBase(neurons.size)
 {
     PhiPerNeuronsBase &self = *this;
+
+    // prepare memory
+    for(size_t i=0;i<neurons.size;++i)
+    {
+        self.append<PhiPerNeuron*>(NULL);
+    }
+    assert(size==neurons.size);
+
+#if 0
     for(size_t i=0;i<neurons.size;++i)
     {
         const Neuron &neuron = neurons[i];
         self.append<size_t,const Neuron &,Unit>(extra, neuron, deltaUnit);
     }
-    assert(size==neurons.size);
+#endif
 
 }
 
@@ -99,7 +150,7 @@ void PhiPerNeurons:: update(const Unit deltaUnit)
 {
     for(size_t i=0;i<size;++i)
     {
-        (*this)[i].update(deltaUnit);
+        //(*this)[i].update(deltaUnit);
     }
 }
 
