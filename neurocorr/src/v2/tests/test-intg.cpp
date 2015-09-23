@@ -53,17 +53,32 @@ YOCTO_UNIT_TEST_IMPL(intg)
     fn.saveTo("f2.dat");
     do_intg("intg2.dat",fn,-10,10);
 
+    for(size_t iter=0;iter<20;++iter)
     {
         const size_t np    = 1 + alea_lt(100);
         const Unit   amp   = 50;
-        const Unit   width = 2000;
+        const Unit   width = 4000;
         fn.clear();
+        fn.foot = Unit(alea_leq(amp))-amp/2;
         for(size_t i=0;i<np;++i)
         {
             fn.insert(alea_leq(width),Unit(alea_leq(amp))-amp/2);
         }
         fn.removeEmptyIntervals();
-        fn.saveTo("fn.dat");
+        if(iter<=0)
+        {
+            fn.saveTo("fn.dat");
+        }
+        const Unit tauMin = -(width+10);
+        const Unit tauMax = width+1;
+        const Unit wMax   = 200;
+        for(Unit w=0;w<=wMax;++w)
+        {
+            for(Unit tauLo=tauMin;tauLo<=tauMax;++tauLo)
+            {
+                (void) fn.integrate(tauLo,tauLo+w);
+            }
+        }
     }
 
 }
