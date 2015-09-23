@@ -40,3 +40,34 @@ void Phi:: update(const Train &train, const Unit deltaUnit)
         phi.copyAndShift(phi0,delta);
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+PhiSet:: ~PhiSet() throw()
+{
+}
+
+PhiSet:: PhiSet(const size_t extra,
+                const Neuron &nn,
+                const Unit   deltaUnit ) :
+PhiSetBase(nn.trials),
+neuron(nn)
+{
+    for(size_t i=0;i<neuron.trials;++i)
+    {
+        append<size_t, Real, const Train &, Unit>(extra,
+                                                  neuron.scale,
+                                                  neuron[i],
+                                                  deltaUnit);
+    }
+}
+
+void PhiSet:: update(const Unit deltaUnit)
+{
+    assert(neuron.trials==size);
+    PhiSetBase &self = *this;
+    for(size_t i=0;i<size;++i)
+    {
+        self[i].update(neuron[i],deltaUnit);
+    }
+}

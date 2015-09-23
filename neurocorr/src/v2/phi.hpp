@@ -25,5 +25,23 @@ private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Phi);
 };
 
+#include "neuron.hpp"
+typedef slots_of<Phi> PhiSetBase;
+
+
+//! a set of Phi functions for one neuron
+class PhiSet : public PhiSetBase
+{
+public:
+    const Neuron &neuron;
+    explicit PhiSet(const size_t extra,const Neuron &nn,const Unit deltaUnit);
+    virtual ~PhiSet() throw();
+
+    void update(const Unit deltaUnit);
+
+private:
+    YOCTO_DISABLE_COPY_AND_ASSIGN(PhiSet);
+};
+
 
 #endif
