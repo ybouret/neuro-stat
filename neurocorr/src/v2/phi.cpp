@@ -92,12 +92,18 @@ size_t PhiPerNeurons:: trains() const throw()
     return phi.size();
 }
 
+#include "yocto/exception.hpp"
+
 void PhiPerNeurons:: compute(const Unit deltaUnit, threading::crew *para)
 {
     if(para)
     {
         delta = deltaUnit;
         (*para)(run);
+        if(para->failure)
+        {
+            throw exception("something went wrong in parallel compute");
+        }
     }
     else
     {
