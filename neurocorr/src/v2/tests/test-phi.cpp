@@ -37,6 +37,7 @@ YOCTO_UNIT_TEST_IMPL(phi)
             nn.displayInfo();
         }
 
+#if 0
         const size_t extra = 2;
         std::cerr << "Creating Phi..." << std::endl;
         mark = chrono.ticks();
@@ -53,6 +54,7 @@ YOCTO_UNIT_TEST_IMPL(phi)
 
         std::cerr << "Updating Phi" << std::endl;
         phi_seq.update(5,NULL);
+#endif
         
     }
 

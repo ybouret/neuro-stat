@@ -97,6 +97,10 @@ void CPW_Function:: clear() throw()
 }
 
 
+void CPW_Function:: ensureCapacity(size_t n)
+{
+    coords.ensure(n);
+}
 
 
 #include "yocto/ios/ocstream.hpp"

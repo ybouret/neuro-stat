@@ -23,7 +23,8 @@ class CPW_Function : public Object
 public:
     //! a function with an intial capacity
     explicit CPW_Function(const Real usr_scale) throw();
-    
+    void     ensureCapacity(size_t n);
+
     virtual ~CPW_Function() throw();
 
     Unit foot; //!< value before first point

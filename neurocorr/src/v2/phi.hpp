@@ -4,66 +4,54 @@
 #include "cpwfn.hpp"
 #include "yocto/ptr/auto.hpp"
 #include "yocto/threading/engine.hpp"
+#include "yocto/threading/crew.hpp"
+#include "neuron.hpp"
 
 typedef slots_of<CPW_Function> PhiPerTrainBase;
 
-//! a set of Constant PieceWise functions for ONE TRAIN of spikes
+//! Phi for ONE ATTACHED TRAIN, minimal granularity
 class PhiPerTrain : public PhiPerTrainBase
 {
 public:
+    //! allocate memory, 2*train.size
+    explicit PhiPerTrain(const size_t extra,
+                         const Train &the_train);
     virtual ~PhiPerTrain() throw();
 
-    //! allocate memory and compute 1+extra function
-    explicit PhiPerTrain(const size_t extra,
-                         const Real   scale,
-                         const Train &train,
-                         const Unit   deltaUnit);
-
-    //! use previous memory
-    void update(const Train &train, const Unit deltaUnit);
-
+    const Train &train;
+    void compute(const Unit deltaUnit);
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(PhiPerTrain);
 };
 
-#include "neuron.hpp"
+
+
 typedef slots_of<PhiPerTrain> PhiPerNeuronBase;
 
-
-//! a set of Phi functions for ONE Neuron
+//! Phi's for ONE NEURON
 class PhiPerNeuron : public PhiPerNeuronBase
 {
 public:
-    const Neuron &neuron;
-    explicit PhiPerNeuron(const size_t extra,const Neuron &nn,const Unit deltaUnit);
+    explicit PhiPerNeuron(const size_t extra,
+                          const Neuron &neuron);
     virtual ~PhiPerNeuron() throw();
-
-    void update(const Unit deltaUnit);
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(PhiPerNeuron);
 };
 
+typedef slots_of<PhiPerNeuron> PhiPerNeuronsBase;
 
-//! a set of Phi functions for SOME NEURONS
-typedef auto_ptr<PhiPerNeuron>     PhiPerNeuronPtr;
-typedef slots_of<PhiPerNeuronPtr>  PhiPerNeuronsBase;
-
+//! Phi's for SOME NEURONS
 class PhiPerNeurons : public PhiPerNeuronsBase
 {
 public:
-    virtual ~PhiPerNeurons() throw();
-    explicit PhiPerNeurons(const size_t       extra,
-                           const Neurons     &neurons,
-                           const Unit         deltaUnit,
-                           threading::engine *parallel);
-    void update(const Unit deltaUnit,
-                threading::engine *parallel);
 
 private:
-    YOCTO_DISABLE_COPY_AND_ASSIGN(PhiPerNeurons);
+    
 };
+
 
 
 #endif
