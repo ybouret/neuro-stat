@@ -52,6 +52,7 @@ class PhiPerNeurons : public PhiPerNeuronsBase
 public:
     virtual ~PhiPerNeurons() throw();
     explicit PhiPerNeurons(const size_t extra, const Neurons &, const Unit deltaUnit);
+    void update(const Unit deltaUnit);
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(PhiPerNeurons);

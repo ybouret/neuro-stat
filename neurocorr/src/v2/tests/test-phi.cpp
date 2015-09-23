@@ -8,9 +8,9 @@ YOCTO_UNIT_TEST_IMPL(phi)
 
     {
         const size_t  num_neurons = 2 + alea_leq(50);
-        const size_t  num_trials  = 3 + alea_leq(100);
+        const size_t  num_trials  = 3 + alea_leq(200);
         const size_t  num_trains  = num_neurons * num_trials;
-        const size_t  max_spikes  = 100 + alea_leq(1000);
+        const size_t  max_spikes  = 100 + alea_leq(10000);
         CMatrix<Real> neurodata(num_trains,1+max_spikes);
         for(size_t i=0;i<num_trains;++i)
         {
@@ -33,8 +33,12 @@ YOCTO_UNIT_TEST_IMPL(phi)
             nn.displayInfo();
         }
 
+        std::cerr << "Creating Phi..." << std::endl;
         PhiPerNeurons phi(2,neurons,4);
 
+        std::cerr << "Updating Phi" << std::endl;
+        phi.update(5);
+        
     }
 
 }

@@ -33,7 +33,7 @@ void PhiPerTrain:: update(const Train &train, const Unit deltaUnit)
     PhiPerTrainBase &self = *this;
     CPW_Function    &phi0 = self[0];
     phi0.buildFrom(train, deltaUnit, true);
-    for(size_t i=1;i<=size;++i)
+    for(size_t i=1;i<size;++i)
     {
         const Unit    delta = i*deltaUnit;
         CPW_Function &phi   = self[i];
@@ -59,6 +59,7 @@ neuron(nn)
                                                   neuron[i],
                                                   deltaUnit);
     }
+    assert(size==neuron.trials);
 }
 
 void PhiPerNeuron:: update(const Unit deltaUnit)
@@ -67,7 +68,10 @@ void PhiPerNeuron:: update(const Unit deltaUnit)
     PhiPerNeuronBase &self = *this;
     for(size_t i=0;i<size;++i)
     {
-        self[i].update(neuron[i],deltaUnit);
+        PhiPerTrain &phi   = self[i];
+        const Train &train = neuron[i];
+        phi.update(train,deltaUnit);
+        //self[i].update(neuron[i],deltaUnit);
     }
 }
 
@@ -87,6 +91,16 @@ PhiPerNeuronsBase(neurons.size)
         const Neuron &neuron = neurons[i];
         self.append<size_t,const Neuron &,Unit>(extra, neuron, deltaUnit);
     }
+    assert(size==neurons.size);
 
 }
+
+void PhiPerNeurons:: update(const Unit deltaUnit)
+{
+    for(size_t i=0;i<size;++i)
+    {
+        (*this)[i].update(deltaUnit);
+    }
+}
+
 
