@@ -3,7 +3,6 @@
 
 #include "cpwfn.hpp"
 #include "yocto/ptr/auto.hpp"
-#include "yocto/threading/engine.hpp"
 #include "yocto/threading/crew.hpp"
 #include "neuron.hpp"
 
@@ -47,14 +46,23 @@ typedef slots_of<PhiPerNeuron> PhiPerNeuronsBase;
 class PhiPerNeurons : public PhiPerNeuronsBase
 {
 public:
+
     explicit PhiPerNeurons(size_t extra, const Neurons &neurons);
     virtual ~PhiPerNeurons() throw();
 
     size_t trains() const throw();
 
+    void compute(const Unit deltaUnit, threading::crew *para);
+    
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(PhiPerNeurons);
-    vector<PhiPerTrain*> phi;
+    Unit                    delta;
+    vector<PhiPerTrain*>    phi;
+    threading::crew::kernel run;
+    
+    void computePara(threading::crew::context &);
+    
 };
 
 

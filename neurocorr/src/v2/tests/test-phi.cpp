@@ -8,7 +8,7 @@ YOCTO_UNIT_TEST_IMPL(phi)
     wtime chrono;
     chrono.start();
     uint64_t mark = 0;
-    
+    threading::crew para;
     {
         const size_t  num_neurons = 2 + alea_leq(50);
         const size_t  num_trials  = 3 + alea_leq(200);
@@ -40,7 +40,19 @@ YOCTO_UNIT_TEST_IMPL(phi)
         const size_t extra = 2;
         PhiPerNeurons phi(extra,neurons);
         std::cerr << "Ready for " << phi.trains() << " Phi functions" << std::endl;
-        
+
+        std::cerr << "Computing, Sequential" << std::endl;
+        mark = chrono.ticks();
+        phi.compute(1,NULL);
+        const double seqTime = chrono( chrono.ticks()-mark );
+        std::cerr << "seqTime=" << seqTime << std::endl;
+
+        std::cerr << "Computing, Parallel" << std::endl;
+        mark = chrono.ticks();
+        phi.compute(1,&para);
+        const double parTime = chrono( chrono.ticks()-mark );
+        std::cerr << "parTime=" << parTime << std::endl;
+        std::cerr << "SpeedUp=" << seqTime/parTime << std::endl;
     }
 
 }

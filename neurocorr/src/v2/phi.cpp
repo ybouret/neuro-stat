@@ -60,7 +60,9 @@ PhiPerNeurons:: ~PhiPerNeurons() throw() {}
 
 PhiPerNeurons:: PhiPerNeurons(size_t extra, const Neurons &neurons) :
 PhiPerNeuronsBase(neurons.size),
-phi()
+delta(0),
+phi(),
+run(this,&PhiPerNeurons::computePara)
 {
     size_t num_phi_per_train = 0;
     for(size_t i=0;i<neurons.size;++i)
@@ -88,4 +90,32 @@ phi()
 size_t PhiPerNeurons:: trains() const throw()
 {
     return phi.size();
+}
+
+void PhiPerNeurons:: compute(const Unit deltaUnit, threading::crew *para)
+{
+    if(para)
+    {
+        delta = deltaUnit;
+        (*para)(run);
+    }
+    else
+    {
+        for(size_t i=phi.size();i>0;--i)
+        {
+            phi[i]->compute(deltaUnit);
+        }
+    }
+}
+
+#include "yocto/code/unroll.hpp"
+#define NC_UPDATE_PHI(I) \
+phi[I]->compute(delta)
+
+void PhiPerNeurons:: computePara(threading::crew::context &ctx)
+{
+    size_t offset = 1;
+    size_t length = phi.size();
+    ctx.split(offset, length);
+    YOCTO_LOOP_FUNC(length,NC_UPDATE_PHI,offset);
 }
