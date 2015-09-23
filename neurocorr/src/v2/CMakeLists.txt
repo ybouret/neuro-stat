@@ -10,6 +10,7 @@ cpwfn.cpp
 cpwfn-build.cpp
 cpwfn-product.cpp
 cpwfn-integrate.cpp
+cpwfn-eval.cpp
 phi.hpp
 phi.cpp
 )

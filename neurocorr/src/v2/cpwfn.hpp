@@ -34,11 +34,14 @@ public:
     //! number of coordinates
     size_t size() const throw();
 
-    //! access operator in [1..size()]
+    //! access coordinate operator in [1..size()]
     const Coord & operator[](const size_t indx) const throw();
 
-    const Unit & value(const size_t index ) const throw();
-    Unit       & value(const size_t index ) throw();
+    //! get value #indx
+    const Unit & value(const size_t indx ) const throw();
+
+    //! get/set value #indx
+    Unit       & value(const size_t indx ) throw();
 
     //! Coord[1], size()>0
     const Coord & front() const throw();
@@ -46,6 +49,11 @@ public:
     //! Coord[size], size()>0
     const Coord & back() const throw();
 
+
+    //! one point sequential operator
+    Unit  operator()(const Unit tau) const throw();
+
+    
     //! raw value for a given delta
     /**
      cost: less than train.size() comparison, train.size() temporary memory

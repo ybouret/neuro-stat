@@ -20,6 +20,16 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
         }
 
         fn.saveTo("cpw.dat");
+        const Unit tauLo = fn.front().tau-5;
+        const Unit tauHi = fn.back().tau +5;
+
+        {
+            ios::wcstream fp("cpw_eval.dat");
+            for(Unit tau=tauLo;tau<=tauHi;++tau)
+            {
+                fp("%ld %ld\n", tau, fn(tau) );
+            }
+        }
     }
 
 
