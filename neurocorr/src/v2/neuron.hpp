@@ -3,7 +3,7 @@
 
 #include "train.hpp"
 
-//! one neuron, with its trials
+//! one neuron, with its trials=trains
 class Neuron : public Object, public Trains
 {
 public:
