@@ -94,8 +94,8 @@ Unit CPW_Function:: integrate(Unit tauLo,
     if(tauLo<=tau1)
     {
         // compute foot value and forward tauLo
-        ans  = foot * (tau1-tauLo);
-        tauLo=tau1;
+        ans   = foot * (tau1-tauLo);
+        tauLo = tau1;
     }
     else
     {
@@ -127,7 +127,29 @@ Unit CPW_Function:: integrate(Unit tauLo,
     //
     // Final Sum
     //__________________________________________________________________________
-    
+    if(jhi<=jlo)
+    {
+        // they are in the same interval !
+        ans += coords[jlo].value * (tauHi-tauLo);
+    }
+    else
+    {
+        // interval containing tauLo
+        const size_t jup = jlo + 1;
+        ans += coords[jlo].value * (coords[jup].tau-tauLo);
+
+        // core
+        for(size_t j=jup,jp=jup+1;j<jhi;++j,++jp)
+        {
+            const Coord &C = coords[j];
+            ans += C.value * (coords[jp].tau - C.tau);
+        }
+
+        // interval containing tauHi
+        const Coord &hi = coords[jhi];
+        ans += hi.value * (tauHi - hi.tau);
+
+    }
 
     return ans;
     
