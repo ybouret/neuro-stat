@@ -1,6 +1,7 @@
 #include "../cpwfn.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/ios/ocstream.hpp"
+#include "yocto/code/rand.hpp"
 
 static inline
 void do_intg(const char         *filename,
@@ -51,6 +52,19 @@ YOCTO_UNIT_TEST_IMPL(intg)
     fn.insert(1,1);
     fn.saveTo("f2.dat");
     do_intg("intg2.dat",fn,-10,10);
+
+    {
+        const size_t np    = 1 + alea_lt(100);
+        const Unit   amp   = 50;
+        const Unit   width = 2000;
+        fn.clear();
+        for(size_t i=0;i<np;++i)
+        {
+            fn.insert(alea_leq(width),Unit(alea_leq(amp))-amp/2);
+        }
+        fn.removeEmptyIntervals();
+        fn.saveTo("fn.dat");
+    }
 
 }
 YOCTO_UNIT_TEST_DONE()
