@@ -82,49 +82,27 @@ PhiPerNeurons:: ~PhiPerNeurons() throw()
 
 }
 
-namespace
+
+//namespace {
+
+YOCTO_QUAD_DECL(BuildProxy,const size_t,extra,const Neuron *,neuron,const Unit,delta,PhiPerNeuronPtr *,handle);
+
+void operator()(lockable &access)
 {
-    class PhiProxy
-    {
-    public:
-        const size_t     extra;
-        const Neuron    &neuron;
-        const Unit       deltaUnit;
-        PhiPerNeuronPtr &handle;
-
-        inline PhiProxy(const size_t     _extra,
-                        const Neuron    &_neuron,
-                        const Unit       _deltaUnit,
-                        PhiPerNeuronPtr &_handle) throw() :
-        extra(_extra),
-        neuron(_neuron),
-        deltaUnit(_deltaUnit),
-        handle(_handle)
-        {
-        }
-
-        inline ~PhiProxy() throw()
-        {
-        }
-
-        PhiProxy(const PhiProxy &p) throw() :
-        extra(p.extra),
-        neuron(p.neuron),
-        deltaUnit(p.deltaUnit),
-        handle(p.handle)
-        {
-
-        }
-
-
-    private:
-        YOCTO_DISABLE_ASSIGN(PhiProxy);
-    };
+    assert(handle);
+    assert(neuron);
+    handle->reset( new PhiPerNeuron(extra,*neuron,delta) );
 }
 
-PhiPerNeurons:: PhiPerNeurons(const size_t   extra,
-                              const Neurons &neurons,
-                              const Unit     deltaUnit) :
+YOCTO_QUAD_END();
+
+//}
+#include "yocto/exception.hpp"
+
+PhiPerNeurons:: PhiPerNeurons(const size_t       extra,
+                              const Neurons     &neurons,
+                              const Unit         deltaUnit,
+                              threading::engine *parallel) :
 PhiPerNeuronsBase(neurons.size)
 {
     PhiPerNeuronsBase &self = *this;
@@ -136,21 +114,66 @@ PhiPerNeuronsBase(neurons.size)
     }
     assert(size==neurons.size);
 
-#if 0
-    for(size_t i=0;i<neurons.size;++i)
+    if(parallel)
     {
-        const Neuron &neuron = neurons[i];
-        self.append<size_t,const Neuron &,Unit>(extra, neuron, deltaUnit);
+        parallel->failed = 0;
+        for(size_t i=0;i<size;++i)
+        {
+            BuildProxy                   proxy(extra,&neurons[i],deltaUnit,&self[i]);
+            const threading::engine::job J(proxy);
+            parallel->enqueue(proxy);
+        }
+        parallel->flush();
+        if(parallel->failed)
+        {
+            throw exception("Failed on Building Phi");
+        }
     }
-#endif
+    else
+    {
+        for(size_t i=0;i<size;++i)
+        {
+            const Neuron &neuron = neurons[i];
+            self[i].reset( new PhiPerNeuron(extra,neuron,deltaUnit) );
+        }
+    }
+
 
 }
 
-void PhiPerNeurons:: update(const Unit deltaUnit)
+YOCTO_PAIR_DECL(UpdateProxy,const Unit,delta,PhiPerNeuronPtr*,handle);
+
+void operator()(lockable &)
 {
-    for(size_t i=0;i<size;++i)
+    (**handle).update(delta);
+}
+
+YOCTO_PAIR_END();
+
+void PhiPerNeurons:: update(const Unit deltaUnit, threading::engine *parallel)
+{
+    if(parallel)
     {
-        //(*this)[i].update(deltaUnit);
+        parallel->failed = 0;
+        for(size_t i=0;i<size;++i)
+        {
+            UpdateProxy                   proxy(deltaUnit,& (*this)[i]);
+            const threading::engine::job J(proxy);
+            parallel->enqueue(proxy);
+        }
+        parallel->flush();
+        if(parallel->failed)
+        {
+            throw exception("Failed on Updating Phi");
+        }
+
+    }
+    else
+    {
+        for(size_t i=0;i<size;++i)
+        {
+            (*this)[i]->update(deltaUnit);
+        }
     }
 }
 

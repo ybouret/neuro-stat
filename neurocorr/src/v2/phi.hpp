@@ -3,6 +3,7 @@
 
 #include "cpwfn.hpp"
 #include "yocto/ptr/auto.hpp"
+#include "yocto/threading/engine.hpp"
 
 typedef slots_of<CPW_Function> PhiPerTrainBase;
 
@@ -46,15 +47,19 @@ private:
 
 
 //! a set of Phi functions for SOME NEURONS
-typedef auto_ptr<PhiPerNeuron>      PhiPerNeuronPtr;
-typedef slots_of< PhiPerNeuronPtr > PhiPerNeuronsBase;
+typedef auto_ptr<PhiPerNeuron>     PhiPerNeuronPtr;
+typedef slots_of<PhiPerNeuronPtr>  PhiPerNeuronsBase;
 
 class PhiPerNeurons : public PhiPerNeuronsBase
 {
 public:
     virtual ~PhiPerNeurons() throw();
-    explicit PhiPerNeurons(const size_t extra, const Neurons &, const Unit deltaUnit);
-    void update(const Unit deltaUnit);
+    explicit PhiPerNeurons(const size_t       extra,
+                           const Neurons     &neurons,
+                           const Unit         deltaUnit,
+                           threading::engine *parallel);
+    void update(const Unit deltaUnit,
+                threading::engine *parallel);
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(PhiPerNeurons);
