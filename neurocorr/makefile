@@ -1,6 +1,9 @@
 YOCTO_ROOT="./yocto"
 CREATE="${YOCTO_ROOT}/src/share/create.sh"
 
+ifndef BUILD_TYPE
+BUILD_TYPE="Debug"#
+endif
 
 all:
 
