@@ -1,7 +1,37 @@
 #include "cpwfn.hpp"
 
-Real CPW_Function:: integrate(const Unit tauLo,
-                              const Unit tauHi) const throw()
+
+namespace
+{
+    static inline
+    size_t FindLowerIndexOf(const Unit          tau,
+                            const array<Coord> &coords,
+                            size_t              jlo,
+                            size_t              jup ) throw()
+    {
+        assert(coords.size()>=2);
+        assert(tau>=coords[jlo].tau);
+        assert(tau<=coords[jup].tau);
+        assert(jup>jlo);
+        while(jup-jlo>1)
+        {
+            const size_t jmid = (jup+jlo)>>1;
+            const Unit   tmid = coords[jmid].tau;
+            if(tau<tmid)
+            {
+                jup = jmid;
+            }
+            else
+            {
+                jlo = jmid;
+            }
+        }
+        return jlo;
+    }
+}
+
+Unit CPW_Function:: integrate(Unit tauLo,
+                              Unit tauHi) const throw()
 {
     assert(tauLo<=tauHi);
 
@@ -20,94 +50,86 @@ Real CPW_Function:: integrate(const Unit tauLo,
     //
     // Get rid or  trivial cases
     //__________________________________________________________________________
-    const size_t n = coords.size();
+    const size_t N = coords.size();
 
-    if(n<=0)
+    if(N<=0)
     {
-        //trivial case 2
-        return Real(foot)*Real(tauHi-tauLo);
+        //trivial case 2: not points, constant function
+        return foot * (tauHi-tauLo);
     }
 
-    const Coord &C1 = coords.front();
-    if(tauHi<=C1.tau)
+    const Coord &C1   = coords.front();
+    const Unit   tau1 = C1.tau;
+    if(tauHi<=tau1)
     {
-        //trivial case 3
-        return Real(foot)*Real(tauHi-tauLo);
+        //trivial case 3: integral at left of interval
+        return foot*(tauHi-tauLo);
     }
 
-    const Coord &Cn = coords.back();
-    if(tauLo>=Cn.tau)
+    const Coord &CN   = coords.back();
+    const Unit   tauN = CN.tau;
+    if(tauLo>=tauN)
     {
         //trivial case 4
-        return Real(Cn.value)*Real(tauHi-tauLo);
+        return CN.value*(tauHi-tauLo);
     }
 
     //__________________________________________________________________________
     //
     // Less trivial case: 1 point across the interval
     //__________________________________________________________________________
-    if(1==n)
+    if(1==N)
     {
-        return Real(foot) * Real(C1.tau-tauLo) + Real(C1.value) * (tauHi-C1.tau);
+        return foot*(tau1-tauLo) + C1.value * (tauHi-tau1);
     }
 
     //__________________________________________________________________________
     //
     // Locate position for tauLo
     //__________________________________________________________________________
-    Real ans  = 0.0;
-    assert(n>=2);
-    size_t jlo = 0;
-    //std::cerr << "tauLo=" << tauLo << ", tau[1]=" << C1.tau << std::endl;
-    if(tauLo>=C1.tau)
+    assert(N>=2);
+
+    Unit   ans = 0;
+    size_t jlo = 1;
+    if(tauLo<=tau1)
     {
-        assert(tauLo<Cn.tau);
-        jlo=1;
-        size_t jup = 1;
-        while(jup-jlo>1)
-        {
-            const size_t jmid   = (jlo+jup)>>1;
-            const Unit   tauMid = coords[jmid].tau;
-            if(tauLo<tauMid)
-            {
-                jup = jmid;
-            }
-            else
-            {
-                jlo = jmid;
-            }
-        }
-        std::cerr << "lo:" << coords[jlo].tau << "<=" << tauLo << "<=" << coords[jup].tau << std::endl;
+        // compute foot value and forward tauLo
+        ans  = foot * (tau1-tauLo);
+        tauLo=tau1;
+    }
+    else
+    {
+        assert(tauLo<tauN);
+        // full range bissection
+        jlo = FindLowerIndexOf(tauLo, coords, 1, N);
     }
 
     //__________________________________________________________________________
     //
     // Locate position for tauHi
     //__________________________________________________________________________
-    size_t jhi = n;
-    if(tauHi<=Cn.tau)
+    size_t jhi = N-1;
+    if(tauHi>=tauN)
     {
-        assert(tauHi>C1.tau);
-        jhi = (jlo>0) ? jlo : 1;
-        size_t jbn = n;
-        while(jbn-jhi>1)
-        {
-            const size_t jmid   = (jhi+jbn)>>1;
-            const Unit   tauMid = coords[jmid].tau;
-            if(tauHi<tauMid)
-            {
-                jbn = jmid;
-            }
-            else
-            {
-                jhi = jmid;
-            }
-        }
-        std::cerr << "hi:" << coords[jhi].tau << "<=" << tauHi << "<=" << coords[jbn].tau << std::endl;
+        // compute tail value and move tauLo
+        ans  += CN.value * (tauHi-tauN);
+        tauHi = tauN;
     }
-    
-    
-    return ans;
+    else
+    {
+        assert(tauHi>tau1);
+        // bissection using jlo as starting point
+        jhi = FindLowerIndexOf(tauHi, coords, jlo, N);
+    }
 
+
+    //__________________________________________________________________________
+    //
+    // Final Sum
+    //__________________________________________________________________________
+    
+
+    return ans;
+    
 }
 

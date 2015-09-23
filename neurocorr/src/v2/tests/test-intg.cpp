@@ -45,8 +45,10 @@ YOCTO_UNIT_TEST_IMPL(intg)
     fn.saveTo("f1.dat");
     do_intg("intg1.dat",fn,-10,10);
 
-    //! step finishing at 1
-    fn.insert(1,0);
+    //! step finishing at tau=1
+    fn.foot=1;
+    fn.value(1)=-1;
+    fn.insert(1,1);
     fn.saveTo("f2.dat");
     do_intg("intg2.dat",fn,-10,10);
 

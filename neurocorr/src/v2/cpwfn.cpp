@@ -61,6 +61,21 @@ const Coord & CPW_Function:: operator[](const size_t indx) const throw()
     return coords[indx];
 }
 
+const Unit & CPW_Function:: value(const size_t indx ) const throw()
+{
+    assert(indx>0);
+    assert(indx<=size());
+    return coords[indx].value;
+}
+
+Unit & CPW_Function:: value(const size_t indx )  throw()
+{
+    assert(indx>0);
+    assert(indx<=size());
+    return coords[indx].value;
+}
+
+
 const Coord & CPW_Function:: front() const throw()
 {
     assert(size()>0);

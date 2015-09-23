@@ -37,6 +37,9 @@ public:
     //! access operator in [1..size()]
     const Coord & operator[](const size_t indx) const throw();
 
+    const Unit & value(const size_t index ) const throw();
+    Unit       & value(const size_t index ) throw();
+
     //! Coord[1], size()>0
     const Coord & front() const throw();
 
@@ -79,7 +82,7 @@ public:
     CPW_Function(const CPW_Function &lhs, const CPW_Function &rhs);
 
     //! integrate with tauLo<=tauHi
-    Real integrate(const Unit tauLo, const Unit tauHi) const throw();
+    Unit integrate( Unit tauLo,  Unit tauHi) const throw();
 
 
 private:
