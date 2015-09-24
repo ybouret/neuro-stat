@@ -21,7 +21,7 @@ YOCTO_SUPPORT_C_STYLE_OPS(Coord);
 class CPW_Function : public Object
 {
 public:
-    //! a function with an intial capacity
+    //! an empty function
     explicit CPW_Function(const Real usr_scale) throw();
     void     ensureCapacity(size_t n);
 
