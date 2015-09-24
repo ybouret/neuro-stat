@@ -5,16 +5,12 @@ train.hpp
 train.cpp
 records.hpp
 records.cpp
-neuron.cpp
-neuron.hpp
 cpwfn.hpp
 cpwfn.cpp
 cpwfn-build.cpp
 cpwfn-product.cpp
 cpwfn-integrate.cpp
 cpwfn-eval.cpp
-phi.hpp
-phi.cpp
 phifn.hpp
 phifn.cpp
 )
