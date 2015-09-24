@@ -3,6 +3,8 @@ types.hpp
 types.cpp
 train.hpp
 train.cpp
+records.hpp
+records.cpp
 neuron.cpp
 neuron.hpp
 cpwfn.hpp
