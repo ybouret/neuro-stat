@@ -36,3 +36,22 @@ neurons(cols)
         }
     }
 }
+
+
+void Records:: displayNeurons() const
+{
+    std::cerr << "#Neurons=" << neurons << std::endl;
+
+    for(size_t j=0;j<neurons;++j)
+    {
+        std::cerr << "neuron #" << j << "\t(#trials=" << trials << ")" << std::endl;
+        std::cerr << "|_";
+        for(size_t i=0;i<trials;++i)
+        {
+            const Train &tr = *((*this)[i][j]);
+            std::cerr << "/" << tr.size();
+        }
+        std::cerr << "." << std::endl;
+    }
+    
+}

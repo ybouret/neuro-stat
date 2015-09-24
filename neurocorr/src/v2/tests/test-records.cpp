@@ -26,6 +26,7 @@ YOCTO_UNIT_TEST_IMPL(records)
     Records records(1.0,neurodata,num_neurons);
     std::cerr << "#Neurons: " << records.neurons << std::endl;
     std::cerr << "#Trials:  " << records.trials  << std::endl;
+    records.displayNeurons();
     
 }
 YOCTO_UNIT_TEST_DONE()

@@ -15,6 +15,8 @@ cpwfn-integrate.cpp
 cpwfn-eval.cpp
 phi.hpp
 phi.cpp
+phifn.hpp
+phifn.cpp
 )
 
 ADD_LIBRARY(ncv2 STATIC ${c_srcs})

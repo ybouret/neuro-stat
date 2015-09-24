@@ -4,6 +4,7 @@ test-types.cpp
 test-train.cpp
 test-records.cpp
 test-neuron.cpp
+test-phifn.cpp
 test-cpwfn.cpp
 test-intg.cpp
 test-phi.cpp
@@ -20,6 +21,8 @@ ADD_TEST(Neuron  test-ncv2 neuron)
 ADD_TEST(CPWFn   test-ncv2 cpwfn)
 ADD_TEST(Intg    test-ncv2 intg)
 ADD_TEST(Phi     test-ncv2 phi)
+ADD_TEST(PhiFn   test-ncv2 phifn)
+
 
 IF(R_FOUND)
 ADD_TEST(NAME test_nc_R WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND ${R_EXE} --no-save --slave -f test-nc.R)

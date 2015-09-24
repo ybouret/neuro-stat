@@ -17,7 +17,8 @@ public:
                      const Matrix<Real> &neurodata,
                      const size_t        num_neurons);
     virtual ~Records() throw();
-    
+
+    void displayNeurons() const;
     
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Records);
