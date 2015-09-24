@@ -1,5 +1,5 @@
 #include "yocto/R/R++.hpp"
-#include "neuron.hpp"
+#include "records.hpp"
 #include "yocto/ptr/auto.hpp"
 
 using namespace yocto;
@@ -31,7 +31,7 @@ SEXP NeuroCorr_Version() throw()
 //
 //______________________________________________________________________________
 static inline
-Neurons *BuildNeurons(SEXP &RND, SEXP &RNumNeurons, SEXP &RScale)
+Records *BuildRecords(SEXP &RND, SEXP &RNumNeurons, SEXP &RScale)
 {
     //______________________________________________________________________
     //
@@ -45,7 +45,7 @@ Neurons *BuildNeurons(SEXP &RND, SEXP &RNumNeurons, SEXP &RScale)
     //
     // Direct Call
     //______________________________________________________________________
-    return new Neurons(scale,neurodata,num_neurons);
+    return new Records(scale,neurodata,num_neurons);
 }
 
 extern "C"
@@ -54,16 +54,15 @@ SEXP NeuroCorr_CheckNeuroData(SEXP RND, SEXP RNumNeurons, SEXP RScale) throw()
     YOCTO_R_PROLOG()
     {
 
-        auto_ptr<Neurons> pNeurons( BuildNeurons(RND,RNumNeurons,RScale) );
-        Neurons &neurons = *pNeurons;
-        Rprintf("#neurons=%u (#trials=%u)\n", unsigned(neurons.size), unsigned(neurons.trials) );
-        for(int i=0;i<neurons.size;++i)
+        auto_ptr<Records> pRecords( BuildRecords(RND,RNumNeurons,RScale) );
+        Records &records = *pRecords;
+        Rprintf("#neurons=%u (#trials=%u)\n", unsigned(records.neurons), unsigned(records.trials) );
+        for(int i=0;i<records.neurons;++i)
         {
-            const Neuron &nn = neurons[i];
             Rprintf("Neuron[%3d]:\n", i);
-            for(unsigned j=0;j<nn.trials;++j)
+            for(unsigned j=0;j<records.trials;++j)
             {
-                const Train &tr = nn[j];
+                const Train &tr = *records[j][i];
                 Rprintf("\ttrial[%3u](#%3u)",j,tr.size());
                 Rprintf("\n");
             }
