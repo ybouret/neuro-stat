@@ -48,3 +48,20 @@ void Box:: extractFrom( const Train &train, UList &tau ) const
     }
 
 }
+
+#if 0
+void Box:: build_rhs(const PHI &phi) const
+{
+    assert(trial<=phi.trials);
+    const size_t iTrial  = trial;
+    const size_t neurons = phi.neurons;
+
+    for(size_t iN=0;iN<neurons;++iN)
+    {
+        
+    }
+
+
+}
+#endif
+
