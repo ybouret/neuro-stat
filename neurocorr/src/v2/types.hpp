@@ -1,7 +1,8 @@
 #ifndef NC_TYPES_INCLUDED
 #define NC_TYPES_INCLUDED 1
 
-#include "yocto/object.hpp"
+#include "yocto/sequence/list.hpp"
+
 using namespace yocto;
 
 typedef unit_t Unit;
@@ -32,6 +33,8 @@ public:
 private:
     YOCTO_DISABLE_ASSIGN(Object);
 };
+
+typedef list<Unit> UList;
 
 #endif
 

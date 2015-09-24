@@ -2,7 +2,7 @@
 #define NC_BOX_INCLUDED 1
 
 #include "types.hpp"
-
+#include "train.hpp"
 
 class Box
 {
@@ -17,7 +17,9 @@ public:
                  const Unit   end) throw();
     virtual ~Box() throw();
     Box(const Box &) throw();
-    
+
+    void extractFrom( const Train &train, UList &tau ) const;
+
 private:
     YOCTO_DISABLE_ASSIGN(Box);
 };

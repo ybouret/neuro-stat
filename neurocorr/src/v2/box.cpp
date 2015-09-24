@@ -13,7 +13,7 @@ tauStart(ini),
 tauFinal(end),
 kind(0)
 {
-
+    assert(tauFinal>=tauStart);
 }
 
 
@@ -23,5 +23,28 @@ tauStart(b.tauStart),
 tauFinal(b.tauFinal),
 kind(b.kind)
 {
+
+}
+
+
+void Box:: extractFrom( const Train &train, UList &tau ) const
+{
+    tau.free();
+    const size_t ns = train.size();
+    size_t i=0;
+
+    while(i<ns)
+    {
+        if(train[i]>=tauStart) break;
+        ++i;
+    }
+
+    while(i<ns)
+    {
+        const Unit tt = train[i];
+        if(tt>tauFinal) break;
+        tau.push_back(tt);
+        ++i;
+    }
 
 }
