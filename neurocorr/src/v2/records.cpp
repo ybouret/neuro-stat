@@ -22,12 +22,12 @@ Records:: Records(const Real          scale,
                   const size_t        num_neurons) :
 RecordsBase( __get_num_trials(neurodata.rows,num_neurons), num_neurons ),
 trials(rows),
-neurons(cols)
+neurones(cols)
 {
     build_with<Train*>(NULL);
     RecordsBase &self = *this;
     size_t iTrain = 0;
-    for(size_t iN = 0; iN < neurons; ++iN )
+    for(size_t iN = 0; iN < neurones; ++iN )
     {
         for(size_t iT = 0; iT < trials; ++iT )
         {
@@ -38,11 +38,11 @@ neurons(cols)
 }
 
 
-void Records:: displayNeurons() const
+void Records:: displayNeurones() const
 {
-    std::cerr << "#Neurons=" << neurons << std::endl;
+    std::cerr << "#Neurons=" << neurones << std::endl;
 
-    for(size_t j=0;j<neurons;++j)
+    for(size_t j=0;j<neurones;++j)
     {
         std::cerr << "neuron #" << j << "\t(#trials=" << trials << ")" << std::endl;
         std::cerr << "|_";

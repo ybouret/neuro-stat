@@ -71,8 +71,8 @@ SEXP NeuroCorr_CheckNeuroData(SEXP RND, SEXP RNumNeurons, SEXP RScale) throw()
 
         auto_ptr<Records> pRecords( BuildRecords(RND,RNumNeurons,RScale) );
         Records &records = *pRecords;
-        Rprintf("#neurons=%u (#trials=%u)\n", unsigned(records.neurons), unsigned(records.trials) );
-        for(int i=0;i<records.neurons;++i)
+        Rprintf("#neurons=%u (#trials=%u)\n", unsigned(records.neurones), unsigned(records.trials) );
+        for(int i=0;i<records.neurones;++i)
         {
             Rprintf("Neuron[%3d]:\n", i);
             for(unsigned j=0;j<records.trials;++j)

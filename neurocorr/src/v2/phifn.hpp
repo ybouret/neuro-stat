@@ -38,7 +38,7 @@ class PHI : public PHI_Base
 {
 public:
     const size_t &trials;
-    const size_t &neurons;
+    const size_t &neurones;
     explicit PHI(const size_t extra, const Records &records);
     virtual ~PHI() throw();
 

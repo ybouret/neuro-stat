@@ -58,12 +58,12 @@ void Box:: computeFor(const PHI &Phi, vector<Unit> &b) const
         throw exception("Box trial is invalid!!!");
     }
     
-    const size_t iT      = trial;
-    const size_t neurons = Phi.neurons;
-    const PHI::row &PhiT = Phi[iT];
+    const size_t    iT       = trial;
+    const size_t    neurones = Phi.neurones;
+    const PHI::row &PhiT     = Phi[iT];
     
     b.free();
-    for(size_t iN=0;iN<neurons;++iN)
+    for(size_t iN=0;iN<neurones;++iN)
     {
         const PHI_Functions &phi   = *PhiT[iN];
         const Train         &train = phi.train;

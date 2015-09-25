@@ -47,7 +47,7 @@ PHI:: ~PHI() throw()
 PHI:: PHI(const size_t extra, const Records &records) :
 PHI_Base(records.rows,records.cols),
 trials(rows),
-neurons(cols),
+neurones(cols),
 delta(0),
 pCode(this,& PHI::paraCompute)
 {
@@ -55,7 +55,7 @@ pCode(this,& PHI::paraCompute)
     PHI_Base &self = *this;
     for(size_t i=0;i<trials;++i)
     {
-        for(size_t j=0;j<neurons;++j)
+        for(size_t j=0;j<neurones;++j)
         {
             self[i][j].reset( new PHI_Functions(extra, * records[i][j] ) );
         }

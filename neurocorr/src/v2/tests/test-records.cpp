@@ -5,10 +5,10 @@
 
 YOCTO_UNIT_TEST_IMPL(records)
 {
-    const size_t  num_neurons = 2 + alea_leq(50);
-    const size_t  num_trials  = 3 + alea_leq(200);
-    const size_t  num_trains  = num_neurons * num_trials;
-    const size_t  max_spikes  = 100 + alea_leq(10000);
+    const size_t  num_neurones = 2 + alea_leq(50);
+    const size_t  num_trials   = 3 + alea_leq(200);
+    const size_t  num_trains   = num_neurones * num_trials;
+    const size_t  max_spikes   = 100 + alea_leq(10000);
     CMatrix<Real> neurodata(num_trains,1+max_spikes);
 
     for(size_t i=0;i<num_trains;++i)
@@ -23,10 +23,10 @@ YOCTO_UNIT_TEST_IMPL(records)
         }
     }
 
-    Records records(1.0,neurodata,num_neurons);
-    std::cerr << "#Neurons: " << records.neurons << std::endl;
+    Records records(1.0,neurodata,num_neurones);
+    std::cerr << "#Neurons: " << records.neurones << std::endl;
     std::cerr << "#Trials:  " << records.trials  << std::endl;
-    records.displayNeurons();
+    records.displayNeurones();
     
 }
 YOCTO_UNIT_TEST_DONE()

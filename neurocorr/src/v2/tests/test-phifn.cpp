@@ -31,7 +31,7 @@ YOCTO_UNIT_TEST_IMPL(phifn)
     }
 
     Records records(1.0,neurodata,num_neurons);
-    records.displayNeurons();
+    records.displayNeurones();
 
     //! allocating memory
     std::cerr << "Allocating Memory for Phi" << std::endl;
