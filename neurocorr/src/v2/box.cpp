@@ -62,11 +62,19 @@ void Box:: computeFor(const PHI &Phi) const
     const size_t neurons = Phi.neurons;
     const PHI::row &PhiT = Phi[iT];
     
+    vector<Real> v;
     for(size_t iN=0;iN<neurons;++iN)
     {
         const PHI_Functions &phi   = *PhiT[iN];
         const Train         &train = phi.train;
         extractTauFrom(train);
+        const size_t N = Tau.size(); v.push_back(N);
+        const size_t K = phi.size;
+        for(size_t k=0;k<K;++k)
+        {
+            const Real phi_trial_neur_k = phi[k]._sumValuesAtOrdered(Tau);
+            v.push_back(phi_trial_neur_k);
+        }
     }
 
 }
