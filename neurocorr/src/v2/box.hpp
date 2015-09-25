@@ -21,8 +21,8 @@ public:
 
     void extractTauFrom( const Train &train ) const;
 
-    //! compute
-    void computeFor(const PHI &Phi, vector<Unit> &b ) const;
+    //! compute inside a given matrix
+    void computeFor(const PHI &Phi, Matrix<Unit> &b ) const;
 
     
 private:

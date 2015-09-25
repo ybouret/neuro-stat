@@ -48,6 +48,7 @@ PHI:: PHI(const size_t extra, const Records &records) :
 PHI_Base(records.rows,records.cols),
 trials(rows),
 neurones(cols),
+K(1+extra),
 delta(0),
 pCode(this,& PHI::paraCompute)
 {

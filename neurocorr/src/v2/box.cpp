@@ -51,30 +51,32 @@ void Box:: extractTauFrom( const Train &train ) const
 
 #include "yocto/exception.hpp"
 
-void Box:: computeFor(const PHI &Phi, vector<Unit> &b) const
+void Box:: computeFor(const PHI &Phi, Matrix<Unit> &B) const
 {
     if(trial>=Phi.trials)
     {
         throw exception("Box trial is invalid!!!");
     }
-    
+
+    assert(B.rows==Phi.neurones);
+    assert(B.cols==1+Phi.K);
     const size_t    iT       = trial;
     const size_t    neurones = Phi.neurones;
     const PHI::row &PhiT     = Phi[iT];
-    
-    b.free();
+    const size_t    K        = Phi.K;
+
     for(size_t iN=0;iN<neurones;++iN)
     {
         const PHI_Functions &phi   = *PhiT[iN];
         const Train         &train = phi.train;
         extractTauFrom(train);
         const size_t N = Tau.size();
-        b.push_back(N);
-        const size_t K = phi.size;
+        B(iN,0) = N;
+        //b.push_back(N);
         for(size_t k=0;k<K;++k)
         {
-            const Real phi_trial_neur_k = phi[k].sumValuesAtOrdered(Tau);
-            b.push_back(phi_trial_neur_k);
+            const Unit phi_trial_neur_k = phi[k].sumValuesAtOrdered(Tau);
+            B(iN,1+k) = phi_trial_neur_k;
         }
     }
 

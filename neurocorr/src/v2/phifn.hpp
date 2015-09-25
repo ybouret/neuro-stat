@@ -39,6 +39,7 @@ class PHI : public PHI_Base
 public:
     const size_t &trials;
     const size_t &neurones;
+    const size_t K; //!< 1+extra
     explicit PHI(const size_t extra, const Records &records);
     virtual ~PHI() throw();
 
