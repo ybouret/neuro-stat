@@ -23,12 +23,13 @@ YOCTO_UNIT_TEST_IMPL(box)
     std::cerr << "Computing Phi..." << std::endl;
     phi.compute(1,&para);
 
+
     CMatrix<Unit> B(phi.neurones,1+phi.K);
     for(size_t it=0;it<phi.trials;++it)
     {
         Box box( it, 10, 200 );
         box.computeFor(phi,B);
-        //std::cerr << "B=" << B << std::endl;
+        std::cerr << "B=" << B << std::endl;
     }
 
 }

@@ -11,20 +11,21 @@ public:
     const Unit    tauStart;  //!< tau start
     const Unit    tauFinal;  //!< tau final
     const int     kind;      //!< label
-    mutable UList Tau;       //!< local tau's
-    
+
     explicit Box(const size_t indx,
                  const Unit   ini,
                  const Unit   end) throw();
     virtual ~Box() throw();
     Box(const Box &) throw();
 
-    void extractTauFrom( const Train &train ) const;
+    UList &buildTauFor( const Train &train  ) const throw();
 
     //! compute inside a given matrix
-    void computeFor(const PHI &Phi, Matrix<Unit> &b ) const;
+    void computeFor(const PHI &Phi, Matrix<Unit> &b) const throw();
 
     
+
+
 private:
     YOCTO_DISABLE_ASSIGN(Box);
 };

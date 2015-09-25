@@ -27,8 +27,11 @@ kind(b.kind)
 }
 
 
-void Box:: extractTauFrom( const Train &train ) const
+UList &Box:: buildTauFor( const Train &train ) const throw()
 {
+    assert(train.Tau.capacity()>=train.size());
+    UList &Tau = train.Tau;
+
     Tau.free();
     const size_t ns = train.size();
     size_t i=0;
@@ -47,11 +50,12 @@ void Box:: extractTauFrom( const Train &train ) const
         ++i;
     }
 
+    return Tau;
 }
 
 #include "yocto/exception.hpp"
 
-void Box:: computeFor(const PHI &Phi, Matrix<Unit> &B) const
+void Box:: computeFor(const PHI &Phi, Matrix<Unit> &B ) const throw()
 {
     if(trial>=Phi.trials)
     {
@@ -69,10 +73,9 @@ void Box:: computeFor(const PHI &Phi, Matrix<Unit> &B) const
     {
         const PHI_Functions &phi   = *PhiT[iN];
         const Train         &train = phi.train;
-        extractTauFrom(train);
-        const size_t N = Tau.size();
-        B(iN,0) = N;
-        //b.push_back(N);
+        const UList         &Tau = buildTauFor(train);
+        const size_t         np = Tau.size();
+        B(iN,0) = np;
         for(size_t k=0;k<K;++k)
         {
             const Unit phi_trial_neur_k = phi[k].sumValuesAtOrdered(Tau);

@@ -20,9 +20,10 @@ public:
 
     //! manually create 0 filled train
     explicit Train(const Real scale, const size_t nSpike);
-
     virtual ~Train() throw();
-    
+
+    mutable UList Tau; //!< list of selected value
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Train);
 };

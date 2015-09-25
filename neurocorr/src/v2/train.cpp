@@ -29,7 +29,8 @@ size_t __get_length_of(const Matrix<Real> &neurodata,
 
 Train:: Train(const Real scale, const size_t nSpike) :
 Object(scale),
-CVector<Unit>(nSpike)
+CVector<Unit>(nSpike),
+Tau(size(),as_capacity)
 {
 }
 
@@ -39,9 +40,10 @@ Train:: Train(const Real          scale,
               const Matrix<Real> &neurodata,
               const size_t        iTrain) :
 Object(scale),
-CVector<Unit>( __get_length_of(neurodata,iTrain) )
+CVector<Unit>( __get_length_of(neurodata,iTrain) ),
+Tau(size(),as_capacity)
 {
-    const size_t n = size();
+    const size_t   n = size();
     CVector<Unit> &a = *this;
     for(size_t i=0;i<n;++i)
     {
