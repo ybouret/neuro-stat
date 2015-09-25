@@ -21,7 +21,7 @@ public:
 
     void extractTauFrom( const Train &train ) const;
 
-    void computeFor(const PHI &Phi) const;
+    void computeFor(const PHI &Phi, vector<Unit> &b ) const;
 
     
 private:

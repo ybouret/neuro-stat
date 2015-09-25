@@ -1,4 +1,4 @@
-#include "../phifn.hpp"
+#include "../box.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
 #include "yocto/sys/wtime.hpp"
@@ -52,6 +52,10 @@ YOCTO_UNIT_TEST_IMPL(phifn)
     std::cerr << "parTime=" << parTime << std::endl;
     std::cerr << "SpeedUp=" << seqTime/parTime << std::endl;
 
+    Box box( alea_lt(phi.trials), 10, 20 );
+    vector<Unit> b;
+    box.computeFor(phi,b);
+    std::cerr << "b=" << b << std::endl;
 
 
 }
