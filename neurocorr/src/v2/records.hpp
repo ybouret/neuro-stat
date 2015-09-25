@@ -15,11 +15,16 @@ public:
     const size_t &neurones; //!< alias to cols
     explicit Records(const Real          scale,
                      const Matrix<Real> &neurodata,
-                     const size_t        num_neurons);
+                     const size_t        num_neurones);
     virtual ~Records() throw();
 
     void displayNeurones() const;
-    
+
+    //! random records with unit scaling
+    static Records *CreateRandom(const size_t num_neurones,
+                                 const size_t num_trials,
+                                 const size_t max_spikes);
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Records);
 };

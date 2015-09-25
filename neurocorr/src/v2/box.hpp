@@ -20,6 +20,8 @@ public:
     Box(const Box &) throw();
 
     void extractTauFrom( const Train &train ) const;
+
+    //! compute
     void computeFor(const PHI &Phi, vector<Unit> &b ) const;
 
     

@@ -11,9 +11,9 @@ static inline
 size_t __get_num_trials(const size_t trains, const size_t num_neurons)
 {
     if(trains<=0)                   throw exception("Records: No Train");
-    if(num_neurons<=0)              throw exception("Records: No Neuron");
-    if(trains<num_neurons)          throw exception("Records: Mismatch Trains<Neurons");
-    if( 0 != (trains%num_neurons) ) throw exception("Records: Incompatible Length");
+    if(num_neurons<=0)              throw exception("Records: No Neurone");
+    if(trains<num_neurons)          throw exception("Records: Mismatch Trains<Neurones");
+    if( 0 != (trains%num_neurons) ) throw exception("Records: Incompatible Lengths");
     return trains/num_neurons;
 }
 
@@ -53,5 +53,32 @@ void Records:: displayNeurones() const
         }
         std::cerr << "." << std::endl;
     }
-    
+
+}
+
+
+#include "yocto/code/rand.hpp"
+
+Records *Records:: CreateRandom(const size_t num_neurones,
+                                const size_t num_trials,
+                                const size_t max_spikes)
+{
+    assert(num_neurones>0);
+    assert(num_trials>0);
+    const size_t  num_trains = num_neurones*num_trials;
+    CMatrix<Real> neurodata(num_trains,1+max_spikes);
+
+    for(size_t i=0;i<num_trains;++i)
+    {
+        const size_t ns = alea_leq(max_spikes);
+        neurodata[i][0] = ns;
+        size_t curr = 0;
+        for(size_t j=1;j<=ns;++j)
+        {
+            curr += 1 + alea_leq(10);
+            neurodata[i][j] = curr;
+        }
+    }
+
+    return new Records(1.0,neurodata,num_neurones);
 }

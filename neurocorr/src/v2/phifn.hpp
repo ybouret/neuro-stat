@@ -46,7 +46,6 @@ public:
     void compute( const Unit deltaUnit, Crew *para );
 
     
-    
 private:
     Unit   delta; // for parallel coding
     Kernel pCode; // the parallel code

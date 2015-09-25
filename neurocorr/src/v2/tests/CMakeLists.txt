@@ -6,6 +6,7 @@ test-records.cpp
 test-phifn.cpp
 test-cpwfn.cpp
 test-intg.cpp
+test-box.cpp
 )
 
 TARGET_LINK_LIBRARIES(test-ncv2 ncv2)
@@ -18,6 +19,7 @@ ADD_TEST(Records test-ncv2 records)
 ADD_TEST(CPWFn   test-ncv2 cpwfn)
 ADD_TEST(Intg    test-ncv2 intg)
 ADD_TEST(PhiFn   test-ncv2 phifn)
+ADD_TEST(Box     test-ncv2 box)
 
 
 IF(R_FOUND)
