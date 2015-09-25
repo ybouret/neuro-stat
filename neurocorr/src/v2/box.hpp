@@ -18,12 +18,14 @@ public:
     virtual ~Box() throw();
     Box(const Box &) throw();
 
+    //! use the train.Tau list, pre-allocated
     UList &buildTauFor( const Train &train  ) const throw();
 
-    //! compute inside a given matrix
-    void computeFor(const PHI &Phi, Matrix<Unit> &b) const throw();
+    //! compute B: TODO store in vector ?
+    void computeVec(const PHI &Phi, Matrix<Unit> &B) const throw();
 
-    
+    //! compute G..
+    void computeMat(const PHI &Phi) const;
 
 
 private:
