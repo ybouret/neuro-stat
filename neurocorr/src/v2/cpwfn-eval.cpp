@@ -224,3 +224,123 @@ Unit  CPW_Function:: sumValuesAtOrdered( const RArray<Unit> &Tau ) const throw()
     return ans;
 }
 
+Unit  CPW_Function:: sumValuesAtOrdered( const UList &Tau ) const throw()
+{
+    //__________________________________________________________________________
+    //
+    // Get number of Tau values
+    //__________________________________________________________________________
+    const size_t M = Tau.size();
+    if(M<=0) return 0;
+
+    //__________________________________________________________________________
+    //
+    // M>0, let's start to work
+    //__________________________________________________________________________
+    const size_t N   = coords.size();
+    Unit         ans = 0;
+    switch(N)
+    {
+            //__________________________________________________________________
+            //
+            // Trivial case: constant function
+            //__________________________________________________________________
+        case 0: return foot*M;
+
+            //__________________________________________________________________
+            //
+            // Trivial case: 1 point function
+            //__________________________________________________________________
+        case 1: {
+            // easy way, linear sear
+            const Coord          &C   = coords.front();
+            const Unit            tau = C.tau;
+            size_t                i   = 0;
+            UList::const_iterator k   = Tau.begin();
+            while(i<M)
+            {
+                if(*k>tau) break;
+                ++i;
+                ++k;
+            }
+
+            ans +=  i    * foot;
+            ans += (M-i) * C.value;
+            return ans;
+        }
+
+        default:
+            break;
+    }
+
+    assert(N>=2);
+    const Coord &C1   = coords.front();
+    const Unit   tau1 = C1.tau;
+
+    size_t                i   = 0;
+    UList::const_iterator k   = Tau.begin();
+
+    //__________________________________________________________________________
+    //
+    // search where we enter the function
+    //__________________________________________________________________________
+    while(i<M)
+    {
+        if(*k>tau1) break;
+        ++i;
+        ++k;
+    }
+    ans += foot*i;
+
+    //__________________________________________________________________________
+    //
+    // locate points inside the core
+    //__________________________________________________________________________
+    const Coord &CN   = coords.back();
+    const Unit   tauN = CN.tau;
+    size_t       jup  = 2;       // first interval upper index
+    while(i<M)
+    {
+        assert(jup<=N);
+
+        //______________________________________________________________________
+        //
+        // are we still inside ?
+        //______________________________________________________________________
+        const Unit tt = *k;
+        if(tt>tauN)
+            break;
+
+        //______________________________________________________________________
+        //
+        // check where we are
+        //______________________________________________________________________
+        assert(tt>coords[jup-1].tau);
+        assert(tt<=tauN);
+        while(tt>coords[jup].tau)
+        {
+            assert(jup<N);
+            // just slide...
+            ++jup;
+        }
+
+        //______________________________________________________________________
+        //
+        // update value
+        //______________________________________________________________________
+        ans += coords[jup-1].value;
+        ++i;
+        ++k;
+    }
+
+    //__________________________________________________________________________
+    //
+    // now we leave the function
+    //__________________________________________________________________________
+    ans += (M-i) * CN.value;
+    
+    return ans;
+
+}
+
+

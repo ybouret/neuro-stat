@@ -65,6 +65,7 @@ public:
     
     //! sum values of function at given ordered times
     Unit  sumValuesAtOrdered( const RArray<Unit> &Tau ) const throw();
+    Unit  sumValuesAtOrdered( const UList        &Tau ) const throw();
 
     
     //! raw value for a given delta

@@ -52,6 +52,12 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
             throw exception("_sumValuesAtOrdered failure!");
         }
         const Unit uOpt = fn. sumValuesAtOrdered(points);
+        const Unit lOpt = fn. sumValuesAtOrdered(plist);
+        if(uOpt!=lOpt)
+        {
+            throw exception("_sumValuesAtOrdered failure!");
+        }
+
         //std::cerr << uRaw << "/" << uOpt << std::endl;
         if(uRaw!=uOpt)
         {
@@ -72,8 +78,13 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
             
             YOCTO_TIMINGS(tmx, TEST_TIME, theSum += fn.sumValuesAtOrdered(points));
             const double optSpeed = tmx.speed;
-            std::cerr << "optSpeed=" << optSpeed << std::endl;
-            std::cerr << "Speed Up=" << optSpeed/rawSpeed << std::endl;
+            std::cerr << "optSpeedCore=" << optSpeed << std::endl;
+            YOCTO_TIMINGS(tmx, TEST_TIME, theSum += fn.sumValuesAtOrdered(plist));
+            const double optSpeedList = tmx.speed;
+            std::cerr << "optSpeedList=" << optSpeedList << std::endl;
+
+            std::cerr << "CoreSpeedUp=" << optSpeed/rawSpeed         << std::endl;
+            std::cerr << "ListSpeedUp=" << optSpeedList/rawSpeedList << std::endl;
         }
     }
 

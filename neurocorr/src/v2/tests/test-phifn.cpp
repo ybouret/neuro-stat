@@ -52,11 +52,13 @@ YOCTO_UNIT_TEST_IMPL(phifn)
     std::cerr << "parTime=" << parTime << std::endl;
     std::cerr << "SpeedUp=" << seqTime/parTime << std::endl;
 
-    Box box( alea_lt(phi.trials), 10, 20 );
     vector<Unit> b;
-    box.computeFor(phi,b);
-    std::cerr << "b=" << b << std::endl;
-
-
+    for(size_t it=0;it<phi.trials;++it)
+    {
+        Box box( it, 10, 100 );
+        box.computeFor(phi,b);
+        std::cerr << "b=" << b << std::endl;
+    }
+    
 }
 YOCTO_UNIT_TEST_DONE()

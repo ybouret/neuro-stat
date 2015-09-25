@@ -73,7 +73,7 @@ void Box:: computeFor(const PHI &Phi, vector<Unit> &b) const
         const size_t K = phi.size;
         for(size_t k=0;k<K;++k)
         {
-            const Real phi_trial_neur_k = phi[k]._sumValuesAtOrdered(Tau);
+            const Real phi_trial_neur_k = phi[k].sumValuesAtOrdered(Tau);
             b.push_back(phi_trial_neur_k);
         }
     }
