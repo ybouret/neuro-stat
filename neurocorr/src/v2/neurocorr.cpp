@@ -1,8 +1,23 @@
+#include "yocto/rtld/export.hpp"
 #include "yocto/R/R++.hpp"
-#include "records.hpp"
+#include "phifn.hpp"
 #include "yocto/ptr/auto.hpp"
 
 using namespace yocto;
+
+static Crew *team = NULL;
+
+static inline void EnterModule() throw()
+{
+    std::cerr << "Entering Module" << std::endl;
+}
+
+static inline void LeaveModule() throw()
+{
+    std::cerr << "Leaving Module" << std::endl;
+}
+
+YOCTO_RTLD_SETUP(EnterModule,LeaveModule)
 
 ////////////////////////////////////////////////////////////////////////////////
 //
