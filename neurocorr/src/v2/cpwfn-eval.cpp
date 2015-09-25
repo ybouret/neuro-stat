@@ -98,6 +98,20 @@ Unit  CPW_Function:: _sumValuesAtOrdered( const RArray<Unit> &Tau ) const throw(
 }
 
 
+Unit  CPW_Function:: _sumValuesAtOrdered(const UList &Tau) const throw()
+{
+    Unit                  ans = 0;
+    const size_t          np  = Tau.size();
+    UList::const_iterator it  = Tau.begin();
+    for(size_t i=np;i>0;--i,++it)
+    {
+        ans += (*this)(*it);
+    }
+    return ans;
+}
+
+
+
 Unit  CPW_Function:: sumValuesAtOrdered( const RArray<Unit> &Tau ) const throw()
 {
     //__________________________________________________________________________

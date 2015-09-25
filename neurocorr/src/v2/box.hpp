@@ -7,21 +7,23 @@
 class Box
 {
 public:
-    const size_t trial;
-    const Unit   tauStart;
-    const Unit   tauFinal;
-    const int    kind;
-
+    const size_t  trial;     //!< associated trial
+    const Unit    tauStart;  //!< tau start
+    const Unit    tauFinal;  //!< tau final
+    const int     kind;      //!< label
+    mutable UList Tau;       //!< local tau's
+    
     explicit Box(const size_t indx,
                  const Unit   ini,
                  const Unit   end) throw();
     virtual ~Box() throw();
     Box(const Box &) throw();
 
-    void extractFrom( const Train &train, UList &tau ) const;
+    void extractTauFrom( const Train &train ) const;
 
+    void computeFor(const PHI &Phi) const;
 
-
+    
 private:
     YOCTO_DISABLE_ASSIGN(Box);
 };

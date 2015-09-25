@@ -27,9 +27,9 @@ kind(b.kind)
 }
 
 
-void Box:: extractFrom( const Train &train, UList &tau ) const
+void Box:: extractTauFrom( const Train &train ) const
 {
-    tau.free();
+    Tau.free();
     const size_t ns = train.size();
     size_t i=0;
 
@@ -43,25 +43,30 @@ void Box:: extractFrom( const Train &train, UList &tau ) const
     {
         const Unit tt = train[i];
         if(tt>tauFinal) break;
-        tau.push_back(tt);
+        Tau.push_back(tt);
         ++i;
     }
 
 }
 
-#if 0
-void Box:: build_rhs(const PHI &phi) const
-{
-    assert(trial<=phi.trials);
-    const size_t iTrial  = trial;
-    const size_t neurons = phi.neurons;
+#include "yocto/exception.hpp"
 
+void Box:: computeFor(const PHI &Phi) const
+{
+    if(trial>=Phi.trials)
+    {
+        throw exception("");
+    }
+    
+    const size_t iT      = trial;
+    const size_t neurons = Phi.neurons;
+    const PHI::row &PhiT = Phi[iT];
+    
     for(size_t iN=0;iN<neurons;++iN)
     {
-        
+        const PHI_Functions &phi   = *PhiT[iN];
+        const Train         &train = phi.train;
+        extractTauFrom(train);
     }
 
-
 }
-#endif
-

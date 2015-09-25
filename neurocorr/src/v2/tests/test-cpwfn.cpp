@@ -38,12 +38,19 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
 
         const size_t  np = tauHi-tauLo+1;
         CVector<Unit> points(np);
+        UList         plist(np,as_capacity);
         for(Unit tau=tauLo,i=0;tau<=tauHi;++i,++tau)
         {
             points[i] = tau;
+            plist.push_back(tau);
         }
 
         const Unit uRaw = fn._sumValuesAtOrdered(points);
+        const Unit lRaw = fn._sumValuesAtOrdered(plist);
+        if(uRaw!=lRaw)
+        {
+            throw exception("_sumValuesAtOrdered failure!");
+        }
         const Unit uOpt = fn. sumValuesAtOrdered(points);
         //std::cerr << uRaw << "/" << uOpt << std::endl;
         if(uRaw!=uOpt)
@@ -57,7 +64,12 @@ YOCTO_UNIT_TEST_IMPL(cpwfn)
             volatile Unit theSum = 0;
             YOCTO_TIMINGS(tmx, TEST_TIME, theSum += fn._sumValuesAtOrdered(points));
             const double rawSpeed = tmx.speed;
-            std::cerr << "rawSpeed=" << rawSpeed << std::endl;
+            std::cerr << "rawSpeedCore=" << rawSpeed << std::endl;
+            
+            YOCTO_TIMINGS(tmx, TEST_TIME, theSum += fn._sumValuesAtOrdered(plist));
+            const double rawSpeedList = tmx.speed;
+            std::cerr << "rawSpeedList=" << rawSpeedList << std::endl;
+            
             YOCTO_TIMINGS(tmx, TEST_TIME, theSum += fn.sumValuesAtOrdered(points));
             const double optSpeed = tmx.speed;
             std::cerr << "optSpeed=" << optSpeed << std::endl;

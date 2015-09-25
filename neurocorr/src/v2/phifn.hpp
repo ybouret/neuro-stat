@@ -42,11 +42,14 @@ public:
     explicit PHI(const size_t extra, const Records &records);
     virtual ~PHI() throw();
 
+    //! compute the set of Phi functions for a given delta
     void compute( const Unit deltaUnit, Crew *para );
 
+    
+    
 private:
     Unit   delta; // for parallel coding
-    Kernel pCode;
+    Kernel pCode; // the parallel code
     YOCTO_DISABLE_COPY_AND_ASSIGN(PHI);
     void paraCompute(Context &);
 };

@@ -59,6 +59,10 @@ public:
     //! debug function
     Unit  _sumValuesAtOrdered(const RArray<Unit> &Tau ) const throw();
     
+    //! debug function
+    Unit  _sumValuesAtOrdered(const UList &Tau) const throw();
+    
+    
     //! sum values of function at given ordered times
     Unit  sumValuesAtOrdered( const RArray<Unit> &Tau ) const throw();
 
