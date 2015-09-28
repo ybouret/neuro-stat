@@ -36,10 +36,10 @@ typedef auto_ptr<PHI_Functions>        PHI_FunctionsPtr;
 typedef slots2D_of<PHI_FunctionsPtr>   PHI_Base;
 
 //! Quad of computations to do
-YOCTO_SEXTUPLE_DECL(GMap,const size_t,i,const size_t,k,const size_t,l,const size_t,m,const size_t,I_i_k,const size_t,I_l_m);
+YOCTO_SEXTUPLE_DECL(Mix,const size_t,i,const size_t,k,const size_t,l,const size_t,m,const size_t,I_i_k,const size_t,I_l_m);
 YOCTO_SEXTUPLE_END();
 
-typedef slots_of<GMap> GMaps;
+typedef slots_of<Mix> Mixed;
 
 class PHI : public PHI_Base
 {
@@ -47,12 +47,17 @@ public:
     const size_t &trials;
     const size_t &neurones;
     const size_t  K;     //!< 1+extra
-    GMaps         maps;  //!< (neurons*K)*(neurons*K+1)/2;
+    const size_t  NK;    //!< neurones*K
+    const size_t  dim;   //!< 1+neurons*K, dimension for G/B/...
+    Mixed         mixed; //!< (neurons*K)*(neurons*K+1)/2, all possible mixed terms
 
     explicit PHI(const size_t extra, const Records &records);
     virtual ~PHI() throw();
 
     //! compute the set of Phi functions for a given delta
+    /**
+     this can be done in parallel
+     */
     void compute( const Unit deltaUnit, Crew *para );
 
 private:
@@ -60,7 +65,7 @@ private:
     Kernel pCode; // the parallel code
     YOCTO_DISABLE_COPY_AND_ASSIGN(PHI);
     void paraCompute(Context &);
-    void prepareMaps();
+    void prepareMixed();
 };
 
 #endif

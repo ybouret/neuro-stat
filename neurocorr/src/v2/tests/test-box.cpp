@@ -36,8 +36,8 @@ YOCTO_UNIT_TEST_IMPL(box)
 
 
     std::cerr << "Computing B's and G's" << std::endl;
-    const size_t  num_rows=1+Phi.neurones*Phi.K;
-    const size_t  num_cols=Phi.neurones;
+    const size_t  num_rows= Phi.dim;
+    const size_t  num_cols= Phi.neurones;
     CMatrix<Unit> B(num_rows,num_cols);
     CMatrix<Unit> G(num_rows,num_rows);
 
@@ -47,16 +47,17 @@ YOCTO_UNIT_TEST_IMPL(box)
     {
         Box box( it, 0, 500 );
         mark = chrono.ticks();
-        box.computeRHS(Phi,B,Tau);
+        box.appendRHS(Phi,B,Tau);
         Bcount += chrono.ticks()-mark;
 
         mark = chrono.ticks();
-        box.computeMATRIX(Phi,G);
+        //box.computeMATRIX(Phi,G);
+        box.appendLinearTo(G,Phi);
         Gcount += chrono.ticks()-mark;
         if(it==itOut)
         {
-            std::cerr << "B=" << B << std::endl;
-            std::cerr << "G=" << G << std::endl;
+            //std::cerr << "B=" << B << std::endl;
+            //std::cerr << "G=" << G << std::endl;
         }
     }
     const double Bell = chrono(Bcount);

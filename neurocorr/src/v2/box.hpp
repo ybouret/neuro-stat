@@ -22,13 +22,13 @@ public:
     //! extract the sorted list of times within the box in the train...
     void extract( UList &Tau, const Train &train  ) const;
 
-    //! compute B
+    //! append values to a B vector
     /**
      B.rows = 1+Phi.K*Phi.neurones
      B.cols = Phi.neurones
      The use of Tau must be different in case of parallel or sequential code
      */
-    void computeRHS(const PHI &Phi, Matrix<Unit> &B,UList &tau) const;
+    void appendRHS(const PHI &Phi, Matrix<Unit> &B,UList &tau) const;
 
     //! compute G
     /**
@@ -36,7 +36,10 @@ public:
      */
     void computeMATRIX(const PHI &Phi, Matrix<Unit> &G ) const;
 
-
+    void appendLinearTo(Matrix<Unit> &G,const PHI &Phi) const;
+    
+    void appendMixed();
+    
 private:
     YOCTO_DISABLE_ASSIGN(Box);
 };

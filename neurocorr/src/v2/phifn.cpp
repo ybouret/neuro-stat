@@ -50,7 +50,9 @@ PHI_Base(records.rows,records.cols),
 trials(rows),
 neurones(cols),
 K(1+extra),
-maps( ((neurones*K)*(neurones*K+1))/2 ),
+NK(neurones*K),
+dim(1+neurones*K),
+mixed( (NK*dim)/2 ),
 delta(0),
 pCode(this,& PHI::paraCompute)
 {
@@ -63,7 +65,7 @@ pCode(this,& PHI::paraCompute)
             self[i][j].reset( new PHI_Functions(extra, * records[i][j] ) );
         }
     }
-    prepareMaps();
+    prepareMixed();
 }
 
 #include "yocto/exception.hpp"
@@ -100,7 +102,7 @@ void PHI:: paraCompute(Context &ctx)
     YOCTO_LOOP_FUNC(length, NC_COMPUTE_PHI,offset);
 }
 
-void PHI:: prepareMaps()
+void PHI:: prepareMixed()
 {
     for(size_t i=0;i<neurones;++i)
     {
@@ -117,15 +119,15 @@ void PHI:: prepareMaps()
                     if(I_l_m>=I_i_k)
                     {
                         //std::cerr << I_l_m << '/';
-                        GMap gm(i,k,l,m,1+I_i_k,1+I_l_m);
-                        maps.push_back(gm);
+                        Mix gm(i,k,l,m,1+I_i_k,1+I_l_m);
+                        mixed.push_back(gm);
                     }
                 }
             }
             //std::cerr << std::endl;
         }
     }
-    std::cerr << "#maps=" << maps.size << "/" << maps.capacity << std::endl;
+    std::cerr << "#mixed=" << mixed.size << "/" << mixed.capacity << std::endl;
 
 }
 
