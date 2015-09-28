@@ -30,7 +30,7 @@ This expression is the number of points in $\rbrack t-(k+1)\delta,t-k\delta\rbra
 are hence right-continuous, constant piecewise functions.
 In particular,
 $$
-	\Phi_{z,k,\delta}(t) = \Phi_{z,0,\delta}(t+k\delta).
+	\Phi_{z,k,\delta}(t) = \Phi_{z,0,\delta}(t-k\delta).
 $$
 so we only need to compute a source function for a given train, and the following functions are computed by just
 a shift in the partition.
@@ -47,7 +47,7 @@ In summary, let $F(t)$ be a CPW function with $n_F$  coordinates and a foot valu
 	\begin{itemize}
 		\item $F(t\leq\tau_0) = \mathrm{foot}$
 		\item $F(\tau_{i}<t\leq\tau_{i+1}) = F_i$
-		\item $F(t>\tau_{n_F-1})        = F_{n_F-1}$
+		\item $F(t>\tau_{n_F-1})           = F_{n_F-1}$
 	\end{itemize}
 \end{itemize}
 
@@ -68,6 +68,22 @@ Mine: Specific List Fusion + doublons removal.
 A box $B$ is described by a trial index $j$ (with its $N$ corresponding trains, one per neurone),
 a starting time $\tau_{s}$, a final time $\tau_{f}$, and a biological behaviour $\beta$.
 
-\subsection{Quantities to be computed}
+\subsection{Right-hand column-vectors $\mathcal{B}$}
+The matrix $\mathcal{B}$ has $N$ columns and $1+NK$ rows.\\
+For each neurone $N_{j,i}$, we make a new column $\mathcal{B}_i$.
+We start by collection the list $\lambda_{j,i}=\lbrace\tau_{j,i}\in\left[\tau_s,\tau_f\right]\rbrace$,
+which is a (shorter) list of sorted times.
+\begin{itemize}
+\item
+The first line is
+$$
+	\mathcal{B}_{i,0} = \#\lambda_{j,i}
+$$
+\item
+The following lines are defined for each neurone $l$, append the $K$ values
+$$
+	\mathcal{B}_{i,1+(Kl)+k} = \sum_{\tau\in\lambda_{j,i}} \Phi_{j,l,k,\delta}(\tau)
+$$
+\end{itemize}
 
 \end{document}

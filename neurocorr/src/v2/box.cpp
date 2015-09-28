@@ -55,15 +55,15 @@ UList &Box:: buildTauFor( const Train &train ) const throw()
 
 #include "yocto/exception.hpp"
 
-void Box:: computeVec(const PHI &Phi, Matrix<Unit> &B) const throw()
+void Box:: computeRHS(const PHI &Phi, Matrix<Unit> &B) const throw()
 {
     if(trial>=Phi.trials)
     {
         throw exception("computeVec: Box trial is invalid!!!");
     }
 
-    assert(B.rows==Phi.neurones);
-    assert(B.cols==1+Phi.K);
+    assert(B.rows==1+Phi.K*Phi.neurones);
+    assert(B.cols==Phi.neurones);
     const size_t    iT       = trial;
     const size_t    neurones = Phi.neurones;
     const PHI::row &PhiT     = Phi[iT];
@@ -75,11 +75,17 @@ void Box:: computeVec(const PHI &Phi, Matrix<Unit> &B) const throw()
         const Train         &train = phi.train;
         const UList         &Tau   = buildTauFor(train);
         const size_t         np    = Tau.size();
-        B(iN,0) = np;
-        for(size_t k=0;k<K;++k)
+        B(0,iN) = np;
+
+        size_t indx = 0;
+        for(size_t l=0;l<neurones;++l)
         {
-            const Unit phi_trial_neur_k = phi[k].sumValuesAtOrdered(Tau);
-            B(iN,1+k) = phi_trial_neur_k;
+            const CPW_Functions &phi = *PhiT[l];
+            for(size_t k=0;k<K;++k)
+            {
+                ++indx;
+                B(indx,iN) = phi[k].sumValuesAtOrdered(Tau);
+            }
         }
     }
 

@@ -6,7 +6,7 @@ YOCTO_UNIT_TEST_IMPL(box)
 {
     Crew     para;
 
-    const size_t  num_neurones = 2   + alea_leq(50);
+    const size_t  num_neurones = 4;//2   + alea_leq(50);
     const size_t  num_trials   = 3   + alea_leq(200);
     const size_t  max_spikes   = 100 + alea_leq(10000);
 
@@ -25,20 +25,12 @@ YOCTO_UNIT_TEST_IMPL(box)
 
 
     std::cerr << "Computing B's" << std::endl;
-    CMatrix<Unit> B(phi.neurones,1+phi.K);
+    CMatrix<Unit> B(1+phi.neurones*phi.K,phi.neurones);
     for(size_t it=0;it<phi.trials;++it)
     {
         Box box( it, 10, 200 );
-        box.computeVec(phi,B);
-        //std::cerr << "B=" << B << std::endl;
-    }
-
-    std::cerr << "Computing G's" << std::endl;
-    for(size_t it=0;it<phi.trials;++it)
-    {
-        Box box( it, 10, 200 );
-        box.computeMat(phi);
-        //std::cerr << "B=" << B << std::endl;
+        box.computeRHS(phi,B);
+        std::cerr << "B=" << B << std::endl;
     }
 
 

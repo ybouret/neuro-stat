@@ -22,7 +22,7 @@ public:
     UList &buildTauFor( const Train &train  ) const throw();
 
     //! compute B: TODO store in vector ?
-    void computeVec(const PHI &Phi, Matrix<Unit> &B) const throw();
+    void computeRHS(const PHI &Phi, Matrix<Unit> &B) const throw();
 
     //! compute G..
     void computeMat(const PHI &Phi) const;
