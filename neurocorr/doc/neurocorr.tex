@@ -4,6 +4,7 @@
 \usepackage{amssymb,amsmath}
 \usepackage{epstopdf}
 \usepackage{bm}
+\usepackage{dsfont}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
 \begin{document}
@@ -11,7 +12,62 @@
 \maketitle
 
 \section{Data Description}
-We have a set of $M$ trials performed on $N$ neurones.
-Each trial $\mathcal{T}$.
+We have a set of $M$ trials (indexed by $j$) performed on $N$ neurones (indexed by $i$).
+Each trial is a set of $N$ trains $\mathcal{T}_{j,i}$ with a
+given number of spikes $S_{j,i}$ occuring a times $\tau_{j,i,q}, q\in[1:S_{j,i}]$.
+Here, we will assume that the times are integer for a given time scale (millisecond, microsecond, nanosecond...).
+
+\section{Counting interaction function}
+\subsection{Description}
+An counting interaction function is described by two parameters and acting on any train $\mathcal{T}_z$: a time length $\delta$ and a number
+of shifts $k$ ($0\leq k < K$):
+$$
+	\Phi_{z,k,\delta}(t) = 
+	\sum_{u\in\tau_{z}}
+	 \mathds{1}_{(t-u)\in\mathbb{I}_k,\mathbb{I}_k=\lbrack k\delta,(k+1)\delta\lbrack}
+$$
+This expression is the number of points in $\rbrack t-(k+1)\delta,t-k\delta\rbrack$, and all the $\Phi$ functions
+are hence right-continuous, constant piecewise functions.
+In particular,
+$$
+	\Phi_{z,k,\delta}(t) = \Phi_{z,0,\delta}(t+k\delta).
+$$
+so we only need to compute a source function for a given train, and the following functions are computed by just
+a shift in the partition.
+
+\subsection{Implementation}
+\subsubsection{Description}
+We described a CPW function by a list/vector of \textbf{sorted} coordinates $\tau_i,F_i$.
+and a '$\mathrm{foot}$' before the first coordinate. If the function has no coordinate, this
+is the constant function...with constant value=$\mathrm{foot}$.
+In summary, let $F(t)$ be a CPW function with $n_F$  coordinates and a foot value.
+\begin{itemize}
+	\item if $n_F=0$ then $F(t)\equiv\mathrm{foot}$.
+	\item if $n_F>0$ then
+	\begin{itemize}
+		\item $F(t\leq\tau_0) = \mathrm{foot}$
+		\item $F(\tau_{i}<t\leq\tau_{i+1}) = F_i$
+		\item $F(t>\tau_{n_F-1})        = F_{n_F-1}$
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{Algorithm to build the source function}
+Mine: Specific List Fusion + doublons removal.
+
+\subsubsection{Evaluation}
+
+\subsubsection{Sum over sorted times}
+
+\subsubsection{Product construction}
+
+\subsubsection{Integration}
+
+
+\section{Boxes-wise computation}
+\subsection{Using boxes}
+A box $B$ is described by a trial index $j$ (with its $N$ corresponding trains, one per neurone),
+a starting time $\tau_{s}$, a final time $\tau_{f}$, and a biological behaviour $\beta$.
+
+\subsection{Quantities to be computed}
 
 \end{document}
