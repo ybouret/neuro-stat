@@ -6,13 +6,17 @@ YOCTO_UNIT_TEST_IMPL(box)
 {
     Crew     para;
 
-    const size_t  num_neurones = 4;//2   + alea_leq(50);
+    const size_t  num_neurones = 2   + alea_leq(50);
     const size_t  num_trials   = 3   + alea_leq(200);
     const size_t  max_spikes   = 100 + alea_leq(10000);
 
     std::cerr << "Creating Random Records" << std::endl;
     auto_ptr<Records> pRec( Records::CreateRandom(num_neurones, num_trials, max_spikes) );
     Records &records = *pRec;
+    std::cerr << "records.trials   =" << records.trials   << std::endl;
+    std::cerr << "records.neurons  =" << records.neurones << std::endl;
+    std::cerr << "records.trains   =" << records.items    << std::endl;
+    std::cerr << "records.maxCount =" << records.maxCount << std::endl;
 
     //! allocating memory
     std::cerr << "Allocating Memory for Phi" << std::endl;
@@ -26,11 +30,11 @@ YOCTO_UNIT_TEST_IMPL(box)
 
     std::cerr << "Computing B's" << std::endl;
     CMatrix<Unit> B(1+phi.neurones*phi.K,phi.neurones);
+    UList        Tau;//( records.maxCount, as_capacity );
     for(size_t it=0;it<phi.trials;++it)
     {
         Box box( it, 10, 200 );
-        box.computeRHS(phi,B);
-        std::cerr << "B=" << B << std::endl;
+        box.computeRHS(phi,B,Tau);
     }
 
 

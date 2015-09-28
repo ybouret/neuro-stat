@@ -22,12 +22,13 @@ Records:: Records(const Real          scale,
                   const size_t        num_neurons) :
 RecordsBase( __get_num_trials(neurodata.rows,num_neurons), num_neurons ),
 trials(rows),
-neurones(cols)
+neurones(cols),
+maxCount(0)
 {
     build_with<Train*>(NULL);
     RecordsBase &self = *this;
     size_t iTrain = 0;
-    //size_t count  = 0;
+    size_t count  = 0;
     for(size_t iN = 0; iN < neurones; ++iN )
     {
         for(size_t iT = 0; iT < trials; ++iT )
@@ -35,10 +36,10 @@ neurones(cols)
             Train *tr = new Train(scale,neurodata,iTrain);
             self[iT][iN].reset(tr);
             ++iTrain;
-            //if(tr->size()>count) count = tr->size();
+            if(tr->size()>count) count = tr->size();
         }
     }
-    //(size_t&)maxCount = count;
+    (size_t&)maxCount = count;
 }
 
 

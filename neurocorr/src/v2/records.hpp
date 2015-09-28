@@ -13,6 +13,7 @@ class Records : public RecordsBase
 public:
     const size_t &trials;   //!< alias to rows
     const size_t &neurones; //!< alias to cols
+    const size_t  maxCount; //!< max count of spikes in a trial
     
     explicit Records(const Real          scale,
                      const Matrix<Real> &neurodata,

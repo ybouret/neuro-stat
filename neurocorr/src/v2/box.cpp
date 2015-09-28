@@ -27,11 +27,8 @@ kind(b.kind)
 }
 
 
-UList &Box:: buildTauFor( const Train &train ) const throw()
+void Box:: extract( UList &Tau, const Train &train ) const
 {
-    assert(train.Tau.capacity()>=train.size());
-    UList &Tau = train.Tau;
-
     Tau.free();
     const size_t ns = train.size();
     size_t i=0;
@@ -50,12 +47,11 @@ UList &Box:: buildTauFor( const Train &train ) const throw()
         ++i;
     }
 
-    return Tau;
 }
 
 #include "yocto/exception.hpp"
 
-void Box:: computeRHS(const PHI &Phi, Matrix<Unit> &B) const throw()
+void Box:: computeRHS(const PHI &Phi, Matrix<Unit> &B, UList &Tau) const
 {
     if(trial>=Phi.trials)
     {
@@ -73,11 +69,10 @@ void Box:: computeRHS(const PHI &Phi, Matrix<Unit> &B) const throw()
     {
         const PHI_Functions &phi   = *PhiT[iN];
         const Train         &train = phi.train;
-        const UList         &Tau   = buildTauFor(train);
-        const size_t         np    = Tau.size();
-        B(0,iN) = np;
+        size_t               indx  = 0;
 
-        size_t indx = 0;
+        extract(Tau,train);
+        B(0,iN) = Tau.size();
         for(size_t l=0;l<neurones;++l)
         {
             const CPW_Functions &phi = *PhiT[l];
