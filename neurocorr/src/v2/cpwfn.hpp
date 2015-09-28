@@ -58,16 +58,18 @@ public:
 
     //! debug function
     Unit  _sumValuesAtOrdered(const RArray<Unit> &Tau ) const throw();
-    
+
     //! debug function
     Unit  _sumValuesAtOrdered(const UList &Tau) const throw();
-    
-    
+
+
     //! sum values of function at given ordered times
     Unit  sumValuesAtOrdered( const RArray<Unit> &Tau ) const throw();
+
+    //! sum values of function at given ordered times, list version
     Unit  sumValuesAtOrdered( const UList        &Tau ) const throw();
 
-    
+
     //! raw value for a given delta
     /**
      cost: less than train.size() comparison, train.size() temporary memory
@@ -105,6 +107,10 @@ public:
 
     //! integrate with tauLo<=tauHi
     Unit integrate( Unit tauLo,  Unit tauHi) const throw();
+
+
+    bool is_same_that(const CPW_Function &F) const throw();
+
 
 
 private:

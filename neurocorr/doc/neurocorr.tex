@@ -71,7 +71,7 @@ a starting time $\tau_{s}$, a final time $\tau_{f}$, and a biological behaviour 
 \subsection{Right-hand column-vectors $\mathcal{B}$}
 The matrix $\mathcal{B}$ has $N$ columns and $1+NK$ rows.\\
 For each neurone $N_{j,i}$, we make a new column $\mathcal{B}_i$.
-We start by collection the list $\lambda_{j,i}=\lbrace\tau_{j,i}\in\left[\tau_s,\tau_f\right]\rbrace$,
+We start by collecting the list $\lambda_{j,i}=\lbrace\tau_{j,i}\in\left[\tau_s,\tau_f\right]\rbrace$,
 which is a (shorter) list of sorted times.
 \begin{itemize}
 \item
@@ -86,18 +86,25 @@ $$
 $$
 \end{itemize}
 
-\subsection{Left-hand Matrix $\mathcal{G}$}
+\subsection{Left-hand Symmetric Matrix $\mathcal{G}$}
 The $\mathcal{G}$ matrix has $1+NK$ lines and columns.
 \begin{itemize}
 	\item 
 		$$ 
 		\mathcal{G}_{0,0} = \tau_f-\tau_s+1
 		$$
-	\item for each neuron $i$ the for each index $k$,
+	\item for each neurone $i$, then for each index $k$, using $I_{i,k}=K\times i + k$,
+		\begin{itemize}
+		\item compute the border term
 		$$
-			\mathcal{G}_{0,1+\ldots} =  \int_{\tau_s}^{\tau_f} \Phi_{j,i,k}(\tau) \, \mathrm{d}\tau
+			\mathcal{G}_{0,I_{i,k}} = \mathcal{G}_{I_{i,k},0} = \int_{\tau_s}^{\tau_f} \Phi_{j,i,k}(\tau) \, \mathrm{d}\tau
 		$$
-	
+		\item for each neuron $l\geq i$, then for each index $m$
+		$$
+			\mathcal{G}_{I_{l,m},I_{i,k}} = \mathcal{G}_{I_{i,k},I_{l,m}}  =
+			\int_{\tau_s}^{\tau_f}  \Phi_{j,i,k}(\tau) \Phi_{j,l,m}(\tau) \, \mathrm{d}\tau
+		$$
+		\end{itemize}
 	
 \end{itemize}
 

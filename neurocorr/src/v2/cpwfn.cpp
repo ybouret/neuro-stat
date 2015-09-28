@@ -26,6 +26,7 @@ Object(fn),
 foot(fn.foot),
 coords(fn.coords)
 {
+    assert(this->is_same_that(fn));
     shiftBy(deltaUnit);
 }
 
@@ -102,6 +103,22 @@ void CPW_Function:: ensureCapacity(size_t n)
     coords.ensure(n);
 }
 
+bool CPW_Function:: is_same_that(const CPW_Function &F) const throw()
+{
+    if(foot!=F.foot)        return false;
+    const size_t np = size();
+    if(F.size() != np ) return false;
+    for(size_t i=np;i>0;--i)
+    {
+        const Coord &A = coords[i];
+        const Coord &B = F.coords[i];
+        if(A.tau!=B.tau)     return false;
+        if(A.value!=B.value) return false;
+    }
+
+    //everything is equal
+    return true;
+}
 
 #include "yocto/ios/ocstream.hpp"
 

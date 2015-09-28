@@ -12,7 +12,7 @@ CPW_Functions(1+extra),
 train(tr)
 {
     CPW_Functions &self = *this;
-    
+
     const Real scale = train.scale;
     for(size_t i=0;i<=extra;++i)
     {
@@ -31,11 +31,12 @@ train(tr)
 void PHI_Functions:: compute(const Unit deltaUnit)
 {
     CPW_Functions &self = *this;
-    CPW_Function &phi0 = self[0];
+    CPW_Function  &phi0 = self[0];
     phi0.buildFrom(train,deltaUnit);
-    for(size_t i=1;i<size;++i)
+    const Unit top(size);
+    for(Unit i=1;i<top;++i)
     {
-        self[i].copyAndShift(phi0,deltaUnit);
+        self[i].copyAndShift(phi0,i*deltaUnit);
     }
 }
 
@@ -49,6 +50,7 @@ PHI_Base(records.rows,records.cols),
 trials(rows),
 neurones(cols),
 K(1+extra),
+maps( ((neurones*K)*(neurones*K+1))/2 ),
 delta(0),
 pCode(this,& PHI::paraCompute)
 {
@@ -61,6 +63,7 @@ pCode(this,& PHI::paraCompute)
             self[i][j].reset( new PHI_Functions(extra, * records[i][j] ) );
         }
     }
+    prepareMaps();
 }
 
 #include "yocto/exception.hpp"
@@ -95,5 +98,34 @@ void PHI:: paraCompute(Context &ctx)
     size_t    length = items;
     ctx.split(offset, length);
     YOCTO_LOOP_FUNC(length, NC_COMPUTE_PHI,offset);
+}
+
+void PHI:: prepareMaps()
+{
+    for(size_t i=0;i<neurones;++i)
+    {
+        for(size_t k=0;k<K;++k)
+        {
+            const size_t I_i_k = i*K + k;
+            std::cerr << "I_i_k=" << I_i_k << ": I_l_m=";
+            for(size_t l=i;l<neurones;++l)
+            {
+                const size_t lk = l*K;
+                for(size_t m=0;m<K;++m)
+                {
+                    const size_t I_l_m = lk+m;
+                    if(I_l_m>=I_i_k)
+                    {
+                        std::cerr << I_l_m << '/';
+                        GMap gm(i,k,l,m,1+I_i_k,1+I_l_m);
+                        maps.push_back(gm);
+                    }
+                }
+            }
+            std::cerr << std::endl;
+        }
+    }
+    std::cerr << "#maps=" << maps.size << "/" << maps.capacity << std::endl;
+
 }
 
