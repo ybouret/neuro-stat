@@ -86,4 +86,19 @@ $$
 $$
 \end{itemize}
 
+\subsection{Left-hand Matrix $\mathcal{G}$}
+The $\mathcal{G}$ matrix has $1+NK$ lines and columns.
+\begin{itemize}
+	\item 
+		$$ 
+		\mathcal{G}_{0,0} = \tau_f-\tau_s+1
+		$$
+	\item for each neuron $i$ the for each index $k$,
+		$$
+			\mathcal{G}_{0,1+\ldots} =  \int_{\tau_s}^{\tau_f} \Phi_{j,i,k}(\tau) \, \mathrm{d}\tau
+		$$
+	
+	
+\end{itemize}
+
 \end{document}

@@ -19,14 +19,22 @@ public:
     Box(const Box &) throw();
 
 
-    //!
+    //! extract the sorted list of times within the box in the train...
     void extract( UList &Tau, const Train &train  ) const;
 
-    //! compute B: TODO store in vector ?
+    //! compute B
+    /**
+     B.rows = 1+Phi.K*Phi.neurones
+     B.cols = Phi.neurones
+     The use of Tau must be different in case of parallel or sequential code
+     */
     void computeRHS(const PHI &Phi, Matrix<Unit> &B,UList &tau) const;
 
-    //! compute G..
-    void computeMat(const PHI &Phi) const;
+    //! compute G
+    /**
+     G.rows = G.cols = 1+Phi.K*Phi.N
+     */
+    void computeMATRIX(const PHI &Phi, Matrix<Unit> &G ) const;
 
 
 private:

@@ -87,34 +87,32 @@ void Box:: computeRHS(const PHI &Phi, Matrix<Unit> &B, UList &Tau) const
 }
 
 
-void Box:: computeMat(const PHI &Phi) const
+void Box:: computeMATRIX(const PHI &Phi, Matrix<Unit> &G) const
 {
+    assert(G.cols == G.rows );
+    assert(G.rows == 1+Phi.K*Phi.neurones);
+
     if(trial>=Phi.trials)
     {
         throw exception("computeVec: Box trial is invalid!!!");
     }
+
+    G(0,0) = tauFinal-tauStart+1;
 
     const size_t    iT       = trial;
     const size_t    neurones = Phi.neurones;
     const PHI::row &PhiT     = Phi[iT];
     const size_t    K        = Phi.K;
 
+    size_t indx = 0;
     for(size_t iN=0;iN<neurones;++iN)
     {
-        const PHI_Functions &phi_i = *PhiT[iN];
-        for(size_t jN=0;jN<neurones;++jN)
+        const PHI_Functions &phi_j_i = *PhiT[iN];
+        for(size_t k=0;k<K;++k)
         {
-            const PHI_Functions &phi_j = *PhiT[iN];
-            for(size_t k=0;k<K;++k)
-            {
-                const CPW_Function &phi_ik = phi_i[k];
-                for(size_t l=0;l<K;++l)
-                {
-                    const CPW_Function &phi_jl = phi_j[l];
-                    const CPW_Function  phi(phi_ik,phi_jl);
-                    (void)phi.integrate(tauStart,tauFinal);
-                }
-            }
+            const CPW_Function &phi_j_i_k = phi_j_i[k];
+            ++indx;
+            G(0,indx) = G(indx,0) = phi_j_i_k.integrate(tauStart,tauFinal);
         }
     }
 

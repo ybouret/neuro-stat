@@ -21,20 +21,31 @@ YOCTO_UNIT_TEST_IMPL(box)
     //! allocating memory
     std::cerr << "Allocating Memory for Phi" << std::endl;
     const size_t extra = 2;
-    PHI phi(extra,records);
+    PHI Phi(extra,records);
 
     //! computing phi for a given delta
     std::cerr << "Computing Phi..." << std::endl;
-    phi.compute(1,&para);
+    Phi.compute(1,&para);
 
 
-    std::cerr << "Computing B's" << std::endl;
-    CMatrix<Unit> B(1+phi.neurones*phi.K,phi.neurones);
+    std::cerr << "Computing B's and G's" << std::endl;
+    const size_t  num_rows=1+Phi.neurones*Phi.K;
+    const size_t  num_cols=Phi.neurones;
+    CMatrix<Unit> B(num_rows,num_cols);
+    CMatrix<Unit> G(num_rows,num_rows);
+
     UList        Tau;//( records.maxCount, as_capacity );
-    for(size_t it=0;it<phi.trials;++it)
+    const size_t itOut = Phi.trials/2;
+    for(size_t it=0;it<Phi.trials;++it)
     {
         Box box( it, 10, 200 );
-        box.computeRHS(phi,B,Tau);
+        box.computeRHS(Phi,B,Tau);
+        box.computeMATRIX(Phi,G);
+        if(it==itOut)
+        {
+            std::cerr << "B=" << B << std::endl;
+            std::cerr << "G=" << G << std::endl;
+        }
     }
 
 
