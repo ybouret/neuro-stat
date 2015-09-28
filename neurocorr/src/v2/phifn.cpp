@@ -107,7 +107,7 @@ void PHI:: prepareMaps()
         for(size_t k=0;k<K;++k)
         {
             const size_t I_i_k = i*K + k;
-            std::cerr << "I_i_k=" << I_i_k << ": I_l_m=";
+            //std::cerr << "I_i_k=" << I_i_k << ": I_l_m=";
             for(size_t l=i;l<neurones;++l)
             {
                 const size_t lk = l*K;
@@ -116,13 +116,13 @@ void PHI:: prepareMaps()
                     const size_t I_l_m = lk+m;
                     if(I_l_m>=I_i_k)
                     {
-                        std::cerr << I_l_m << '/';
+                        //std::cerr << I_l_m << '/';
                         GMap gm(i,k,l,m,1+I_i_k,1+I_l_m);
                         maps.push_back(gm);
                     }
                 }
             }
-            std::cerr << std::endl;
+            //std::cerr << std::endl;
         }
     }
     std::cerr << "#maps=" << maps.size << "/" << maps.capacity << std::endl;

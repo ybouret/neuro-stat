@@ -13,9 +13,9 @@ YOCTO_UNIT_TEST_IMPL(box)
     wtime    chrono;
     chrono.start();
 
-    const size_t  num_neurones = 2 ;//  + alea_leq(50);
-    const size_t  num_trials   = 3 ;//  + alea_leq(200);
-    const size_t  max_spikes   = 100 + alea_leq(10000);
+    const size_t  num_neurones = 2 + alea_leq(100);
+    const size_t  num_trials   = 3 + alea_leq(100);
+    const size_t  max_spikes   = 100 + alea_leq(20000);
 
     std::cerr << "Creating Random Records" << std::endl;
     auto_ptr<Records> pRec( Records::CreateRandom(num_neurones, num_trials, max_spikes) );
@@ -27,7 +27,7 @@ YOCTO_UNIT_TEST_IMPL(box)
 
     //! allocating memory
     std::cerr << "Allocating Memory for Phi" << std::endl;
-    const size_t extra = 2;
+    const size_t extra = 9;
     PHI Phi(extra,records);
 
     //! computing phi for a given delta

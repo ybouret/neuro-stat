@@ -125,8 +125,8 @@ void Box:: computeMATRIX(const PHI &Phi, Matrix<Unit> &G) const
         const CPW_Function &phi_j_k = (*Phi_j[gm.i])[gm.k];
         const CPW_Function &phi_l_m = (*Phi_j[gm.l])[gm.m];
         const CPW_Function  p(phi_j_k,phi_l_m);
-        std::cerr << gm << std::endl;
-        //G(gm.I_i_k,gm.I_l_m) =
+        //std::cerr << gm << std::endl;
+        G(gm.I_i_k,gm.I_l_m) =
         G(gm.I_l_m,gm.I_i_k) = p.integrate(tauStart,tauFinal);
     }
     std::cerr << std::endl;
