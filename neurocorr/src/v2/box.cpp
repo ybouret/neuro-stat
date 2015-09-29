@@ -175,7 +175,9 @@ Boxes:: ~Boxes() throw()
 Boxes:: Boxes(const Real usr_scale, const size_t nboxes) :
 Object(usr_scale),
 _Boxes(nboxes),
-prod(0)
+bmap(),
+prod(0),
+run(this,&Boxes::evalMixed)
 {
 }
 
@@ -189,13 +191,18 @@ void Boxes:: allocateProducts(const size_t count,const size_t np)
     }
 }
 
-void Boxes:: mapBoxesPerTrial()
+#include "yocto/exception.hpp"
+
+void Boxes:: mapBoxesPerTrial(const size_t trials)
 {
     bmap.free();
     for(size_t i=0;i<size;++i)
     {
         Box *pB = & ((*this)[i]);
-        bmap.insert(pB->trial,pB);
+        const size_t trial = pB->trial;
+        if(trial>=trials)
+            throw exception("Box[%u]: invalid trial #%u", unsigned(i+1), unsigned(trial));
+        bmap.insert(trial,pB);
     }
     std::cerr << "#BoxGroups=" << bmap.keys() << std::endl;
 }
@@ -205,11 +212,34 @@ void Boxes:: updateMixed(Matrix<Unit>  *regG,
                          const PHI     &Phi,
                          Crew          *para)
 {
-    //assert(trial<Phi.trials);
-    // register targets
+    //
+    pPHI = &Phi;
 
-    // memory to reserve
-    //const size_t    np = Phi.maxCount * 2;
+    //
+    const size_t maxProductCount = 2*Phi.maxCount;
+    // preparing stuff
+    mapBoxesPerTrial(Phi.trials);
+
+    if(para)
+    {
+        allocateProducts(para->size,maxProductCount);
+        for(j=0;j<Phi.trials;++j)
+        {
+            (*para)(run);
+        }
+    }
+    else
+    {
+        allocateProducts(1,maxProductCount);
+        Crew::single_context ctx;
+        for(j=0;j<Phi.trials;++j)
+        {
+            run(ctx);
+        }
+
+    }
+
+
 
 #if 0
     // start finding functions
@@ -239,6 +269,14 @@ void Boxes:: updateMixed(Matrix<Unit>  *regG,
 
     }
 #endif
+    
+}
+
+
+void Boxes:: evalMixed(Context &ctx)
+{
+    //lockable &access = ctx.access;
+    const PHI &Phi = *pPHI;
 
 }
 

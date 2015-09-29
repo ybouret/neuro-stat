@@ -72,16 +72,21 @@ public:
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Boxes);
-    typedef Box *BoxPtr;
+    typedef Box *                       BoxPtr;
     typedef multi_map<size_t,BoxPtr>    BoxHolder;
     typedef BoxHolder::Group            BoxGroup;
     typedef dynamic_slots<CPW_Function> Products;
 
+    size_t                      j;    //!< current trial index
+    const PHI *                 pPHI; //!< current PHI functions
     BoxHolder                   bmap; //!< make groups of boxes
     Products                    prod; //!< store the current(s) function
+    Kernel                      run;  //!< call evalMixed
 
-    void mapBoxesPerTrial();
+    void mapBoxesPerTrial(const size_t trials);
     void allocateProducts(const size_t count,const size_t np);
+    void evalMixed(Context &ctx);
+
 };
 
 #endif
