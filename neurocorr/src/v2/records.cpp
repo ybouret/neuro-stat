@@ -17,29 +17,56 @@ size_t __get_num_trials(const size_t trains, const size_t num_neurons)
     return trains/num_neurons;
 }
 
+#include "yocto/code/utils.hpp"
+
 Records:: Records(const Real          scale,
                   const Matrix<Real> &neurodata,
                   const size_t        num_neurons) :
 RecordsBase( __get_num_trials(neurodata.rows,num_neurons), num_neurons ),
 trials(rows),
 neurones(cols),
-maxCount(0)
+maxCount(0),
+tauMin(0),
+tauMax(0)
 {
     build_with<Train*>(NULL);
     RecordsBase &self = *this;
     size_t iTrain = 0;
     size_t count  = 0;
+    Unit   tMin   = 0;
+    Unit   tMax   = 0;
+    bool   init   = true;
     for(size_t iN = 0; iN < neurones; ++iN )
     {
         for(size_t iT = 0; iT < trials; ++iT )
         {
             Train *tr = new Train(scale,neurodata,iTrain);
             self[iT][iN].reset(tr);
+            const size_t trSize = tr->size();
+            if(init)
+            {
+                if(trSize>0)
+                {
+                    tMin = (*tr)[0];
+                    tMax = (*tr)[trSize-1];
+                    init = false;
+                }
+            }
+            else
+            {
+                if(trSize>0)
+                {
+                    tMin = min_of(tMin,(*tr)[0]);
+                    tMax = max_of(tMax,(*tr)[trSize-1]);
+                }
+            }
             ++iTrain;
-            if(tr->size()>count) count = tr->size();
+            if(trSize>count) count = trSize;
         }
     }
     (size_t&)maxCount = count;
+    (size_t&)tauMin   = tMin;
+    (size_t&)tauMax   = tMax;
 }
 
 

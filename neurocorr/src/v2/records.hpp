@@ -14,7 +14,9 @@ public:
     const size_t &trials;   //!< alias to rows
     const size_t &neurones; //!< alias to cols
     const size_t  maxCount; //!< max count of spikes in a trial
-    
+    const Unit    tauMin;   //!< mininal possible time
+    const Unit    tauMax;   //!< maximal possible time
+
     explicit Records(const Real          scale,
                      const Matrix<Real> &neurodata,
                      const size_t        num_neurones);

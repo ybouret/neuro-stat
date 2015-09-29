@@ -205,6 +205,19 @@ void Boxes:: mapBoxesPerTrial(const size_t trials)
         bmap.insert(trial,pB);
     }
     std::cerr << "#BoxGroups=" << bmap.keys() << std::endl;
+    for(j=0;j<trials;++j)
+    {
+        pGrp = bmap.search(j);
+        if(pGrp)
+        {
+            std::cerr << "Boxes for trial #" << j << " : " << pGrp->size << std::endl;
+            for(const BoxNode *node = pGrp->head;node;node=node->next)
+            {
+                const Box &b = *(node->get());
+                std::cerr << "\t" << b << std::endl;
+            }
+        }
+    }
 }
 
 void Boxes:: updateMixed(const PHI     &Phi,
@@ -294,7 +307,7 @@ void Boxes:: evalMixed(Context &ctx)
     // loop over functions
     for(size_t i=offset,ii=0;ii<length;++i,++ii)
     {
-        const Mix mix(mixed[i]);
+        const Mix           mix(mixed[i]);
         const CPW_Function &phi_j_k = (*Phi_j[mix.i])[mix.k];
         const CPW_Function &phi_l_m = (*Phi_j[mix.l])[mix.m];
         F.product(phi_j_k,phi_l_m);

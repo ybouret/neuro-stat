@@ -24,6 +24,8 @@ YOCTO_UNIT_TEST_IMPL(box)
     std::cerr << "records.neurons  =" << records.neurones << std::endl;
     std::cerr << "records.trains   =" << records.items    << std::endl;
     std::cerr << "records.maxCount =" << records.maxCount << std::endl;
+    std::cerr << "records.tauMin   =" << records.tauMin   << std::endl;
+    std::cerr << "records.tauMax   =" << records.tauMax   << std::endl;
 
     //! allocating memory
     std::cerr << "Allocating Memory for Phi" << std::endl;
@@ -34,6 +36,7 @@ YOCTO_UNIT_TEST_IMPL(box)
     std::cerr << "Computing Phi..." << std::endl;
     Phi.compute(4,&para);
 
+    std::cerr << "There are " << Phi.mixed.size << " mixed terms" << std::endl;
 
     std::cerr << "Computing B's and G's" << std::endl;
     const size_t  num_rows= Phi.dim;
@@ -43,7 +46,23 @@ YOCTO_UNIT_TEST_IMPL(box)
 
     const size_t boxes_per_trials = 3;
     Boxes boxes(1.0,boxes_per_trials*num_trials);
-    
+    const Unit maxLength = records.tauMax-records.tauMin + 1;
+    for(size_t j=0,k=0;j<num_trials;++j)
+    {
+        for(size_t i=0;i<boxes_per_trials;++i)
+        {
+            const Unit ini = alea_leq(maxLength);
+            const Unit len = 1 + alea_leq(maxLength);
+            const Box  b((++k)%num_trials,ini,ini+len);
+            boxes.push_back(b);
+        }
+    }
+    std::cerr << "Boxes:";
+    for(size_t i=0;i<boxes.size;++i)
+    {
+        std::cerr << boxes[i] << std::endl;
+    }
+    boxes.updateMixed(Phi,NULL);
 
     return 0;
 

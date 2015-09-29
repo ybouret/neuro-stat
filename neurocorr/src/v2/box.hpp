@@ -42,6 +42,11 @@ public:
 
     void appendLinearTo(Matrix<Unit> &G,const PHI &Phi) const;
 
+    inline friend std::ostream & operator<<(std::ostream &os, const Box &b )
+    {
+        os << "[@" << b.trial << ":" << b.tauStart << "->" << b.tauFinal << "|$" << b.kind << "]";
+        return os;
+    }
 
 private:
     YOCTO_DISABLE_ASSIGN(Box);
