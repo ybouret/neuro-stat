@@ -81,7 +81,7 @@ private:
     const BoxGroup             *pGrp; //!< current group, for one trial
     BoxHolder                   bmap; //!< make groups of boxes
     Products                    prod; //!< store the current(s) function
-    Kernel                      run;  //!< call evalMixed
+    Kernel                      kMix; //!< call evalMixed
 
     void mapBoxesPerTrial(const size_t trials);
     void allocateProducts(const size_t count,const size_t np);

@@ -177,7 +177,7 @@ Object(usr_scale),
 _Boxes(nboxes),
 bmap(),
 prod(0),
-run(this,&Boxes::evalMixed)
+kMix(this,&Boxes::evalMixed)
 {
 }
 
@@ -225,7 +225,7 @@ void Boxes:: updateMixed(const PHI     &Phi,
         {
             pGrp = bmap.search(j);
             if(!pGrp) continue;
-            (*para)(run);
+            (*para)(kMix);
         }
     }
     else
@@ -236,7 +236,7 @@ void Boxes:: updateMixed(const PHI     &Phi,
         {
             pGrp = bmap.search(j);
             if(!pGrp) continue;
-            run(ctx);
+            kMix(ctx);
         }
 
     }
@@ -300,7 +300,7 @@ void Boxes:: evalMixed(Context &ctx)
         F.product(phi_j_k,phi_l_m);
 
         //loop over boxes using this trial
-        for(BoxNode *node = pGrp->head; node; node=node->next)
+        for(const BoxNode *node = pGrp->head; node; node=node->next)
         {
             const Box &box = * (node->get());
             assert(box.trial==j);
