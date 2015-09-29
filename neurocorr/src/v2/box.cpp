@@ -23,7 +23,7 @@ tauStart(b.tauStart),
 tauFinal(b.tauFinal),
 kind(b.kind)
 {
-
+    
 }
 
 
@@ -32,13 +32,13 @@ void Box:: extract( UList &Tau, const Train &train ) const
     Tau.free();
     const size_t ns = train.size();
     size_t i=0;
-
+    
     while(i<ns)
     {
         if(train[i]>=tauStart) break;
         ++i;
     }
-
+    
     while(i<ns)
     {
         const Unit tt = train[i];
@@ -46,7 +46,7 @@ void Box:: extract( UList &Tau, const Train &train ) const
         Tau.push_back(tt);
         ++i;
     }
-
+    
 }
 
 
@@ -59,12 +59,12 @@ void Box:: appendRHS(const PHI &Phi, Matrix<Unit> &B, UList &Tau) const
     const size_t    neurones = Phi.neurones;
     const PHI::row &Phi_j    = Phi[j];
     const size_t    K        = Phi.K;
-
+    
     for(size_t i=0;i<neurones;++i)
     {
         const PHI_Functions &phi_j_i = *Phi_j[i];
         size_t               indx    = 0;
-
+        
         extract(Tau,phi_j_i.train);
         B(0,i) += Tau.size();
         for(size_t l=0;l<neurones;++l)
@@ -77,7 +77,7 @@ void Box:: appendRHS(const PHI &Phi, Matrix<Unit> &B, UList &Tau) const
             }
         }
     }
-
+    
 }
 
 
@@ -86,14 +86,14 @@ void Box:: computeMATRIX(const PHI &Phi, Matrix<Unit> &G) const
     assert(trial<Phi.trials);
     assert(G.cols == G.rows );
     assert(G.rows == 1+Phi.K*Phi.neurones);
-
+    
     G(0,0) = tauFinal-tauStart+1;
-
+    
     const size_t    j        = trial;
     const size_t    neurones = Phi.neurones;
     const PHI::row &Phi_j    = Phi[j];
     const size_t    K        = Phi.K;
-
+    
     // linear terms
     size_t indx = 0;
     for(size_t i=0;i<neurones;++i)
@@ -106,7 +106,7 @@ void Box:: computeMATRIX(const PHI &Phi, Matrix<Unit> &G) const
             G(0,indx) = G(indx,0) = phi_j_i_k.integrate(tauStart,tauFinal);
         }
     }
-
+    
     // mixed terms
     const size_t nm =  Phi.mixed.size;
     const Mix   *pg = &Phi.mixed[0];
@@ -151,6 +151,16 @@ void Box:: appendLinearTo(Matrix<Unit> &G, const PHI &Phi) const
             G(indx,0) = (G(0,indx) += ans);
         }
     }
+    
+}
 
+void Box:: appendMixedTo(Matrix<Unit>       &G,
+                         const CPW_Function &F,
+                         const Mix          &g)
+{
+    const Unit   ans = F.integrate(tauStart,tauFinal);
+    const size_t I   = g.I_i_k;
+    const size_t J   = g.I_l_m;
+    G(I,J) = ( G(J,I) += ans );
 }
 

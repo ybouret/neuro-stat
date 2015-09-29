@@ -38,7 +38,10 @@ public:
 
     void appendLinearTo(Matrix<Unit> &G,const PHI &Phi) const;
     
-    void appendMixed();
+    void appendMixedTo(Matrix<Unit>       &G,
+                       const CPW_Function &F,
+                       const Mix          &g);
+    
     
 private:
     YOCTO_DISABLE_ASSIGN(Box);

@@ -35,7 +35,7 @@ private:
 typedef auto_ptr<PHI_Functions>        PHI_FunctionsPtr;
 typedef slots2D_of<PHI_FunctionsPtr>   PHI_Base;
 
-//! Quad of computations to do
+//! sextuple of computations to do
 YOCTO_SEXTUPLE_DECL(Mix,const size_t,i,const size_t,k,const size_t,l,const size_t,m,const size_t,I_i_k,const size_t,I_l_m);
 YOCTO_SEXTUPLE_END();
 
@@ -59,7 +59,7 @@ public:
      this can be done in parallel
      */
     void compute( const Unit deltaUnit, Crew *para );
-
+    
 private:
     Unit   delta; // for parallel coding
     Kernel pCode; // the parallel code
