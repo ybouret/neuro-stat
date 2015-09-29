@@ -223,14 +223,24 @@ void Boxes:: mapBoxesPerTrial(const size_t trials)
 void Boxes:: updateMixed(const PHI     &Phi,
                          Crew          *para)
 {
+    //__________________________________________________________________________
     //
+    // Link internal data
+    //__________________________________________________________________________
     pPHI = &Phi;
 
+    //__________________________________________________________________________
     //
-    const size_t maxProductCount = 2*Phi.maxCount;
+    // Prepare boxes
+    //__________________________________________________________________________
     // preparing stuff
     mapBoxesPerTrial(Phi.trials);
 
+    //__________________________________________________________________________
+    //
+    // Will Allocate memory
+    //__________________________________________________________________________
+    const size_t maxProductCount = 2*Phi.maxCount;
     if(para)
     {
         allocateProducts(para->size,maxProductCount);
@@ -251,9 +261,9 @@ void Boxes:: updateMixed(const PHI     &Phi,
             if(!pGrp) continue;
             kMix(ctx);
         }
-
     }
 
+}
 
 
 #if 0
@@ -285,7 +295,7 @@ void Boxes:: updateMixed(const PHI     &Phi,
     }
 #endif
     
-}
+
 
 
 void Boxes:: evalMixed(Context &ctx)
@@ -296,13 +306,18 @@ void Boxes:: evalMixed(Context &ctx)
     // prepare data
     const PHI      &Phi    = *pPHI; assert(j<Phi.trials);
     const PHI::row &Phi_j  = Phi[j];
-    CPW_Function   &F      = prod[ctx.rank];
+    CPW_Function   &F      = prod[ctx.rank]; //!< one temporary per thread
 
     // prepare splitting
     const Mixed    &mixed  = Phi.mixed;
     size_t          offset = 0;
     size_t          length = mixed.size;
     ctx.split(offset,length);
+
+    {
+        //YOCTO_LOCK(ctx.access);
+        //std::cerr << "functions " << offset << " to " << offset+length-1 << std::endl;
+    }
 
     // loop over functions
     for(size_t i=offset,ii=0;ii<length;++i,++ii)
