@@ -13,9 +13,9 @@ YOCTO_UNIT_TEST_IMPL(box)
     wtime    chrono;
     chrono.start();
 
-    const size_t  num_neurones = 2 + alea_leq(100);
-    const size_t  num_trials   = 3 + alea_leq(100);
-    const size_t  max_spikes   = 100 + alea_leq(20000);
+    const size_t  num_neurones = 2;// + alea_leq(100);
+    const size_t  num_trials   = 3;// + alea_leq(100);
+    const size_t  max_spikes   = 100;// + alea_leq(20000);
 
     std::cerr << "Creating Random Records" << std::endl;
     auto_ptr<Records> pRec( Records::CreateRandom(num_neurones, num_trials, max_spikes) );
@@ -40,6 +40,12 @@ YOCTO_UNIT_TEST_IMPL(box)
     const size_t  num_cols= Phi.neurones;
     CMatrix<Unit> B(num_rows,num_cols);
     CMatrix<Unit> G(num_rows,num_rows);
+
+    const size_t boxes_per_trials = 3;
+    Boxes boxes(1.0,boxes_per_trials*num_trials);
+    
+
+    return 0;
 
     UList        Tau;//( records.maxCount, as_capacity );
     const size_t itOut = Phi.trials/2;

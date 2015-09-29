@@ -207,9 +207,7 @@ void Boxes:: mapBoxesPerTrial(const size_t trials)
     std::cerr << "#BoxGroups=" << bmap.keys() << std::endl;
 }
 
-void Boxes:: updateMixed(Matrix<Unit>  *regG,
-                         const size_t   numG,
-                         const PHI     &Phi,
+void Boxes:: updateMixed(const PHI     &Phi,
                          Crew          *para)
 {
     //
@@ -225,6 +223,8 @@ void Boxes:: updateMixed(Matrix<Unit>  *regG,
         allocateProducts(para->size,maxProductCount);
         for(j=0;j<Phi.trials;++j)
         {
+            pGrp = bmap.search(j);
+            if(!pGrp) continue;
             (*para)(run);
         }
     }
@@ -234,6 +234,8 @@ void Boxes:: updateMixed(Matrix<Unit>  *regG,
         Crew::single_context ctx;
         for(j=0;j<Phi.trials;++j)
         {
+            pGrp = bmap.search(j);
+            if(!pGrp) continue;
             run(ctx);
         }
 
@@ -275,9 +277,37 @@ void Boxes:: updateMixed(Matrix<Unit>  *regG,
 
 void Boxes:: evalMixed(Context &ctx)
 {
-    //lockable &access = ctx.access;
-    const PHI &Phi = *pPHI;
+    assert(pPHI);
+    assert(pGrp);
 
+    // prepare data
+    const PHI      &Phi    = *pPHI; assert(j<Phi.trials);
+    const PHI::row &Phi_j  = Phi[j];
+    CPW_Function   &F      = prod[ctx.rank];
+
+    // prepare splitting
+    const Mixed    &mixed  = Phi.mixed;
+    size_t          offset = 0;
+    size_t          length = mixed.size;
+    ctx.split(offset,length);
+
+    // loop over functions
+    for(size_t i=offset,ii=0;ii<length;++i,++ii)
+    {
+        const Mix mix(mixed[i]);
+        const CPW_Function &phi_j_k = (*Phi_j[mix.i])[mix.k];
+        const CPW_Function &phi_l_m = (*Phi_j[mix.l])[mix.m];
+        F.product(phi_j_k,phi_l_m);
+
+        //loop over boxes using this trial
+        for(BoxNode *node = pGrp->head; node; node=node->next)
+        {
+            const Box &box = * (node->get());
+            assert(box.trial==j);
+            const Unit ans = F.integrate(box.tauStart,box.tauFinal);
+            (void)ans;
+        }
+    }
 }
 
 

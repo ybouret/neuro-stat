@@ -65,9 +65,7 @@ public:
 
     virtual ~Boxes() throw();
 
-    void updateMixed(Matrix<Unit>  *regG,
-                     const size_t   numG,
-                     const PHI     &Phi,
+    void updateMixed(const PHI     &Phi,
                      Crew          *para);
 
 private:
@@ -75,10 +73,12 @@ private:
     typedef Box *                       BoxPtr;
     typedef multi_map<size_t,BoxPtr>    BoxHolder;
     typedef BoxHolder::Group            BoxGroup;
+    typedef BoxHolder::GNode            BoxNode;
     typedef dynamic_slots<CPW_Function> Products;
 
     size_t                      j;    //!< current trial index
     const PHI *                 pPHI; //!< current PHI functions
+    const BoxGroup             *pGrp; //!< current group, for one trial
     BoxHolder                   bmap; //!< make groups of boxes
     Products                    prod; //!< store the current(s) function
     Kernel                      run;  //!< call evalMixed
