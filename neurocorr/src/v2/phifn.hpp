@@ -46,10 +46,11 @@ class PHI : public PHI_Base
 public:
     const size_t &trials;
     const size_t &neurones;
-    const size_t  K;     //!< 1+extra
-    const size_t  NK;    //!< neurones*K
-    const size_t  dim;   //!< 1+neurons*K, dimension for G/B/...
-    Mixed         mixed; //!< (neurons*K)*(neurons*K+1)/2, all possible mixed terms
+    const size_t  K;        //!< 1+extra
+    const size_t  NK;       //!< neurones*K
+    const size_t  dim;      //!< 1+neurons*K, dimension for G/B/...
+    Mixed         mixed;    //!< (neurons*K)*(neurons*K+1)/2, all possible mixed terms
+    const size_t  maxCount; //!< max points in one function
 
     explicit PHI(const size_t extra, const Records &records);
     virtual ~PHI() throw();

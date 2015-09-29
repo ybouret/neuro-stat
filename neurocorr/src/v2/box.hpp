@@ -4,6 +4,10 @@
 #include "types.hpp"
 #include "phifn.hpp"
 
+
+class   Box;
+typedef slots_of<Box> _Boxes;
+
 class Box
 {
 public:
@@ -37,14 +41,43 @@ public:
     void computeMATRIX(const PHI &Phi, Matrix<Unit> &G ) const;
 
     void appendLinearTo(Matrix<Unit> &G,const PHI &Phi) const;
-    
+
+#if 0
     void appendMixedTo(Matrix<Unit>       &G,
                        const CPW_Function &F,
                        const Mix          &g);
-    
-    
+#endif
+
+
 private:
     YOCTO_DISABLE_ASSIGN(Box);
+};
+
+
+//! Boxes
+class Boxes : public Object, public _Boxes
+{
+public:
+    //! extracted from a R matrix
+    /**
+     \warning trials indices start from 1 in R data
+     */
+    explicit Boxes( const Real usr_scale, const Matrix<Real> &RBoxes);
+
+    //just reserve memory
+    explicit Boxes( const Real usr_scale, const size_t nboxes);
+
+    virtual ~Boxes() throw();
+
+    void updateMixed(Matrix<Unit>  *regG,
+                     const size_t   numG,
+                     const PHI     &Phi,
+                     Crew          *para);
+
+private:
+    YOCTO_DISABLE_COPY_AND_ASSIGN(Boxes);
+    dynamic_slots<CPW_Function> prod;
+    void allocateProducts(const size_t count,const size_t np);
 };
 
 #endif

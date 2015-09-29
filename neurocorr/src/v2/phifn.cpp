@@ -53,6 +53,7 @@ K(1+extra),
 NK(neurones*K),
 dim(1+neurones*K),
 mixed( (NK*dim)/2 ),
+maxCount(records.maxCount),
 delta(0),
 pCode(this,& PHI::paraCompute)
 {
@@ -128,6 +129,5 @@ void PHI:: prepareMixed()
         }
     }
     std::cerr << "#mixed=" << mixed.size << "/" << mixed.capacity << std::endl;
-
 }
 
