@@ -1,4 +1,4 @@
-#include "../box.hpp"
+#include "../boxes.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
 #include "yocto/sys/wtime.hpp"
@@ -57,18 +57,20 @@ YOCTO_UNIT_TEST_IMPL(box)
             boxes.push_back(b);
         }
     }
-    std::cerr << "Boxes:";
+    std::cerr << "Boxes:" << std::endl;
     for(size_t i=0;i<boxes.size;++i)
     {
         std::cerr << boxes[i] << std::endl;
     }
 
     // sequential trial
+    std::cerr << "Sequential Computation" << std::endl;
     mark = chrono.ticks();
     boxes.updateMixed(Phi,NULL);
     const double seqMixed = chrono( chrono.ticks() - mark );
 
     // parallel code
+    std::cerr << "Parallel Computation of Mixed terms" << std::endl;
     mark = chrono.ticks();
     boxes.updateMixed(Phi,&para);
     const double parMixed = chrono( chrono.ticks() - mark );

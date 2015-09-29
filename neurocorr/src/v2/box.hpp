@@ -33,7 +33,7 @@ public:
      The use of Tau must be different in case of parallel or sequential code
      */
     void appendRHS(const PHI &Phi, Matrix<Unit> &B,UList &tau) const;
-
+    
     //! compute G
     /**
      G.rows = G.cols = 1+Phi.K*Phi.N
@@ -52,46 +52,5 @@ private:
     YOCTO_DISABLE_ASSIGN(Box);
 };
 
-#include "yocto/associative/multi-map.hpp"
-#include "yocto/ptr/alias.hpp"
-
-//! Boxes
-class Boxes : public Object, public _Boxes
-{
-public:
-    //! extracted from a R matrix
-    /**
-     \warning trials indices start from 1 in R data
-     */
-    explicit Boxes( const Real usr_scale, const Matrix<Real> &RBoxes);
-
-    //just reserve memory
-    explicit Boxes( const Real usr_scale, const size_t nboxes);
-
-    virtual ~Boxes() throw();
-
-    void updateMixed(const PHI     &Phi,
-                     Crew          *para);
-
-private:
-    YOCTO_DISABLE_COPY_AND_ASSIGN(Boxes);
-    typedef Box *                       BoxPtr;
-    typedef multi_map<size_t,BoxPtr>    BoxHolder;
-    typedef BoxHolder::Group            BoxGroup;
-    typedef BoxHolder::GNode            BoxNode;
-    typedef dynamic_slots<CPW_Function> Products;
-
-    size_t                      j;    //!< current trial index
-    const PHI *                 pPHI; //!< current PHI functions
-    const BoxGroup             *pGrp; //!< current group, for one trial
-    BoxHolder                   bmap; //!< make groups of boxes
-    Products                    prod; //!< store the current(s) function
-    Kernel                      kMix; //!< call evalMixed
-
-    void mapBoxesPerTrial(const size_t trials);
-    void allocateProducts(const size_t count,const size_t np);
-    void evalMixed(Context &ctx);
-
-};
 
 #endif

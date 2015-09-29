@@ -15,6 +15,10 @@ phifn.hpp
 phifn.cpp
 box.hpp
 box.cpp
+boxes.hpp
+boxes.cpp
+boxes-mixed.cpp
+boxes-linear.cpp
 )
 
 ADD_LIBRARY(ncv2 STATIC ${c_srcs})
