@@ -189,6 +189,17 @@ void Boxes:: allocateProducts(const size_t count,const size_t np)
     }
 }
 
+void Boxes:: mapBoxesPerTrial()
+{
+    bmap.free();
+    for(size_t i=0;i<size;++i)
+    {
+        Box *pB = & ((*this)[i]);
+        bmap.insert(pB->trial,pB);
+    }
+    std::cerr << "#BoxGroups=" << bmap.keys() << std::endl;
+}
+
 void Boxes:: updateMixed(Matrix<Unit>  *regG,
                          const size_t   numG,
                          const PHI     &Phi,

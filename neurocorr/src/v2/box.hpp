@@ -42,17 +42,13 @@ public:
 
     void appendLinearTo(Matrix<Unit> &G,const PHI &Phi) const;
 
-#if 0
-    void appendMixedTo(Matrix<Unit>       &G,
-                       const CPW_Function &F,
-                       const Mix          &g);
-#endif
-
 
 private:
     YOCTO_DISABLE_ASSIGN(Box);
 };
 
+#include "yocto/associative/multi-map.hpp"
+#include "yocto/ptr/alias.hpp"
 
 //! Boxes
 class Boxes : public Object, public _Boxes
@@ -76,7 +72,15 @@ public:
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Boxes);
-    dynamic_slots<CPW_Function> prod;
+    typedef Box *BoxPtr;
+    typedef multi_map<size_t,BoxPtr>    BoxHolder;
+    typedef BoxHolder::Group            BoxGroup;
+    typedef dynamic_slots<CPW_Function> Products;
+
+    BoxHolder                   bmap; //!< make groups of boxes
+    Products                    prod; //!< store the current(s) function
+
+    void mapBoxesPerTrial();
     void allocateProducts(const size_t count,const size_t np);
 };
 
