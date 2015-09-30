@@ -12,9 +12,10 @@ YOCTO_UNIT_TEST_IMPL(box)
     wtime    chrono;
     chrono.start();
 
-    const size_t  num_neurones = 10;// + alea_leq(100);
+    const size_t  num_neurones = 5;// + alea_leq(100);
     const size_t  num_trials   = 3;// + alea_leq(100);
     const size_t  max_spikes   = 1000 + alea_leq(2000);
+    const size_t  extra        = 2;
 
     std::cerr << "Creating Random Records" << std::endl;
     auto_ptr<Records> pRec( Records::CreateRandom(num_neurones, num_trials, max_spikes) );
@@ -28,7 +29,6 @@ YOCTO_UNIT_TEST_IMPL(box)
 
     //! allocating memory
     std::cerr << "Allocating Memory for Phi" << std::endl;
-    const size_t extra = 9;
     PHI Phi(extra,records);
 
     //! computing phi for a given delta
@@ -36,6 +36,7 @@ YOCTO_UNIT_TEST_IMPL(box)
     Phi.compute(4,&para);
 
     std::cerr << "There are " << Phi.mixed.size << " mixed terms" << std::endl;
+    std::cerr << "For a dimension of " << Phi.dim << std::endl;
 
     std::cerr << "Computing B's and G's" << std::endl;
     //const size_t  num_rows= Phi.dim;
@@ -53,6 +54,7 @@ YOCTO_UNIT_TEST_IMPL(box)
             const Unit ini = alea_leq(maxLength);
             const Unit len = 1 + alea_leq(maxLength);
             const Box  b((++k)%num_trials,ini,ini+len);
+            (Box::Kind &)(b.kind) = (i%2);
             boxes.push_back(b);
         }
     }
@@ -74,17 +76,29 @@ YOCTO_UNIT_TEST_IMPL(box)
     // sequential trial
     std::cerr << "Sequential Computation" << std::endl;
     mark = chrono.ticks();
-    MixedEvaluator(boxes,Phi, kdb, G, NULL);
+    MixedEvaluator(boxes,Phi, G, NULL);
     const double seqMixed = chrono( chrono.ticks() - mark );
-
-    return 0;
+    std::cerr << "seqMixedTime=" << seqMixed << std::endl;
+    for(size_t i=0;i<G.size;++i)
+    {
+        std::cerr << "seqG" << i << "=" << *G[i] << std::endl;
+    }
 
 
     // parallel code
     std::cerr << "Parallel Computation of Mixed terms" << std::endl;
+    for(size_t i=0;i<G.size;++i)
+    {
+        G[i]->ld(0);
+    }
     mark = chrono.ticks();
-    MixedEvaluator(boxes,Phi,kdb,G,&para);
+    MixedEvaluator(boxes,Phi, G,&para);
     const double parMixed = chrono( chrono.ticks() - mark );
+    std::cerr << "parMixedTime=" << parMixed << std::endl;
+    for(size_t i=0;i<G.size;++i)
+    {
+        std::cerr << "parG" << i << "=" << *G[i] << std::endl;
+    }
 
     std::cerr << "seqMixedTime=" << seqMixed << std::endl;
     std::cerr << "parMixedTime=" << parMixed << std::endl;

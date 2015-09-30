@@ -11,7 +11,8 @@ Box:: Box(const size_t indx,
 trial(indx),
 tauStart(ini),
 tauFinal(end),
-kind(0)
+kind(0),
+indx(0)
 {
     assert(tauFinal>=tauStart);
 }
@@ -21,7 +22,8 @@ Box:: Box(const Box &b) throw() :
 trial(b.trial),
 tauStart(b.tauStart),
 tauFinal(b.tauFinal),
-kind(b.kind)
+kind(b.kind),
+indx(b.indx)
 {
 
 }

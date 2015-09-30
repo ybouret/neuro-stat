@@ -25,6 +25,7 @@ public:
 
     virtual ~Boxes() throw();
 
+    //! build database and assign indices to boxes
     void buildDB( Box::KindDB &db ) const;
 
 private:
@@ -36,7 +37,6 @@ class MixedEvaluator
 public:
     explicit MixedEvaluator(const Boxes       &boxes,
                             const PHI         &UsrPhi,
-                            const Box::KindDB &box_kinds,
                             Matrices          &Gmatrices,
                             Crew              *para);
 
@@ -50,7 +50,6 @@ private:
     slots_of<BoxList>      mgr;    //!< box, ordered by trials
     slots_of<CPW_Function> prod;   //!< memory for product function
     Kernel                 run;    //!< call compute
-    const Box::KindDB     &kind;
     Matrices              &G;
     void compute(Context &ctx);
 };

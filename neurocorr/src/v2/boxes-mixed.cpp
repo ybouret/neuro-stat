@@ -10,7 +10,6 @@ MixedEvaluator:: ~MixedEvaluator() throw()
 
 MixedEvaluator:: MixedEvaluator(const Boxes       &boxes,
                                 const PHI         &UsrPhi,
-                                const Box::KindDB &box_kinds,
                                 Matrices          &Gmatrices,
                                 Crew              *para) :
 Phi(UsrPhi),
@@ -19,11 +18,9 @@ J(0),
 mgr(trials),
 prod(para?para->size:1),
 run(this, & MixedEvaluator::compute),
-kind(box_kinds),
 G(Gmatrices)
 {
 
-    assert(G.size==kind.size());
     Crew::single_context mono;
 
     // allocate memory for products
@@ -108,8 +105,7 @@ void MixedEvaluator::compute(Context &ctx)
         for(const BoxNode *node=mgr[J].head;node;node=node->next)
         {
             const Box    *box = node->addr; assert(box); assert(box->trial==J);
-            const size_t *pg  = kind.search(box->kind);  assert(pg);
-            const size_t   g  = *pg; assert(g<kind.size()); assert(g<G.size);
+            const size_t   g  = box->indx;  assert(g<G.size);
             const Unit    ans = F.integrate(box->tauStart,box->tauFinal);
             Matrix<Real>  &GG = *G[g];
             GG(Indx,Jndx) = ( GG(Jndx,Indx) += ans);
