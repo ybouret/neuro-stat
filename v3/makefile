@@ -24,6 +24,7 @@ clean:
 	@echo "-- cleaning wink_R"
 	@$(MAKE) -s -C src/wink_R clean
 	@echo "-- cleaning local binaries" && rm -Rf ./bin
+	@$(MAKE) -s -C doc clean
 
 preclean:
 	@echo "-- removing out of sources builds" && cd forge && touch targets &&  ( ( cat targets | xargs rm -rf ) && rm -f targets )
