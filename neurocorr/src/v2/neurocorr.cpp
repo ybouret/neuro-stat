@@ -15,10 +15,10 @@ static inline void LeaveModule() throw()
 {
     std::cerr << "Leaving Module" << std::endl;
     if(team)
-{
-	delete team;
-	team = NULL;
-}
+    {
+        delete team;
+        team = NULL;
+    }
 }
 
 YOCTO_RTLD_SETUP(EnterModule,LeaveModule)
@@ -59,7 +59,7 @@ Records *BuildRecords(SEXP &RND, SEXP &RNumNeurons, SEXP &RScale)
     RMatrix<Real> neurodata(RND);
     const int     num_neurons = R2Scalar<int>(RNumNeurons);
     const Real    scale       = R2Scalar<Real>(RScale);
-    
+
     //______________________________________________________________________
     //
     // Direct Call
@@ -76,10 +76,10 @@ SEXP NeuroCorr_CheckNeuroData(SEXP RND, SEXP RNumNeurons, SEXP RScale) throw()
         auto_ptr<Records> pRecords( BuildRecords(RND,RNumNeurons,RScale) );
         Records &records = *pRecords;
         Rprintf("#neurons=%u (#trials=%u)\n", unsigned(records.neurones), unsigned(records.trials) );
-        for(size_t i=0;i<records.neurones;++i)
+        for(size_t i=0; i<records.neurones; ++i)
         {
             Rprintf("Neuron[%3d]:\n", i);
-            for(unsigned j=0;j<records.trials;++j)
+            for(unsigned j=0; j<records.trials; ++j)
             {
                 const Train &tr = *records[j][i];
                 Rprintf("\ttrial[%3u](#%3u)",j,tr.size());
