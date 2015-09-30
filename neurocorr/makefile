@@ -37,4 +37,3 @@ clang:
 codeblocks:
 	@bash $(CREATE) . codeblocks ${BUILD_TYPE}
 
-
