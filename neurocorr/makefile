@@ -34,3 +34,7 @@ gnu:
 clang:
 	@bash $(CREATE) src clang ${BUILD_TYPE}
 
+codeblocks:
+	@bash $(CREATE) src codeblocks ${BUILD_TYPE}
+
+
