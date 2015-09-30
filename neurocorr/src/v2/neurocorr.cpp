@@ -72,7 +72,6 @@ SEXP NeuroCorr_CheckNeuroData(SEXP RND, SEXP RNumNeurons, SEXP RScale) throw()
 {
     YOCTO_R_PROLOG()
     {
-
         auto_ptr<Records> pRecords( BuildRecords(RND,RNumNeurons,RScale) );
         Records &records = *pRecords;
         Rprintf("#neurons=%u (#trials=%u)\n", unsigned(records.neurones), unsigned(records.trials) );
