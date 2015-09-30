@@ -5,7 +5,9 @@
 #include "yocto/sequence/addr-list.hpp"
 
 //! to group boxes by same trial
-typedef addr_list<Box> BoxList;
+typedef addr_list<const Box> BoxList;
+typedef addr_node<const Box> BoxNode;
+
 YOCTO_SUPPORT_BITWISE_OPS(BoxList);
 
 //! Boxes
@@ -32,7 +34,12 @@ private:
 class MixedEvaluator
 {
 public:
-    explicit MixedEvaluator(Boxes &boxes,const PHI &UsrPhi, Crew *para);
+    explicit MixedEvaluator(const Boxes       &boxes,
+                            const PHI         &UsrPhi,
+                            const Box::KindDB &box_kinds,
+                            Matrices          &Gmatrices,
+                            Crew              *para);
+
     virtual ~MixedEvaluator() throw();
 
 private:
@@ -43,6 +50,8 @@ private:
     slots_of<BoxList>      mgr;    //!< box, ordered by trials
     slots_of<CPW_Function> prod;   //!< memory for product function
     Kernel                 run;    //!< call compute
+    const Box::KindDB     &kind;
+    const Matrices        &G;
     void compute(Context &ctx);
 };
 

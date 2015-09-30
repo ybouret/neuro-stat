@@ -8,15 +8,19 @@ MixedEvaluator:: ~MixedEvaluator() throw()
 }
 
 
-MixedEvaluator:: MixedEvaluator(Boxes     &boxes,
-                                const PHI &UsrPhi,
-                                Crew      *para) :
+MixedEvaluator:: MixedEvaluator(const Boxes       &boxes,
+                                const PHI         &UsrPhi,
+                                const Box::KindDB &box_kinds,
+                                Matrices          &Gmatrices,
+                                Crew              *para) :
 Phi(UsrPhi),
 trials(Phi.trials),
 J(0),
 mgr(trials),
 prod(para?para->size:1),
-run(this, & MixedEvaluator::compute)
+run(this, & MixedEvaluator::compute),
+kind(box_kinds),
+G(Gmatrices)
 {
 
     Crew::single_context mono;
@@ -34,7 +38,7 @@ run(this, & MixedEvaluator::compute)
     const size_t nb = boxes.size;
     for(size_t i=0;i<nb;++i)
     {
-        Box &box = boxes[i];
+        const Box &box = boxes[i];
         if(box.trial>=trials) throw exception("Invalid Box Trial!");
         mgr[box.trial].append(&box);
     }
@@ -80,14 +84,14 @@ void MixedEvaluator::compute(Context &ctx)
         F.product(phi_j_k,phi_l_m);
 
         //loop over boxes using this trial
-        for(const addr_node<Box> *node=mgr[J].head;node;node=node->next)
+        for(const BoxNode *node=mgr[J].head;node;node=node->next)
         {
             const Box *box = node->addr; assert(box);
             assert(box->trial==J);
             const Unit ans = F.integrate(box->tauStart,box->tauFinal);
             (void)ans;
         }
-        
+
     }
 
 

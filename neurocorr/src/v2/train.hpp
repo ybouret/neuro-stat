@@ -2,7 +2,6 @@
 #define NC_TRAIN_INCLUDED 1
 
 #include "types.hpp"
-#include "yocto/R/IR.hpp"
 #include "yocto/sequence/slots.hpp"
 
 //! data in Units

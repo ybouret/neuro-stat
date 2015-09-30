@@ -8,8 +8,7 @@ YOCTO_UNIT_TEST_IMPL(box)
 
     Crew     para;
     uint64_t mark=0;
-    uint64_t Bcount=0;
-    uint64_t Gcount=0;
+
     wtime    chrono;
     chrono.start();
 
@@ -39,10 +38,10 @@ YOCTO_UNIT_TEST_IMPL(box)
     std::cerr << "There are " << Phi.mixed.size << " mixed terms" << std::endl;
 
     std::cerr << "Computing B's and G's" << std::endl;
-    const size_t  num_rows= Phi.dim;
-    const size_t  num_cols= Phi.neurones;
-    CMatrix<Unit> B(num_rows,num_cols);
-    CMatrix<Unit> G(num_rows,num_rows);
+    //const size_t  num_rows= Phi.dim;
+    //const size_t  num_cols= Phi.neurones;
+    //CMatrix<Unit> B(num_rows,num_cols);
+    //CMatrix<Unit> G(num_rows,num_rows);
 
     const size_t boxes_per_trials = 3;
     Boxes boxes(1.0,boxes_per_trials*num_trials);
@@ -63,16 +62,21 @@ YOCTO_UNIT_TEST_IMPL(box)
         std::cerr << boxes[i] << std::endl;
     }
 
+    Box::KindDB kdb;
+    boxes.buildDB(kdb);
+    std::cerr << "#kinds=" << kdb.size() << std::endl;
+    CMatrices G(kdb.size(),Phi.dim,Phi.dim);
+
     // sequential trial
     std::cerr << "Sequential Computation" << std::endl;
     mark = chrono.ticks();
-    MixedEvaluator(boxes,Phi, NULL);
+    MixedEvaluator(boxes,Phi, kdb, G, NULL);
     const double seqMixed = chrono( chrono.ticks() - mark );
 
     // parallel code
     std::cerr << "Parallel Computation of Mixed terms" << std::endl;
     mark = chrono.ticks();
-    MixedEvaluator(boxes,Phi, &para);
+    MixedEvaluator(boxes,Phi,kdb,G,&para);
     const double parMixed = chrono( chrono.ticks() - mark );
 
     std::cerr << "seqMixedTime=" << seqMixed << std::endl;
@@ -82,6 +86,9 @@ YOCTO_UNIT_TEST_IMPL(box)
 
     return 0;
 
+#if 0
+    uint64_t Bcount=0;
+    uint64_t Gcount=0;
     UList        Tau;//( records.maxCount, as_capacity );
     const size_t itOut = Phi.trials/2;
     for(size_t it=0;it<Phi.trials;++it)
@@ -105,7 +112,7 @@ YOCTO_UNIT_TEST_IMPL(box)
     const double Gell = chrono(Gcount);
     std::cerr << "Bell=" << Bell << std::endl;
     std::cerr << "Gell=" << Gell << std::endl;
-
+#endif
 
 
 }
