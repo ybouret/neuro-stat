@@ -6,7 +6,7 @@
 
 # programs for the simulations
 
-source('../../../codes/SimuHawkes.R',chdir=TRUE)
+source('../../codes/SimuHawkes.R',chdir=TRUE)
 
 # package for Lasso
 #library(lassoshooting)
