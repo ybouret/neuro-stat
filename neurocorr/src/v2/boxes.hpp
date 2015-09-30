@@ -51,7 +51,7 @@ private:
     slots_of<CPW_Function> prod;   //!< memory for product function
     Kernel                 run;    //!< call compute
     const Box::KindDB     &kind;
-    const Matrices        &G;
+    Matrices              &G;
     void compute(Context &ctx);
 };
 

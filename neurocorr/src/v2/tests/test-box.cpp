@@ -65,6 +65,10 @@ YOCTO_UNIT_TEST_IMPL(box)
     Box::KindDB kdb;
     boxes.buildDB(kdb);
     std::cerr << "#kinds=" << kdb.size() << std::endl;
+    for(Box::KindDB::iterator i = kdb.begin(); i != kdb.end(); ++i)
+    {
+        std::cerr << "Kind=" << i->key << " -> index=" << *i << std::endl;
+    }
     CMatrices G(kdb.size(),Phi.dim,Phi.dim);
 
     // sequential trial
@@ -72,6 +76,9 @@ YOCTO_UNIT_TEST_IMPL(box)
     mark = chrono.ticks();
     MixedEvaluator(boxes,Phi, kdb, G, NULL);
     const double seqMixed = chrono( chrono.ticks() - mark );
+
+    return 0;
+
 
     // parallel code
     std::cerr << "Parallel Computation of Mixed terms" << std::endl;
@@ -83,8 +90,6 @@ YOCTO_UNIT_TEST_IMPL(box)
     std::cerr << "parMixedTime=" << parMixed << std::endl;
     std::cerr << "SpeedUp     =" << seqMixed/parMixed << std::endl;
     
-
-    return 0;
 
 #if 0
     uint64_t Bcount=0;

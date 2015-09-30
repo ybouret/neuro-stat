@@ -55,7 +55,7 @@ public:
         // allocate matrice and register them
         for(size_t i=0;i<nm;++i)
         {
-            M.append<size_t,size_t>(nr,nm);
+            M.append<size_t,size_t>(nr,nc);
             this->push_back( &M[i] );
         }
     }
