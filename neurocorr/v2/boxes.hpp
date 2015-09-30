@@ -32,6 +32,26 @@ private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Boxes);
 };
 
+class LinearEvaluator
+{
+public:
+    explicit LinearEvaluator(const Boxes &boxes,
+                             const PHI   &UsrPhi,
+                             Matrices    &Bmatrices,
+                             Crew        *para);
+
+    virtual ~LinearEvaluator() throw();
+
+private:
+    YOCTO_DISABLE_COPY_AND_ASSIGN(LinearEvaluator);
+    const PHI   &Phi;
+    Matrices    &B;
+    void compute(Context &ctx);
+    slots_of<UList> TauList;
+    const size_t   &count;
+    
+};
+
 class MixedEvaluator
 {
 public:
