@@ -3,7 +3,7 @@
 
 #include "types.hpp"
 #include "yocto/R/IR.hpp"
-#include "yocto/container/slots.hpp"
+#include "yocto/sequence/slots.hpp"
 
 //! data in Units
 class Train : public Object, public CVector<Unit>

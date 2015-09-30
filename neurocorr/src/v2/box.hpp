@@ -3,18 +3,22 @@
 
 #include "types.hpp"
 #include "phifn.hpp"
-
+#include "yocto/associative/map.hpp"
 
 class   Box;
 typedef slots_of<Box> _Boxes;
 
+
 class Box
 {
 public:
+    typedef int              Kind;
+    typedef map<Kind,size_t> KindDB;
+
     const size_t   trial;     //!< associated trial
     const Unit     tauStart;  //!< tau start
     const Unit     tauFinal;  //!< tau final
-    const int      kind;      //!< label
+    const Kind     kind;      //!< label
 
     explicit Box(const size_t indx,
                  const Unit   ini,

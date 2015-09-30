@@ -66,13 +66,13 @@ YOCTO_UNIT_TEST_IMPL(box)
     // sequential trial
     std::cerr << "Sequential Computation" << std::endl;
     mark = chrono.ticks();
-    boxes.updateMixed(Phi,NULL);
+    MixedEvaluator(boxes,Phi, NULL);
     const double seqMixed = chrono( chrono.ticks() - mark );
 
     // parallel code
     std::cerr << "Parallel Computation of Mixed terms" << std::endl;
     mark = chrono.ticks();
-    boxes.updateMixed(Phi,&para);
+    MixedEvaluator(boxes,Phi, &para);
     const double parMixed = chrono( chrono.ticks() - mark );
 
     std::cerr << "seqMixedTime=" << seqMixed << std::endl;

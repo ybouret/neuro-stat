@@ -2,7 +2,7 @@
 #define NC_RECORDS_INCLUDED 1
 
 #include "train.hpp"
-#include "yocto/container/slots2d.hpp"
+#include "yocto/sequence/slots2d.hpp"
 #include "yocto/ptr/auto.hpp"
 
 typedef auto_ptr<Train>      TrainPtr;
