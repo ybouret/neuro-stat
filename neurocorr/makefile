@@ -20,22 +20,21 @@ update:
 clean:
 	@echo "-- removing temporary files" && rm -f *.dat
 	@$(MAKE) -s -C doc    clean
-	@$(MAKE) -s -C src/v1 clean
-	@$(MAKE) -s -C src/v2 clean
+	@$(MAKE) -s -C v2 clean
 
 veryclean: clean
 	@echo "-- removing out of sources builds" && cd forge && touch targets && ( cat targets | xargs rm -rf ) && rm -f targets
 
 xcode:
-	@bash $(CREATE) src xcode ${BUILD_TYPE}
+	@bash $(CREATE) . xcode ${BUILD_TYPE}
 	
 gnu:
-	@bash $(CREATE) src gnu ${BUILD_TYPE}
+	@bash $(CREATE) . gnu ${BUILD_TYPE}
 	
 clang:
-	@bash $(CREATE) src clang ${BUILD_TYPE}
+	@bash $(CREATE) . clang ${BUILD_TYPE}
 
 codeblocks:
-	@bash $(CREATE) src codeblocks ${BUILD_TYPE}
+	@bash $(CREATE) . codeblocks ${BUILD_TYPE}
 
 
