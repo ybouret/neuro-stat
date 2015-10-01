@@ -28,7 +28,7 @@ NeuroCorr_CheckNeuroData(DataNeur,Nneur,scale);
 
 NeuroCorr_SetParallel(0);
 delta=0.005;
-K=2;
+K=3;
 
 Sseq = NeuroCorr_ComputePhi(DataNeur,Nneur,scale,delta,K);
 plot(Sseq$phi0,type="l");

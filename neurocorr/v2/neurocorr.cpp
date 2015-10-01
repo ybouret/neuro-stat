@@ -300,9 +300,14 @@ SEXP NeuroCorr_Compute(SEXP neuroDataR,
 
         //______________________________________________________________________
         //
-        // Prepare Matrices
+        // Prepare Boxes, get num matrices to compute
         //______________________________________________________________________
-        
+        const size_t num_matrices = boxes.assignIndices( grouping );
+        Rprintf("[NeuroCorr] Allocating #matrices=%u\n", unsigned(num_matrices));
+        Rprintf("[NeuroCorr] RHS dims are %u x %u\n", unsigned(Phi.dim), unsigned(Phi.neurones) );
+        Rprintf("[NeuroCorr] MAT dims are %u x %u, with %u mixed terms\n",unsigned(Phi.dim), unsigned(Phi.dim), unsigned(Phi.mixed.size) );
+        CMatrices R(num_matrices,Phi.dim,Phi.neurones);
+        CMatrices G(num_matrices,Phi.dim,Phi.dim);
 
         return R_NilValue;
     }
