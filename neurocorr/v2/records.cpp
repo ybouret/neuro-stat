@@ -22,6 +22,7 @@ size_t __get_num_trials(const size_t trains, const size_t num_neurons)
 Records:: Records(const Real          scale,
                   const Matrix<Real> &neurodata,
                   const size_t        num_neurons) :
+Object(scale),
 RecordsBase( __get_num_trials(neurodata.rows,num_neurons), num_neurons ),
 trials(rows),
 neurones(cols),

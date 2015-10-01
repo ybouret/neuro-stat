@@ -94,7 +94,7 @@ Records *BuildRecords(SEXP &RND, SEXP &RNumNeurons, SEXP &RScale)
     //______________________________________________________________________
     RMatrix<Real> neurodata(RND);
     const int     num_neurons = R2Scalar<int>(RNumNeurons);
-    const Real    scale       = R2Scalar<Real>(RScale);
+    const Real    scale       = R2Scalar<double>(RScale);
     
     //______________________________________________________________________
     //
@@ -126,3 +126,59 @@ SEXP NeuroCorr_CheckNeuroData(SEXP RND, SEXP RNumNeurons, SEXP RScale) throw()
     }
     YOCTO_R_EPILOG()
 }
+
+//______________________________________________________________________________
+//
+//
+// Prototype to check Phi Functions
+//
+//______________________________________________________________________________
+#include "yocto/code/utils.hpp"
+
+extern "C"
+SEXP NeuroCorr_ComputePhi(SEXP neuroDataR, SEXP numNeuronesR, SEXP scaleR, SEXP deltaR, SEXP KR ) throw()
+{
+    YOCTO_R_PROLOG()
+    {
+        Rprintf("[ComputePhi]: create records\n");
+        auto_ptr<Records> pRecords( BuildRecords(neuroDataR,numNeuronesR,scaleR) );
+        
+        Records     &records = *pRecords;
+        const double scale = records.scale;
+        const Unit   delta = max_of<int>(1, records.toUnit(R2Scalar<double>(deltaR)) );
+        const size_t K     = max_of<int>(1, R2Scalar<int>(KR) );
+        
+        Rprintf("[ComputePhi]: allocating memory (K=%u)\n",unsigned(K));
+        PHI Phi(K-1,records);
+        
+        Rprintf("[ComputePhi]: computing with delta=%ld/%g\n",long(delta),scale);
+        
+        Phi.compute(delta,team);
+        
+        const CPW_Function &F  = (*Phi[0][0])[0];
+        const size_t        np = F.size();
+        if(np)
+        {
+            const size_t    ntot = 2*np;
+            RMatrix<double> M(ntot,2);
+            
+            M[0][0] = F[1].tau/scale; M[1][0] = F.foot;
+            for(size_t i=1;i<np;++i)
+            {
+                const size_t j=1+(i-1)*2;
+                M[0][j]   = F[i].tau/scale;   M[1][j]   = F[i].value;
+                M[0][j+1] = F[i+1].tau/scale; M[1][j+1] = F[i].value;
+            }
+            M[0][ntot-1] = F[np].tau/scale; M[1][ntot-1] = F[np].value;
+            return *M;
+        }
+        else
+        {
+            RVector<double> ans(1);
+            ans[0] = F.foot;
+            return *ans;
+        }
+    }
+    YOCTO_R_EPILOG()
+}
+

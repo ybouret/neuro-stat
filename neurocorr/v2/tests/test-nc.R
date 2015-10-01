@@ -22,9 +22,14 @@ for(i in 1:ND_rows)
     print(DataNeur[i,1]);
 }
 
-NeuroCorr_CheckNeuroData(DataNeur,Nneur,1.0e6);
+scale = 1.0e6; # microseconds
+NeuroCorr_CheckNeuroData(DataNeur,Nneur,scale);
 
-NeuroCorr_SetParallel(4);
+
+NeuroCorr_SetParallel(0);
+
+
+phi0 = NeuroCorr_ComputePhi(DataNeur,Nneur,scale,0.1,2);
 
 
 

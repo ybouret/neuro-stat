@@ -8,7 +8,7 @@
 typedef auto_ptr<Train>      TrainPtr;
 typedef slots2D_of<TrainPtr> RecordsBase;
 
-class Records : public RecordsBase
+class Records : public Object, public RecordsBase
 {
 public:
     const size_t &trials;   //!< alias to rows
