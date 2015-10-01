@@ -78,7 +78,6 @@ private:
     size_t                 J;      //!< trial index
     slots_of<BoxList>      mgr;    //!< box, ordered by trials
     slots_of<CPW_Function> prod;   //!< memory for product function
-    Kernel                 run;    //!< call compute
     Matrices              &G;
     void compute(Context &ctx);
 };

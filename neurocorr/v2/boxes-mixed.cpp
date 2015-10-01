@@ -17,7 +17,6 @@ trials(Phi.trials),
 J(0),
 mgr(trials),
 prod(para?para->size:1),
-run(this, & MixedEvaluator::compute),
 G(Gmatrices)
 {
 
@@ -47,6 +46,7 @@ G(Gmatrices)
     }
 
     // loop over trials
+    Kernel run(this, & MixedEvaluator::compute);
     for(J=0;J<trials;++J)
     {
         const BoxList &bl = mgr[J];

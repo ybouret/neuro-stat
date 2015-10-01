@@ -98,35 +98,7 @@ YOCTO_UNIT_TEST_IMPL(box)
     std::cerr << "parMixedTime=" << parMixed << std::endl;
     std::cerr << "SpeedUp     =" << seqMixed/parMixed << std::endl;
     
-
-#if 0
-    uint64_t Bcount=0;
-    uint64_t Gcount=0;
-    UList        Tau;//( records.maxCount, as_capacity );
-    const size_t itOut = Phi.trials/2;
-    for(size_t it=0;it<Phi.trials;++it)
-    {
-        Box box( it, 0, 500 );
-        mark = chrono.ticks();
-        box.appendRHS(Phi,B,Tau);
-        Bcount += chrono.ticks()-mark;
-
-        mark = chrono.ticks();
-        //box.computeMATRIX(Phi,G);
-        box.appendLinearTo(G,Phi);
-        Gcount += chrono.ticks()-mark;
-        if(it==itOut)
-        {
-            //std::cerr << "B=" << B << std::endl;
-            //std::cerr << "G=" << G << std::endl;
-        }
-    }
-    const double Bell = chrono(Bcount);
-    const double Gell = chrono(Gcount);
-    std::cerr << "Bell=" << Bell << std::endl;
-    std::cerr << "Gell=" << Gell << std::endl;
-#endif
-
+    
 
 }
 YOCTO_UNIT_TEST_DONE()
