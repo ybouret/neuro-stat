@@ -37,8 +37,49 @@ private:
 };
 
 typedef list<Unit> UList;
-typedef Matrix<Real> *      MatrixPtr;
-typedef slots_of<MatrixPtr> Matrices;
+
+
+typedef Matrix<Unit>        *MatrixPtr;
+typedef slots_of<MatrixPtr> _Matrices;
+
+
+class Matrices : public _Matrices
+{
+public:
+    virtual ~Matrices() throw()
+    {
+    }
+    
+    inline void ldz()
+    {
+        _Matrices &self = *this;
+        for(size_t i=0;i<self.size;++i)
+        {
+            assert(NULL!=self[i]);
+            self[i]->ld(0);
+        }
+    }
+    
+    inline void neg()
+    {
+        _Matrices &self = *this;
+        for(size_t i=0;i<self.size;++i)
+        {
+            assert(NULL!=self[i]);
+            self[i]->neg();
+        }
+
+    }
+
+protected:
+    explicit Matrices(const size_t nm) : _Matrices(nm)
+    {
+    }
+    
+    
+private:
+    YOCTO_DISABLE_COPY_AND_ASSIGN(Matrices);
+};
 
 class CMatrices : public CoreMatrix, public Matrices
 {
@@ -64,11 +105,11 @@ public:
     {
     }
     
-
+   
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(CMatrices);
-    slots_of< CMatrix<Real> > M;
+    slots_of< CMatrix<Unit> > M;
 };
 
 

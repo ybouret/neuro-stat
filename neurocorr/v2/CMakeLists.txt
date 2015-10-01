@@ -17,8 +17,11 @@ box.hpp
 box.cpp
 boxes.hpp
 boxes.cpp
+boxes-mixed.hpp
 boxes-mixed.cpp
+boxes-linear.hpp
 boxes-linear.cpp
+boxes-intg.cpp
 )
 
 ADD_LIBRARY(ncv2 STATIC ${c_srcs})

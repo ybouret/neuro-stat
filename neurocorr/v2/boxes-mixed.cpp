@@ -1,4 +1,4 @@
-#include "boxes.hpp"
+#include "boxes-mixed.hpp"
 #include "yocto/exception.hpp"
 
 
@@ -107,7 +107,7 @@ void MixedEvaluator::compute(Context &ctx)
             const Box    *box = node->addr; assert(box); assert(box->trial==J);
             const size_t   g  = box->indx;  assert(g<G.size);
             const Unit    ans = F.integrate(box->tauStart,box->tauFinal);
-            Matrix<Real>  &GG = *G[g];
+            Matrix<Unit>  &GG = *G[g];
             GG(Indx,Jndx) = ( GG(Jndx,Indx) += ans);
         }
 
