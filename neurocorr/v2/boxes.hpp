@@ -61,6 +61,11 @@ private:
     
 };
 
+class IntegralEvaluator
+{
+    
+};
+
 class MixedEvaluator
 {
 public:
