@@ -15,19 +15,20 @@ public:
                                const PHI      &usrPhi,
                                Matrices       &Gmatrices,
                                Crew           *para);
-    
+
     virtual ~IntegralEvaluator() throw();
-    
+
     YOCTO_QUAD_DECL(Task,const Box *,box,size_t,neurone,size_t,k,size_t,I);
+    YOCTO_DISABLE_ASSIGN(Task);
     YOCTO_QUAD_END();
 
-    
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(IntegralEvaluator);
     const PHI     &Phi;
     Matrices      &G;
     slots_of<Task> Tasks;
-    
+
     void compute(Context &ctx);
 };
 
