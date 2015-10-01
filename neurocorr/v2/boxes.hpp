@@ -35,6 +35,8 @@ public:
      */
     void buildDB( Box::KindDB &db ) const;
     
+    
+    //! prepare boxes and return the number of needed Matrices
     size_t assignIndices(const Grouping mode) const;
     
 private:

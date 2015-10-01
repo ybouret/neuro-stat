@@ -1,5 +1,6 @@
 #include "../boxes-mixed.hpp"
 #include "../boxes-linear.hpp"
+#include "../boxes-intg.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
 #include "yocto/sys/wtime.hpp"
@@ -25,6 +26,18 @@ double RunEvalLinear(const Boxes &boxes,
 {
     const uint64_t mark = chrono.ticks();
     LinearEvaluator(boxes,Phi, B, para);
+    return chrono(chrono.ticks() - mark);
+}
+
+static
+double RunEvalIntg(const Boxes &boxes,
+                   const PHI   &Phi,
+                   Matrices    &G,
+                   Crew        *para,
+                   wtime       &chrono)
+{
+    const uint64_t mark = chrono.ticks();
+    IntegralEvaluator(boxes,Phi, G, para);
     return chrono(chrono.ticks() - mark);
 }
 
@@ -112,6 +125,27 @@ YOCTO_UNIT_TEST_IMPL(box)
     std::cerr << "SpeedUpLinear=" << seqLinear / parLinear << std::endl;
 
     
+    std::cerr << std::endl;
+    std::cerr << "\t\tINTEGRAL TERMS" << std::endl;
+    G.ldz();
+    std::cerr << "Sequential Computation of Integral Terms" << std::endl;
+    const double seqIntg = RunEvalIntg(boxes, Phi, G, NULL, chrono);
+    for(size_t i=0;i<G.size;++i)
+    {
+        std::cerr << "seqGI" << i << "=" << *G[i] << std::endl;
+    }
+    std::cerr << "seqIntg=" << seqIntg << std::endl;
+    
+    G.neg();
+    std::cerr << "Parallel Computation of Integral Terms" << std::endl;
+    const double parIntg = RunEvalIntg(boxes, Phi, G, &para, chrono);
+    for(size_t i=0;i<G.size;++i)
+    {
+        std::cerr << "parGI" << i << "=" << *G[i] << std::endl;
+    }
+    std::cerr << "parIntg=" << parIntg << std::endl;
+    std::cerr << "SpeedUpIntg=" << seqIntg/parIntg << std::endl;
+    return 0;
     
     std::cerr << std::endl;
     std::cerr << "\t\tMIXED TERMS" << std::endl;
@@ -140,7 +174,8 @@ YOCTO_UNIT_TEST_IMPL(box)
     std::cerr << std::endl;
     std::cerr << "Summary: " << std::endl;
     std::cerr << "SpeedUpLinear = " << seqLinear / parLinear << std::endl;
-    std::cerr << "SpeedUpMixed  = " << seqMixed/parMixed << std::endl;
+    std::cerr << "SpeedUpIntg   = " << seqIntg   / parIntg   << std::endl;
+    std::cerr << "SpeedUpMixed  = " << seqMixed  / parMixed  << std::endl;
 
     
 

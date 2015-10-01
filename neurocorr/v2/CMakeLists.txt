@@ -21,6 +21,7 @@ boxes-mixed.hpp
 boxes-mixed.cpp
 boxes-linear.hpp
 boxes-linear.cpp
+boxes-intg.hpp
 boxes-intg.cpp
 )
 
