@@ -64,14 +64,8 @@ YOCTO_UNIT_TEST_IMPL(box)
         std::cerr << boxes[i] << std::endl;
     }
 
-    Box::KindDB kdb;
-    boxes.buildDB(kdb);
-    std::cerr << "#kinds=" << kdb.size() << std::endl;
-    for(Box::KindDB::iterator i = kdb.begin(); i != kdb.end(); ++i)
-    {
-        std::cerr << "Kind=" << i->key << " -> index=" << *i << std::endl;
-    }
-    CMatrices G(kdb.size(),Phi.dim,Phi.dim);
+    const size_t nG = boxes.assignIndices(GroupByKind);
+    CMatrices G(nG,Phi.dim,Phi.dim);
 
     // sequential trial
     std::cerr << "Sequential Computation" << std::endl;

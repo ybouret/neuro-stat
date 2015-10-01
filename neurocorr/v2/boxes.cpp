@@ -23,12 +23,32 @@ void Boxes:: buildDB( Box::KindDB &db ) const
             if(!db.insert(k,db.size())) throw exception("Unexpected Failure in Boxes::buildDB");
         }
     }
-
+    
+    // one matrix per kind
     for(size_t i=0;i<size;++i)
     {
         const Box &b = (*this)[i];
         const size_t *pIndx = db.search(b.kind);
         if(!pIndx) throw exception("Boxes::buildDB:: unexpected missing box kind !!!");
         b.indx = *pIndx;
+    }
+}
+
+size_t Boxes:: assignIndices(const Grouping mode) const
+{
+    switch(mode)
+    {
+        case GroupByKind:
+        {
+            Box::KindDB db;
+            buildDB(db);
+            return db.size();
+        }
+            
+        case GroupByBox:
+        {
+            for(size_t i=0;i<size;++i) (*this)[i].indx = i;
+            return size;
+        }            
     }
 }

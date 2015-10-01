@@ -4,11 +4,15 @@
 #include "box.hpp"
 #include "yocto/sequence/addr-list.hpp"
 
-//! to group boxes by same trial
 typedef addr_list<const Box> BoxList;
 typedef addr_node<const Box> BoxNode;
-
 YOCTO_SUPPORT_BITWISE_OPS(BoxList);
+
+enum Grouping
+{
+    GroupByKind,
+    GroupByBox
+};
 
 //! Boxes
 class Boxes : public Object, public _Boxes
@@ -26,8 +30,13 @@ public:
     virtual ~Boxes() throw();
 
     //! build database and assign indices to boxes
+    /**
+     \return the number of matrices to allocate
+     */
     void buildDB( Box::KindDB &db ) const;
-
+    
+    size_t assignIndices(const Grouping mode) const;
+    
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Boxes);
 };
