@@ -23,7 +23,8 @@ public:
 
     explicit Box(const size_t indx,
                  const Unit   ini,
-                 const Unit   end) throw();
+                 const Unit   end,
+                 const Kind   aka=0) throw();
     virtual ~Box() throw();
     Box(const Box &) throw();
 

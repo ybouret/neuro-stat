@@ -18,12 +18,12 @@ static inline void TeamDelete() throw()
 
 static inline void EnterModule() throw()
 {
-    Rprintf("Entering NeuroCorr\n");
+    Rprintf("Enter NeuroCorr\n");
 }
 
 static inline void LeaveModule() throw()
 {
-    Rprintf("Leaving NeuroCorr\n");
+    Rprintf("Leave NeuroCorr\n");
     if(team)
     {
         Rprintf("WARNING: you should call NeuroCorr_CleanUp()");
@@ -196,11 +196,116 @@ SEXP NeuroCorr_ComputePhi(SEXP neuroDataR, SEXP numNeuronesR, SEXP scaleR, SEXP 
     YOCTO_R_EPILOG()
 }
 
+
 //______________________________________________________________________________
 //
 //
 // Code to compute matrices
 //
 //______________________________________________________________________________
+static inline
+Boxes *BuildBoxes(SEXP        &BoxesR,
+                  const Real   scale,
+                  const size_t trials)
+{
+    const RMatrix<double> rawBoxes(BoxesR);
+    const size_t nb = rawBoxes.cols;
+    const size_t nr = rawBoxes.rows;
+    if(nr<4) throw exception("Need at least 4 rows for Boxes!");
+    auto_ptr<Boxes> pB( new Boxes(scale,nb) );
+    for(size_t b=0;b<nb;++b)
+    {
+        const RMatrix<double>::Column &Col = rawBoxes[b];
 
+        const size_t raw_trial = int(Col[0]);
+        if(raw_trial<=0||raw_trial>trials)
+        {
+            throw exception("Box[%u]: invalid trial #%u", unsigned(b)+1, unsigned(raw_trial));
+        }
+        const Unit tauStart = pB->toUnit(Col[1]);
+        const Unit tauFinal = pB->toUnit(Col[2]);
+        if(tauFinal<=tauStart)
+        {
+            throw exception("Box[%u]: invalid times (up to scale=%g)", unsigned(b)+1, pB->scale);
+        }
+        const int kind = int(Col[3]);
+        const Box box(raw_trial-1,tauStart,tauFinal,kind);
+        pB->push_back(box);
+    }
+    return pB.yield();
+}
+
+#include <cstring>
+
+static inline
+Grouping GetGroupingFrom( SEXP &GroupingR )
+{
+    const char *grp = R2String(GroupingR);
+    Rprintf("[NeuroCorr] Grouping is %s\n", grp);
+
+    if( 0==strcmp(grp,"byKind") )
+        return GroupByKind;
+
+    if( 0==strcmp(grp,"byBox") )
+        return GroupByBox;
+
+    throw exception("[NeuroCorr] Unknown Grouping '%s'",grp);
+}
+
+extern "C"
+SEXP NeuroCorr_Compute(SEXP neuroDataR,
+                       SEXP numNeuronesR,
+                       SEXP scaleR,
+                       SEXP deltaR,
+                       SEXP KR,
+                       SEXP BoxesR,
+                       SEXP GroupingR)
+{
+    YOCTO_R_PROLOG()
+    {
+
+        //______________________________________________________________________
+        //
+        // Get Grouping
+        //______________________________________________________________________
+        const Grouping grouping = GetGroupingFrom(GroupingR);
+
+        //______________________________________________________________________
+        //
+        // Prepare Records
+        //______________________________________________________________________
+        Rprintf("[NeuroCorr] building records\n");
+        auto_ptr<Records> pRecords( BuildRecords(neuroDataR,numNeuronesR,scaleR) );
+        Records          &records = *pRecords;
+        Rprintf("[NeuroCorr] #neurones=%u, #trials=%u\n", unsigned(records.neurones), unsigned(records.trials));
+
+        //______________________________________________________________________
+        //
+        // Prepare Boxes
+        //______________________________________________________________________
+        auto_ptr<Boxes>   pBoxes( BuildBoxes( BoxesR, records.scale, records.trials) );
+        Boxes            &boxes = *pBoxes;
+        Rprintf("[NeuroCorr] #boxes=%u\n", unsigned(boxes.size) );
+
+        //______________________________________________________________________
+        //
+        // Compute Phi, using parallel team if possible
+        //______________________________________________________________________
+        const Unit   delta   = max_of<int>(1, records.toUnit(R2Scalar<double>(deltaR)) );
+        const size_t K       = max_of<int>(1, R2Scalar<int>(KR) );
+        Rprintf("[NeuroCorr] allocating Phi functions\n");
+        PHI          Phi(K-1,records);
+        Rprintf("[NeuroCorr] computing Phi functions for K=%u, delta=%u/%g\n", unsigned(K), unsigned(delta), records.scale);
+        Phi.compute(delta,team);
+
+        //______________________________________________________________________
+        //
+        // Prepare Matrices
+        //______________________________________________________________________
+        
+
+        return R_NilValue;
+    }
+    YOCTO_R_EPILOG()
+}
 

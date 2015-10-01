@@ -80,4 +80,5 @@ for (n in 1:Ntrial)
 
 
 #DataNeur		= Hawkesmulti(Ntrial,delay,BoxComp,spontComp,interacComp)
+BoxEst=t(matrix(c(rep(1,2*Tend/10),t(boxes)),ncol=4))
 

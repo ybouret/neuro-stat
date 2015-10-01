@@ -61,6 +61,11 @@ NeuroCorr_CheckNeuroData <- function( neuroData, numNeurones, scale )
     .Call("NeuroCorr_CheckNeuroData", neuroData, numNeurones, scale);
 }
 
+################################################################################
+##
+## Testing Phi Function
+##
+################################################################################
 
 NeuroCorr_ComputePhi <- function( neuroData, numNeurones, scale, delta, K)
 {
@@ -71,5 +76,23 @@ NeuroCorr_ComputePhi <- function( neuroData, numNeurones, scale, delta, K)
     if( !is.double(K)            ) stop("ComputePhi: K           is not a number");
     
     .Call("NeuroCorr_ComputePhi",neuroData,numNeurones,scale,delta,K);
+}
+
+################################################################################
+##
+## Computing Stuff...
+##
+################################################################################
+NeuroCorr_Compute <- function( neuroData, numNeurones, scale, delta, K, theBoxes, grouping)
+{
+    if( !is.matrix(neuroData)    ) stop("Compute: neuroData   is not a matrix");
+    if( !is.double(numNeurones)  ) stop("Compute: numNeurones is not a number");
+    if( !is.double(scale)        ) stop("Compute: scale       is not a number");
+    if( !is.double(delta)        ) stop("Compute: delta       is not a number");
+    if( !is.double(K)            ) stop("Compute: K           is not a number");
+    if( !is.matrix(theBoxes)     ) stop("Compute: theBoxes    is not a matrix");
+    if( !is.character(grouping)  ) stop("Compute: grouping must be 'byKind' or 'byBox'");
+
+    .Call("NeuroCorr_Compute",neuroData,numNeurones,scale,delta,K,theBoxes,grouping);
 }
 

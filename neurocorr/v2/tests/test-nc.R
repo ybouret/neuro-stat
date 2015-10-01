@@ -27,7 +27,7 @@ NeuroCorr_CheckNeuroData(DataNeur,Nneur,scale);
 
 
 NeuroCorr_SetParallel(0);
-delta=0.1;
+delta=0.005;
 K=2;
 
 Sseq = NeuroCorr_ComputePhi(DataNeur,Nneur,scale,delta,K);
@@ -39,6 +39,10 @@ NeuroCorr_SetParallel(4);
 Spar = NeuroCorr_ComputePhi(DataNeur,Nneur,scale,delta,K);
 plot(Spar$phi0,type="l");
 points(Spar$spikes,col="red");
+
+NeuroCorr_SetParallel(0);
+
+NeuroCorr_Compute(DataNeur,Nneur,scale,delta,K,BoxEst,"byBox");
 
 
 NeuroCorr_CleanUp();

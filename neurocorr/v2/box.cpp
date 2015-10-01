@@ -7,11 +7,12 @@ Box:: ~Box() throw()
 
 Box:: Box(const size_t indx,
           const Unit   ini,
-          const Unit   end) throw() :
+          const Unit   end,
+          const Kind   aka) throw() :
 trial(indx),
 tauStart(ini),
 tauFinal(end),
-kind(0),
+kind(aka),
 indx(0)
 {
     assert(tauFinal>=tauStart);
