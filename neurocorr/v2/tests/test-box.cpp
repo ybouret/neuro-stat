@@ -45,7 +45,7 @@ double RunEvalIntg(const Boxes &boxes,
 YOCTO_UNIT_TEST_IMPL(box)
 {
 
-    Crew     para;
+    Crew     para(true);
     wtime    chrono;
     chrono.start();
 

@@ -22,7 +22,7 @@ YOCTO_UNIT_TEST_IMPL(ops)
     if(argc>4) max_spikes   = strconv::to<size_t>(argv[4],"max_spikes");
     
     
-    Crew     para;
+    Crew     para(true);
     timings  tmx;
     
     

@@ -9,7 +9,7 @@ YOCTO_UNIT_TEST_IMPL(phifn)
     wtime chrono;
     chrono.start();
     uint64_t mark = 0;
-    Crew     para;
+    Crew     para(true);
 
     const size_t  num_neurones = 2 + alea_leq(50);
     const size_t  num_trials   = 3 + alea_leq(200);

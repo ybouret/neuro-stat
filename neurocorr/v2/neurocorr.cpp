@@ -196,3 +196,11 @@ SEXP NeuroCorr_ComputePhi(SEXP neuroDataR, SEXP numNeuronesR, SEXP scaleR, SEXP 
     YOCTO_R_EPILOG()
 }
 
+//______________________________________________________________________________
+//
+//
+// Code to compute matrices
+//
+//______________________________________________________________________________
+
+
