@@ -23,3 +23,9 @@ for(i in 1:ND_rows)
 }
 
 NeuroCorr_CheckNeuroData(DataNeur,Nneur,1.0e6);
+
+NeuroCorr_SetParallel(4);
+
+
+
+NeuroCorr_CleanUp();
