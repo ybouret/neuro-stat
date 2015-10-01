@@ -21,7 +21,6 @@ Tasks(boxes.size*Phi.neurones*Phi.K)
     const size_t N  = Phi.neurones;
     const size_t K  = Phi.K;
     assert(nb*N*K==Tasks.capacity);
-    std::cerr << "#Intg=" << Tasks.capacity << std::endl;
     
     for(size_t b=0;b<nb;++b)
     {
