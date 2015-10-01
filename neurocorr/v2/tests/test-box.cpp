@@ -1,6 +1,7 @@
 #include "../boxes-mixed.hpp"
 #include "../boxes-linear.hpp"
 #include "../boxes-intg.hpp"
+
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
 #include "yocto/sys/wtime.hpp"
@@ -172,11 +173,12 @@ YOCTO_UNIT_TEST_IMPL(box)
     
     
     std::cerr << std::endl;
+    
     std::cerr << "Summary: " << std::endl;
     std::cerr << "SpeedUpLinear = " << seqLinear / parLinear << std::endl;
     std::cerr << "SpeedUpIntg   = " << seqIntg   / parIntg   << std::endl;
     std::cerr << "SpeedUpMixed  = " << seqMixed  / parMixed  << std::endl;
-
+    
     
 
 }

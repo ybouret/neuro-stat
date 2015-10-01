@@ -23,6 +23,8 @@ boxes-linear.hpp
 boxes-linear.cpp
 boxes-intg.hpp
 boxes-intg.cpp
+boxes-ops.hpp
+boxes-ops.cpp
 )
 
 ADD_LIBRARY(ncv2 STATIC ${c_srcs})
