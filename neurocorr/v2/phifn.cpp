@@ -128,6 +128,6 @@ void PHI:: prepareMixed()
             //std::cerr << std::endl;
         }
     }
-    std::cerr << "#mixed=" << mixed.size << "/" << mixed.capacity << std::endl;
+    //std::cerr << "#mixed=" << mixed.size << "/" << mixed.capacity << std::endl;
 }
 

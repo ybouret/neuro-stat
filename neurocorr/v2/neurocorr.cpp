@@ -50,8 +50,7 @@ SEXP NeuroCorr_SetParallel( SEXP numProcsR ) throw()
             {
                 numProcs=maxProcs;
             }
-            team = new Crew(numProcs);
-            std::cerr << "+Team@" << (void*)team << std::endl;
+            team = new Crew(numProcs,0,false);
         }
         return R_NilValue;
     }
@@ -156,9 +155,23 @@ SEXP NeuroCorr_ComputePhi(SEXP neuroDataR, SEXP numNeuronesR, SEXP scaleR, SEXP 
         Phi.compute(delta,team);
         
         const CPW_Function &F  = (*Phi[0][0])[0];
+        const Train        &tr = Phi[0][0]->train;
         const size_t        np = F.size();
         if(np)
         {
+            const char *names[] = { "spikes", "phi0" };
+            RList ans(names,sizeof(names)/sizeof(names[0]));
+            
+            const size_t nt = tr.size();
+            RMatrix<double> Tr(nt,2);
+            for(size_t i=0;i<nt;++i)
+            {
+                Tr[0][i] = tr[i]/scale;
+                Tr[1][i] = 0;
+            }
+            
+            ans.set(0,Tr);
+            
             const size_t    ntot = 2*np;
             RMatrix<double> M(ntot,2);
             
@@ -170,13 +183,14 @@ SEXP NeuroCorr_ComputePhi(SEXP neuroDataR, SEXP numNeuronesR, SEXP scaleR, SEXP 
                 M[0][j+1] = F[i+1].tau/scale; M[1][j+1] = F[i].value;
             }
             M[0][ntot-1] = F[np].tau/scale; M[1][ntot-1] = F[np].value;
-            return *M;
+            
+            ans.set(1,M);
+            
+            return *ans;
         }
         else
         {
-            RVector<double> ans(1);
-            ans[0] = F.foot;
-            return *ans;
+            return R_NilValue;
         }
     }
     YOCTO_R_EPILOG()
