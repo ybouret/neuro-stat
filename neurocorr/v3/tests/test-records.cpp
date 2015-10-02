@@ -73,22 +73,7 @@ YOCTO_UNIT_TEST_IMPL(records)
     const double rawTime = chrono(tmx_);
     std::cerr << "rawTime=" << rawTime << std::endl;
     std::cerr << "optTime=" << optTime << std::endl;
-
-#if 0
-    // create intervals
-    const size_t numBoxes = 100;
-    vector<Unit> tauStart(numBoxes,as_capacity);
-    vector<Unit> tauFinal(numBoxes,as_capacity);
-
-    const Unit tau0 = records.tauMin - 5;
-    const Unit w    = (records.tauMax - records.tauMin)/2;
-    for(size_t i=0;i<numBoxes;++i)
-    {
-        tauStart.push_back( tau0 + Unit(alea_leq(w)));
-        tauFinal.push_back( tauStart.back() +Unit(alea_leq(w)));
-    }
-#endif
-
+    
 
 }
 YOCTO_UNIT_TEST_DONE()
