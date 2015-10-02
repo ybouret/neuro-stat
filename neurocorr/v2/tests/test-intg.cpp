@@ -15,7 +15,7 @@ void do_intg(const char         *filename,
     const Unit w = 4;
     for(Unit tau=tauIni;tau<=tauEnd;++tau)
     {
-        fp("%ld",tau);
+        fp("%ld",long(tau));
         for(Unit h=1;h<=w;++h)
         {
             const Unit tauLo = tau-h;

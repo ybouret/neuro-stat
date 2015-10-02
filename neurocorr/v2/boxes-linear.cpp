@@ -8,19 +8,20 @@ LinearEvaluator:: LinearEvaluator(const Boxes &boxes,
                                   const PHI   &UsrPhi,
                                   Matrices    &Bmatrices,
                                   Crew        *para) :
+box(0),
 Phi(UsrPhi),
 B(Bmatrices),
 TauList(para?para->size:1),
 count(TauList.capacity)
 {
-    
-    
+
+
     // prepare memory, one list per neurone
     for(size_t i=0;i<count;++i)
     {
         TauList.push_back().ensure(Phi.maxCount);
     }
-    
+
     Kernel run(this, &LinearEvaluator::compute);
     Crew::single_context mono;
     const size_t nb = boxes.size;
@@ -46,7 +47,7 @@ void LinearEvaluator::compute(Context &ctx)
     assert(box->trial<Phi.trials);
     assert(box->indx <B.size);
     assert(B[box->indx]);
-    
+
     //__________________________________________________________________________
     //
     // Local Data
@@ -59,7 +60,7 @@ void LinearEvaluator::compute(Context &ctx)
     Matrix<Unit>    &BB     = *B[box->indx];    //!< target B matrix
     const PHI::row  &Phi_j  = Phi[box->trial];
     ctx.split(offset,length);
-    
+
     //__________________________________________________________________________
     //
     // Loop over local neurones
@@ -70,7 +71,7 @@ void LinearEvaluator::compute(Context &ctx)
         const Train         &train   =  phi_j_i.train;
         box->extract(Tau,train);
         BB(0,i) += Tau.size();
-        
+
         //______________________________________________________________________
         //
         // Loop over other neurones
@@ -90,7 +91,7 @@ void LinearEvaluator::compute(Context &ctx)
                 BB(++jndx,i) += ans;
             }
         }
-        
+
     }
-    
+
 }
