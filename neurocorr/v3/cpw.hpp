@@ -35,6 +35,10 @@ public:
 
     Unit operator()(const Unit tau) const throw();
 
+    //! find indices of tauStart<=tau<=tauEnd, return the count, update the idxStart
+    size_t findIndicesWithin(const Unit tauStart,
+                             const Unit tauFinal,
+                             size_t    &idxStart) const throw();
 
 private:
     YOCTO_DISABLE_ASSIGN(CPW);
