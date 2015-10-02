@@ -4,8 +4,8 @@ test-types.cpp
 test-records.cpp
 )
 
-TARGET_LINK_YOCTO(test-ncv3)
 TARGET_LINK_LIBRARIES(test-ncv3 ncv3)
+TARGET_LINK_YOCTO(test-ncv3)
 
 
 ENABLE_TESTING()

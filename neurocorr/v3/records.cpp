@@ -62,7 +62,7 @@ neurones(cols)
             }
 
             // check orderd
-            for(size_t k=1;k<numSpikes;++k)
+            for(int k=1;k<numSpikes;++k)
             {
                 if(train[k-1]>=train[k])
                 {
