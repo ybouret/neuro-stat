@@ -39,12 +39,18 @@ _Records(__chkTrials(numNeurones,data.rows),numNeurones),
 trials(rows),
 neurones(cols)
 {
+    build();
     _Records &self      = *this;
     unsigned  iTrain    = 0;
     const int maxSpikes = data.cols-1;
-    for(size_t j=0;j<trials;++j)
+    size_t count  = 0;
+    Unit   tMin   = 0;
+    Unit   tMax   = 0;
+    bool   init   = true;
+
+    for(size_t i=0;i<neurones;++i)
     {
-        for(size_t i=0;i<neurones;++i)
+        for(size_t j=0;j<trials;++j)
         {
             const int numSpikes = int(data(iTrain,0));
             if(numSpikes<0||numSpikes>maxSpikes)
@@ -52,13 +58,31 @@ neurones(cols)
                 throw exception("Records: invalid train #%d: #spikes=%d\n", iTrain, numSpikes);
             }
             Train *tr = new Train(numSpikes);
+            assert(!self[j][i].is_valid());
             self[j][i].reset(tr);
+            assert(self[j][i].is_valid());
             Train &train = *tr;
 
             // convert
             for(int k=1;k<=numSpikes;++k)
             {
                 train[k-1] = toUnit(data(iTrain,k));
+            }
+
+            count = max_of<size_t>(count, numSpikes);
+            if(numSpikes>0)
+            {
+                if(init)
+                {
+                    tMin = train[0];
+                    tMax = train[numSpikes-1];
+                    init = false;
+                }
+                else
+                {
+                    tMin = min_of(tMin,train[0]);
+                    tMax = max_of(tMax,train[numSpikes-1]);
+                }
             }
 
             // check orderd
@@ -118,7 +142,7 @@ Records * Records:: CreateRandom(const size_t numTrials,
             data(i,k) = curr;
         }
     }
-
+    
     return new Records(1.0,data,numNeurones);
 }
 
