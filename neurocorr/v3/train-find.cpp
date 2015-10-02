@@ -13,7 +13,7 @@ void __locate(const RArray<Unit> &self,
     assert(jlo<jup);
     assert(tau>=self[jlo]);
     assert(tau<=self[jup]);
-    
+
     while(jup-jlo>1)
     {
         const size_t jmid = (jup+jlo)>>1;
@@ -107,11 +107,26 @@ size_t Train:: findIndicesWithin(const Unit tauStart,
     {
         assert(tauStart<=tauMax);
         iStartUp = top;
-        __locate(self,tauStart,iStartLo,iStartUp);
+        while(iStartUp-iStartLo>1)
+        {
+            const size_t jmid = (iStartLo+iStartUp)>>1;
+            const Unit   tmid = self[jmid];
+            if(tmid<tauStart)
+            {
+                iStartLo = jmid;
+            }
+            else
+            {
+                iStartUp = jmid;
+            }
+        }
+
+        //__locate(self,tauStart,iStartLo,iStartUp);
         assert(1+iStartLo==iStartUp);
-        assert(self[iStartLo]<=tauStart);
+        assert(self[iStartLo]<tauStart);
         assert(tauStart<=self[iStartUp]);
     }
+
 
     //__________________________________________________________________________
     //
@@ -125,17 +140,30 @@ size_t Train:: findIndicesWithin(const Unit tauStart,
         assert(tauFinal>=tauMin);
         iFinalLo = iStartLo;
         size_t iFinalUp = top;
-        __locate(self,tauFinal,iFinalLo,iFinalUp);
+        //__locate(self,tauFinal,iFinalLo,iFinalUp);
+        while(iFinalUp-iFinalLo>1)
+        {
+            const size_t jmid = (iFinalLo+iFinalUp)>>1;
+            const Unit   tmid = self[jmid];
+            if(tauFinal<tmid)
+            {
+                iFinalUp = jmid;
+            }
+            else
+            {
+                iFinalLo = jmid;
+            }
+        }
+
         assert(1+iFinalLo==iFinalUp);
         assert(self[iFinalLo]<=tauFinal);
-        assert(tauFinal<=self[iFinalUp]);
+        assert(tauFinal<self[iFinalUp]);
     }
 
     if(iFinalLo>=iStartUp)
     {
         idxStart = iStartUp;
         const size_t points = (iFinalLo-iStartUp)+1;
-        std::cerr << "find in [" << tauStart << ":" << tauFinal << "]: " << points << std::endl;
         return points;
     }
     else
