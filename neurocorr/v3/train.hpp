@@ -6,7 +6,7 @@
 
 typedef CVector<Unit> _Train;
 
-class Train : public _Train
+class Train : public object, public _Train
 {
 public:
 
