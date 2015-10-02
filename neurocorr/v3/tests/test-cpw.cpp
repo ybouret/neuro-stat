@@ -26,6 +26,15 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     train.save("train.dat");
     F.buildFrom(train,5);
     F.save("phi.dat");
+    CPW G;
+    G.shiftFrom(F,3);
+    G.save("shr.dat");
+
+    CPW P,Q;
+    P.productOf(F,G);
+    Q.productOf(G,F);
+    P.save("p.dat");
+    Q.save("q.dat");
 
 }
 YOCTO_UNIT_TEST_DONE()

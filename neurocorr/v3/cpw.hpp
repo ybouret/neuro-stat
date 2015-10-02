@@ -25,8 +25,9 @@ public:
     virtual ~CPW() throw();
     explicit CPW(size_t max_points=0);
     
-    void buildFrom(const RArray<Unit> &spikes, const Unit delta);
-
+    void buildFrom(const RArray<Unit> &spikes, const Unit delta); //!< build function
+    void shiftFrom(const CPW &other, const Unit delta);           //!< shift tau's
+    void productOf(const CPW &lhs, const CPW &rhs);               //!< product of others
 
     void sort() throw(); //!< sort if necessary
     void save(const char *filename) const;

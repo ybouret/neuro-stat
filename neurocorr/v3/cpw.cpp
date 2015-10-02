@@ -19,6 +19,20 @@ void CPW:: insert(const Unit tau, const Unit value) throw()
     push_back(C);
 }
 
+void CPW:: shiftFrom(const CPW &other, const Unit delta)
+{
+    free();
+    const size_t np = other.size;
+    if(capacity<other.size)
+    {
+        resize_empty_to(np);
+    }
+    for(size_t i=0;i<np;++i)
+    {
+        const coord &C = other[i];
+        insert(C.tau+delta,C.value);
+    }
+}
 
 #include "yocto/sequence/lw-array.hpp"
 
