@@ -47,58 +47,18 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                 fp("%ld %ld\n", long(tau), long( F(tau) ));
             }
         }
-
-
-        {
-            ios::wcstream fp("find.dat");
-            ios::wcstream fp_("find_.dat");
-
-            for(Unit tau=pRec->tauMin-10;tau<=pRec->tauMax+10;++tau)
-            {
-                fp("%ld", long(tau));
-                fp_("%ld", long(tau));
-                for(size_t len=1;len<=7;++len)
-                {
-                    size_t iStart = 0;
-                    const size_t count  = train.findIndicesWithin(tau, tau+len, iStart);
-                    fp(" %u", unsigned(count));
-
-                    size_t iStart_ = 0;
-                    const size_t count_  = train.findIndicesWithin_(tau, tau+len, iStart_);
-                    fp_(" %u", unsigned(count_));
-
-                    if(count!=count_)
-                    {
-                        throw exception("invalid counts!");
-                    }
-
-                    if(count>0)
-                    {
-                        if(iStart_!=iStart)
-                        {
-                            throw exception("invalid starts %u/%u!",unsigned(iStart),unsigned(iStart_));
-                        }
-                    }
-                }
-
-                fp("\n");
-                fp_("\n");
-            }
-
-        }
-
     }
 
 
 
     std::cerr << "little trials..." << std::endl;
-    for(size_t iter=0;iter<2;++iter)
+    for(size_t iter=0;iter<8;++iter)
     {
         const size_t num_trials   = 2   + alea_leq(10);
         const size_t num_neurones = 2   + alea_leq(10);
         const size_t max_spikes   = 100 + alea_leq(1000);
 
-        auto_ptr<Records> pRec( Records::CreateRandom(num_trials, num_neurones, max_spikes, 3) );
+        auto_ptr<Records> pRec( Records::CreateRandom(num_trials,num_neurones,max_spikes,3) );
         CPW F,G,P;
         for(size_t j=0;j<pRec->trials;++j)
         {

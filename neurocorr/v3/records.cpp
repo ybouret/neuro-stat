@@ -117,13 +117,13 @@ void Records:: display() const
     const _Records &self = *this;
     for(size_t j=0;j<trials;++j)
     {
-        std::cerr << "\ttrial #" << j << std::endl;
+        std::cerr << "\ttrial #" << j+1 << std::endl;
         for(size_t i=0;i<neurones;++i)
         {
             const TrainPtr &pTr = self[j][i];
             assert(pTr.is_valid());
             const Train &train = *pTr;
-            std::cerr << "\t\tneurone #" << i << " : #spikes=" << train.size() << std::endl;
+            std::cerr << "\t\tneurone #" << i+1 << " : #spikes=" << train.size() << std::endl;
         }
     }
 }

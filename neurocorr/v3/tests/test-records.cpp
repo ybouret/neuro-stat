@@ -3,16 +3,27 @@
 #include "yocto/code/rand.hpp"
 
 #include "yocto/sys/wtime.hpp"
+#include "yocto/string/conv.hpp"
 
 YOCTO_UNIT_TEST_IMPL(records)
 {
-
-    auto_ptr<Records> pRec( Records::CreateRandom(10, 5, 1000, 3) );
+    size_t trials  = 10;
+    size_t neurons = 5;
+    size_t spikes  = 1000;
+    size_t pace    = 3;
+    
+    if(argc>1)
+    {
+        spikes = strconv::to<size_t>(argv[1],"spikes");
+    }
+    
+    auto_ptr<Records> pRec( Records::CreateRandom(trials,neurons, spikes, pace) );
     Records &records = *pRec;
     records.display();
     wtime chrono;
     chrono.start();
 
+   
     uint64_t tmx=0;
     uint64_t tmx_=0;
     uint64_t mark=0;
@@ -36,7 +47,7 @@ YOCTO_UNIT_TEST_IMPL(records)
 
                         size_t       start = 0;
                         mark = chrono.ticks();
-                        const size_t count = tr.findIndicesWithin_(tau,tauEnd,start);
+                        const size_t count = tr.findIndicesWithin(tau,tauEnd,start);
                         tmx += chrono.ticks()-mark;
 
                         size_t       start_ = 0;
@@ -57,6 +68,11 @@ YOCTO_UNIT_TEST_IMPL(records)
             }
         }
     }
+    
+    const double optTime = chrono(tmx);
+    const double rawTime = chrono(tmx_);
+    std::cerr << "rawTime=" << rawTime << std::endl;
+    std::cerr << "optTime=" << optTime << std::endl;
 
 #if 0
     // create intervals

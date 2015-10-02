@@ -1,35 +1,6 @@
 #include "train.hpp"
 
 
-// find self.tau[jlo]<=tau<=self.tau[jup]
-static inline
-void __locate(const RArray<Unit> &self,
-              const Unit  tau,
-              size_t     &jlo,
-              size_t     &jup) throw()
-{
-    assert(jlo<self.size());
-    assert(jup<self.size());
-    assert(jlo<jup);
-    assert(tau>=self[jlo]);
-    assert(tau<=self[jup]);
-
-    while(jup-jlo>1)
-    {
-        const size_t jmid = (jup+jlo)>>1;
-        const Unit   tmid = self[jmid];
-        if(tau<=tmid)
-        {
-            jup = jmid;
-        }
-        else
-        {
-            jlo = jmid;
-        }
-    }
-}
-
-
 size_t Train:: findIndicesWithin(const Unit tauStart,
                                  const Unit tauFinal,
                                  size_t    &idxStart) const throw()
@@ -121,7 +92,6 @@ size_t Train:: findIndicesWithin(const Unit tauStart,
             }
         }
 
-        //__locate(self,tauStart,iStartLo,iStartUp);
         assert(1+iStartLo==iStartUp);
         assert(self[iStartLo]<tauStart);
         assert(tauStart<=self[iStartUp]);
@@ -140,7 +110,6 @@ size_t Train:: findIndicesWithin(const Unit tauStart,
         assert(tauFinal>=tauMin);
         iFinalLo = iStartLo;
         size_t iFinalUp = top;
-        //__locate(self,tauFinal,iFinalLo,iFinalUp);
         while(iFinalUp-iFinalLo>1)
         {
             const size_t jmid = (iFinalLo+iFinalUp)>>1;
@@ -163,8 +132,7 @@ size_t Train:: findIndicesWithin(const Unit tauStart,
     if(iFinalLo>=iStartUp)
     {
         idxStart = iStartUp;
-        const size_t points = (iFinalLo-iStartUp)+1;
-        return points;
+        return (iFinalLo-iStartUp)+1;;
     }
     else
     {
@@ -181,19 +149,23 @@ size_t Train:: findIndicesWithin_(const Unit tauStart,
     if(tauStart>=tauFinal)
         return 0;
 
-    const size_t num = size();
-    size_t       i = 0;
-    const _Train &self = *this;
+    const size_t    num = size();
+    register size_t i    = 0;
+    const _Train   &self = *this;
 
     while(i<num)
     {
         if(self[i]>=tauStart)
         {
+            // found
             idxStart = i;
             while(i<num)
             {
                 if(self[i]>tauFinal)
+                {
+                    // passed
                     break;
+                }
                 ++i;
             }
             return i-idxStart;
