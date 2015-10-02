@@ -2,7 +2,10 @@
 #define NC_TYPES_INCLUDED
 
 #include "yocto/R/IR.hpp"
+#include "yocto/threading/crew.hpp"
+
 using namespace yocto;
+
 
 typedef unit_t Unit;
 typedef double Real;
@@ -21,6 +24,9 @@ public:
 private:
     YOCTO_DISABLE_ASSIGN(Converter);
 };
+
+typedef threading::crew Crew;
+
 
 #endif
 
