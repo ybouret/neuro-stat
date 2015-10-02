@@ -18,7 +18,9 @@ public:
 
     const size_t &trials;    //!< alias to _Records.rows
     const size_t &neurones;  //!< alias to _Records.cols
-
+    const size_t  maxCount;
+    const Unit    tauMin;
+    const Unit    tauMax;
     static Records *CreateRandom(const size_t numTrials,
                                  const size_t numNeurones,
                                  const size_t maxSpikes,

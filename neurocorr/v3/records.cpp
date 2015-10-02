@@ -37,7 +37,10 @@ Records:: Records(const Real          usrScale,
 Converter(usrScale),
 _Records(__chkTrials(numNeurones,data.rows),numNeurones),
 trials(rows),
-neurones(cols)
+neurones(cols),
+maxCount(0),
+tauMin(0),
+tauMax(0)
 {
     build();
     _Records &self      = *this;
@@ -97,12 +100,20 @@ neurones(cols)
         }
     }
 
+    (size_t&)maxCount = count;
+    (Unit  &)tauMin   = tMin;
+    (Unit  &)tauMax   = tMax;
+    
 }
 
 void Records:: display() const
 {
     std::cerr << "#trials   = " << trials << std::endl;;
     std::cerr << "#neurones = " << neurones << std::endl;
+    std::cerr << "#maxCount = " << maxCount << std::endl;
+    std::cerr << "tauMin    = " << tauMin   << std::endl;
+    std::cerr << "tauMax    = " << tauMax   << std::endl;
+
     const _Records &self = *this;
     for(size_t j=0;j<trials;++j)
     {

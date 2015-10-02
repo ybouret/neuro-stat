@@ -33,6 +33,8 @@ public:
     void save(const char *filename) const;
     void insert(const Unit tau, const Unit value) throw();
 
+    Unit operator()(const Unit tau) const throw();
+
 
 private:
     YOCTO_DISABLE_ASSIGN(CPW);
