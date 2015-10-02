@@ -170,6 +170,37 @@ size_t Train:: findIndicesWithin(const Unit tauStart,
     {
         return 0;
     }
-    
+
 }
 
+
+size_t Train:: findIndicesWithin_(const Unit tauStart,
+                                  const Unit tauFinal,
+                                  size_t    &idxStart) const throw()
+{
+    if(tauStart>=tauFinal)
+        return 0;
+
+    const size_t num = size();
+    size_t       i = 0;
+    const _Train &self = *this;
+
+    while(i<num)
+    {
+        if(self[i]>=tauStart)
+        {
+            idxStart = i;
+            while(i<num)
+            {
+                if(self[i]>tauFinal)
+                    break;
+                ++i;
+            }
+            return i-idxStart;
+        }
+        ++i;
+    }
+
+
+    return 0;
+}

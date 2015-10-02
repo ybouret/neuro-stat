@@ -51,17 +51,38 @@ YOCTO_UNIT_TEST_IMPL(cpw)
 
         {
             ios::wcstream fp("find.dat");
+            ios::wcstream fp_("find_.dat");
+
             for(Unit tau=pRec->tauMin-10;tau<=pRec->tauMax+10;++tau)
             {
                 fp("%ld", long(tau));
+                fp_("%ld", long(tau));
                 for(size_t len=1;len<=7;++len)
                 {
                     size_t iStart = 0;
-                    size_t count  = train.findIndicesWithin(tau, tau+len, iStart);
+                    const size_t count  = train.findIndicesWithin(tau, tau+len, iStart);
                     fp(" %u", unsigned(count));
+
+                    size_t iStart_ = 0;
+                    const size_t count_  = train.findIndicesWithin_(tau, tau+len, iStart_);
+                    fp_(" %u", unsigned(count_));
+
+                    if(count!=count_)
+                    {
+                        throw exception("invalid counts!");
+                    }
+
+                    if(count>0)
+                    {
+                        if(iStart_!=iStart)
+                        {
+                            throw exception("invalid starts %u/%u!",unsigned(iStart),unsigned(iStart_));
+                        }
+                    }
                 }
 
                 fp("\n");
+                fp_("\n");
             }
 
         }
@@ -70,8 +91,8 @@ YOCTO_UNIT_TEST_IMPL(cpw)
 
 
 
-
-    for(size_t iter=0;iter<10;++iter)
+    std::cerr << "little trials..." << std::endl;
+    for(size_t iter=0;iter<2;++iter)
     {
         const size_t num_trials   = 2   + alea_leq(10);
         const size_t num_neurones = 2   + alea_leq(10);

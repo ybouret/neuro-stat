@@ -20,6 +20,9 @@ public:
                              const Unit tauFinal,
                              size_t    &idxStart) const throw();
 
+    size_t findIndicesWithin_(const Unit tauStart,
+                              const Unit tauFinal,
+                              size_t    &idxStart) const throw();
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Train);
 };
