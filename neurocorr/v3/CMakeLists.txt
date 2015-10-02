@@ -3,6 +3,7 @@ types.hpp
 types.cpp
 train.hpp
 train.cpp
+train-find.cpp
 experiment.hpp
 experiment.cpp
 records.hpp
@@ -12,7 +13,6 @@ cpw.cpp
 cpw-from-spikes.cpp
 cpw-product.cpp
 cpw-eval.cpp
-cpw-find.cpp
 )
 
 ADD_LIBRARY(ncv3 STATIC ${srcs})

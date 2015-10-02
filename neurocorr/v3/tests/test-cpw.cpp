@@ -54,10 +54,10 @@ YOCTO_UNIT_TEST_IMPL(cpw)
             for(Unit tau=pRec->tauMin-10;tau<=pRec->tauMax+10;++tau)
             {
                 fp("%ld", long(tau));
-                for(size_t len=1;len<=7;++len)
+                for(size_t len=1;len<=1;++len)
                 {
                     size_t iStart = 0;
-                    size_t count  = F.findIndicesWithin(tau, tau+len, iStart);
+                    size_t count  = train.findIndicesWithin(tau, tau+len, iStart);
                     fp(" %u", unsigned(count));
                 }
 

@@ -14,7 +14,12 @@ public:
     virtual ~Train() throw();
 
     void save(const char *filename) const;
-    
+
+    //! find indices of tauStart<=tau<=tauEnd, return the count, update the idxStart
+    size_t findIndicesWithin(const Unit tauStart,
+                             const Unit tauFinal,
+                             size_t    &idxStart) const throw();
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Train);
 };

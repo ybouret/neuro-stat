@@ -1,22 +1,23 @@
-#include "cpw.hpp"
+#include "train.hpp"
 
 
 // find self.tau[jlo]<=tau<=self.tau[jup]
 static inline
-void __locate(const slots_of<coord> &self,
+void __locate(const RArray<Unit> &self,
               const Unit  tau,
               size_t     &jlo,
               size_t     &jup) throw()
 {
-    assert(jlo<self.size);
-    assert(jup<self.size);
+    assert(jlo<self.size());
+    assert(jup<self.size());
     assert(jlo<jup);
-    assert(tau>=self[jlo].tau);
-    assert(tau<=self[jup].tau);
+    assert(tau>=self[jlo]);
+    assert(tau<=self[jup]);
+    
     while(jup-jlo>1)
     {
         const size_t jmid = (jup+jlo)>>1;
-        const Unit   tmid = self[jmid].tau;
+        const Unit   tmid = self[jmid];
         if(tau<=tmid)
         {
             jup = jmid;
@@ -29,9 +30,9 @@ void __locate(const slots_of<coord> &self,
 }
 
 
-size_t CPW:: findIndicesWithin(const Unit tauStart,
-                               const Unit tauFinal,
-                               size_t    &idxStart) const throw()
+size_t Train:: findIndicesWithin(const Unit tauStart,
+                                 const Unit tauFinal,
+                                 size_t    &idxStart) const throw()
 {
 
     //__________________________________________________________________________
@@ -46,8 +47,8 @@ size_t CPW:: findIndicesWithin(const Unit tauStart,
     }
 
 
-    const size_t num  = size;
-    const _CPW  &self = *this;
+    const size_t   num  = size();
+    const _Train  &self = *this;
     switch (num)
     {
         case 0:
@@ -55,7 +56,7 @@ size_t CPW:: findIndicesWithin(const Unit tauStart,
 
         case 1:
         {
-            const Unit tau = self[0].tau;
+            const Unit tau = self[0];
             if(tauStart<=tau&&tau<=tauFinal)
             {
                 idxStart = 0;
@@ -78,7 +79,7 @@ size_t CPW:: findIndicesWithin(const Unit tauStart,
     // Get rid of trivial cases, level 2
     //
     //__________________________________________________________________________
-    const Unit tauMin = self[0].tau;
+    const Unit tauMin = self[0];
     if(tauFinal<tauMin)
     {
         //everybody at left...
@@ -86,7 +87,7 @@ size_t CPW:: findIndicesWithin(const Unit tauStart,
     }
 
     const size_t top    = num-1;
-    const Unit   tauMax = self[top].tau;
+    const Unit   tauMax = self[top];
     if(tauStart>tauMax)
     {
         //everybody at right
@@ -108,8 +109,8 @@ size_t CPW:: findIndicesWithin(const Unit tauStart,
         iStartUp = top;
         __locate(self,tauStart,iStartLo,iStartUp);
         assert(1+iStartLo==iStartUp);
-        assert(self[iStartLo].tau<=tauStart);
-        assert(tauStart<=self[iStartUp].tau);
+        assert(self[iStartLo]<=tauStart);
+        assert(tauStart<=self[iStartUp]);
     }
 
     //__________________________________________________________________________
@@ -126,14 +127,16 @@ size_t CPW:: findIndicesWithin(const Unit tauStart,
         size_t iFinalUp = top;
         __locate(self,tauFinal,iFinalLo,iFinalUp);
         assert(1+iFinalLo==iFinalUp);
-        assert(self[iFinalLo].tau<=tauFinal);
-        assert(tauFinal<=self[iFinalUp].tau);
+        assert(self[iFinalLo]<=tauFinal);
+        assert(tauFinal<=self[iFinalUp]);
     }
 
     if(iFinalLo>=iStartUp)
     {
         idxStart = iStartUp;
-        return (iFinalLo-iStartUp)+1;
+        const size_t points = (iFinalLo-iStartUp)+1;
+        std::cerr << "find in [" << tauStart << ":" << tauFinal << "]: " << points << std::endl;
+        return points;
     }
     else
     {
