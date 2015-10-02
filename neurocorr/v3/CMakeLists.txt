@@ -13,6 +13,7 @@ cpw.cpp
 cpw-from-spikes.cpp
 cpw-product.cpp
 cpw-eval.cpp
+cpw-intg.cpp
 )
 
 ADD_LIBRARY(ncv3 STATIC ${srcs})
