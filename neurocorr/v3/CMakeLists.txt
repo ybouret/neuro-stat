@@ -9,6 +9,7 @@ records.hpp
 records.cpp
 cpw.hpp
 cpw.cpp
+cpw-from-spikes.cpp
 )
 
 ADD_LIBRARY(ncv3 STATIC ${srcs})

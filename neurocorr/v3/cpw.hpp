@@ -14,18 +14,24 @@ int compare(const coord &lhs,const coord&rhs) throw()
 }
 YOCTO_PAIR_END();
 
+typedef dynamic_slots<coord> _CPW;
+
 //! warning, assuming sorted coordinates
-class CPW : public object, public CVector<coord>
+class CPW : public object, public _CPW
 {
 public:
     Unit foot;
 
     virtual ~CPW() throw();
-    explicit CPW(size_t max_points);
+    explicit CPW(size_t max_points=0);
+    
+    void buildFrom(const RArray<Unit> &spikes, const Unit delta);
+
 
     void sort() throw(); //!< sort if necessary
-
     void save(const char *filename) const;
+    void insert(const Unit tau, const Unit value) throw();
+
 
 private:
     YOCTO_DISABLE_ASSIGN(CPW);
