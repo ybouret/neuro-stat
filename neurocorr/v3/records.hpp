@@ -4,8 +4,8 @@
 #include "train.hpp"
 #include "yocto/sequence/slots2d.hpp"
 
-typedef auto_ptr<Train>      TrainPtr;
-typedef slots2D_of<TrainPtr> _Records;
+//typedef auto_ptr<Train>      TrainPtr;
+typedef slots2D_of<Train> _Records;
 
 class Records : public Converter, public _Records
 {

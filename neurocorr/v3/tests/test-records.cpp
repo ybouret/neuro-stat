@@ -33,7 +33,7 @@ YOCTO_UNIT_TEST_IMPL(records)
     {
         for(size_t i=0;i<records.neurones;++i)
         {
-            const Train &tr = *(records[j][i]);
+            const Train &tr = records[j][i];
             const size_t np = tr.size();
             if(np>0)
             {

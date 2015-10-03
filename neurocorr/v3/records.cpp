@@ -31,6 +31,7 @@ size_t __chkTrials(const size_t numNeurones, const size_t numTrains)
 }
 
 
+
 Records:: Records(const Real          usrScale,
                   const Matrix<Real> &data,
                   const size_t        numNeurones) :
@@ -42,7 +43,7 @@ maxCount(0),
 tauMin(0),
 tauMax(0)
 {
-    build();
+    build_with<size_t>(0);
     _Records &self      = *this;
     unsigned  iTrain    = 0;
     const int maxSpikes = data.cols-1;
@@ -60,12 +61,14 @@ tauMax(0)
             {
                 throw exception("Records: invalid train #%d: #spikes=%d\n", iTrain, numSpikes);
             }
-            Train *tr = new Train(numSpikes);
-            assert(!self[j][i].is_valid());
-            self[j][i].reset(tr);
-            assert(self[j][i].is_valid());
-            Train &train = *tr;
 
+            Train &train = self[j][i];
+            {
+                _Train tmp(numSpikes);
+                train.swap_with(tmp);
+            }
+            assert(numSpikes==train.size());
+            
             // convert
             for(int k=1;k<=numSpikes;++k)
             {
@@ -117,14 +120,13 @@ void Records:: display() const
     const _Records &self = *this;
     for(size_t j=0;j<trials;++j)
     {
-        std::cerr << "\ttrial #" << j+1 << std::endl;
+        std::cerr << "\ttrial #" << j+1;
         for(size_t i=0;i<neurones;++i)
         {
-            const TrainPtr &pTr = self[j][i];
-            assert(pTr.is_valid());
-            const Train &train = *pTr;
-            std::cerr << "\t\tneurone #" << i+1 << " : #spikes=" << train.size() << std::endl;
+            const Train &train = self[j][i];
+            std::cerr << "/@" << i+1 << ":" << train.size();
         }
+        std::cerr << std::endl;
     }
 }
 

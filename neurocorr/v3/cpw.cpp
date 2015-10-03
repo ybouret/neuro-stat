@@ -25,13 +25,17 @@ void CPW:: shiftFrom(const CPW &other, const Unit delta)
     const size_t np = other.size;
     if(capacity<other.size)
     {
+        //std::cerr << "MUST RESIZE!!" << std::endl;
         resize_empty_to(np);
     }
+
     for(size_t i=0;i<np;++i)
     {
         const coord &C = other[i];
         insert(C.tau+delta,C.value);
     }
+
+    assert(size==other.size);
 }
 
 #include "yocto/sequence/lw-array.hpp"

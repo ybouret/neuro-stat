@@ -26,7 +26,8 @@ private:
 };
 
 typedef threading::crew Crew;
-
+typedef Crew::context   Context;
+typedef Crew::kernel    Kernel;
 
 #endif
 

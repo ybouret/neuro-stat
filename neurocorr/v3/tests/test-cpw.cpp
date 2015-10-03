@@ -27,7 +27,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
         CPW F;
         auto_ptr<Records> pRec( Records::CreateRandom(1, 1, 10, 3) );
         pRec->display();
-        const Train &train = *(*pRec)[0][0];
+        const Train &train = (*pRec)[0][0];
         train.save("train.dat");
         F.buildFrom(train,5);
         F.save("phi.dat");
@@ -65,13 +65,13 @@ YOCTO_UNIT_TEST_IMPL(cpw)
         {
             for(size_t i=0;i<pRec->neurones;++i)
             {
-                const Train &lhs = *(*pRec)[j][i];
+                const Train &lhs = (*pRec)[j][i];
                 F.buildFrom(lhs,1+alea_leq(10));
                 for(size_t jj=0;jj<pRec->trials;++jj)
                 {
                     for(size_t ii=0;ii<pRec->neurones;++ii)
                     {
-                        const Train &rhs = *(*pRec)[jj][ii];
+                        const Train &rhs = (*pRec)[jj][ii];
                         G.buildFrom(rhs,1+alea_leq(10));
                         P.productOf(F,G);
                     }
@@ -91,7 +91,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     {
         auto_ptr<Records> pRec( Records::CreateRandom(1,1,100,3) );
         CPW F(100);
-        const Train &train = *(*pRec)[0][0];
+        const Train &train = (*pRec)[0][0];
         if(train.size())
         {
             Moments rawM, optM;

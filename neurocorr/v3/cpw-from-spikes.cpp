@@ -8,12 +8,13 @@
 void CPW:: buildFrom(const RArray<Unit> &train, const Unit delta)
 {
     assert(delta>0);
-    free();
+    free(); assert(size<=0);
     foot=0;
     const size_t np = train.size();
     const size_t maxPoints = np*2;
     if(capacity<maxPoints)
     {
+        //std::cerr << "Must Resize!!!" << std::endl;
         resize_empty_to(maxPoints);
     }
 

@@ -9,7 +9,7 @@ typedef CVector<Unit> _Train;
 class Train : public object, public _Train
 {
 public:
-
+    
     explicit Train(const size_t np);
     virtual ~Train() throw();
 
