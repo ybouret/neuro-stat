@@ -82,6 +82,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     
     uint64_t raw0 =0, opt0=0;
     uint64_t raw1 =0, opt1=0;
+    uint64_t raw2 =0, opt2=0;
     uint64_t mark = 0;
     wtime chrono;
     chrono.start();
@@ -92,8 +93,9 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     std::cerr << "Testing Moments" << std::endl;
     Moments rawM, optM;
 
-    for(size_t iter=0;iter<10;++iter)
+    for(size_t iter=0;iter<100;++iter)
     {
+        std::cerr << "."; std::cerr.flush();
         auto_ptr<Records> pRec;
         do
         {
@@ -104,6 +106,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
         const Train &train   = records(0);
         const Unit   tIni    = train[0];
         const Unit   tEnd    = train[train.size()-1];
+        const Unit   dT      = tEnd - tIni + 1;
         const Unit   wMax    = 50;
         const Unit   tLo     = tIni - wMax-2;
         const Unit   tUp     = tEnd+1;
@@ -159,17 +162,34 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                 CHRONO(opt1);
                 if(rawM!=optM)
                 {
-                    throw exception("Moments Mismatch@Level-0");
+                    throw exception("Moments Mismatch@Level-1");
                 }
 
+                continue;
+                // level 2
+                F.free();
+                F.foot = 2;
+                F.insert(tMid-dT/4,3);
+                F.insert(tMid+dT/4,5);
                 
+                MARK();
+                F.evalSumOn_(train, length, offset, rawM);
+                CHRONO(raw2);
+                MARK();
+                F.evalSumOn(train,length,offset,optM);
+                CHRONO(opt2);
+                if(rawM!=optM)
+                {
+                    throw exception("Moments Mismatch @Level-2");
+                }
+
             }
         }
         
         
         
     }
-    
+    std::cerr << std::endl;
     const double raw0Time = chrono(raw0);
     const double opt0Time = chrono(opt0);
     std::cerr << "raw0Time=" << raw0Time << std::endl;
@@ -180,7 +200,12 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     const double opt1Time = chrono(opt1);
     std::cerr << "raw1Time=" << raw1Time << std::endl;
     std::cerr << "opt1Time=" << opt1Time << std::endl;
-
+    
+    std::cerr << std::endl;
+    const double raw2Time = chrono(raw2);
+    const double opt2Time = chrono(opt2);
+    std::cerr << "raw2Time=" << raw2Time << std::endl;
+    std::cerr << "opt2Time=" << opt2Time << std::endl;
     
     return 0;
     
