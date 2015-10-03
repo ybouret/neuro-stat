@@ -82,6 +82,7 @@ Unit CPW:: evalSumOn(const Train &tr,
         {
             const coord &C   = self[0];
             const Unit   tau = C.tau;
+            
             size_t       ii  = 0;
             while(ii<length)
             {
