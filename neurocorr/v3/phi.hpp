@@ -50,7 +50,7 @@ private:
     Kernel       run;
     // computing using delta_
     void computeOn(Context &ctx);
-
+    void     prepareMixed();
 };
 
 #endif

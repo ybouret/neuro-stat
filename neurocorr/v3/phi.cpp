@@ -41,6 +41,7 @@ delta_(0),
 run(this, & PHI::computeOn)
 {
     procedural_build_with<Records,size_t>(records,extra);
+    prepareMixed();
 }
 
 PHI:: ~PHI() throw()
@@ -62,6 +63,36 @@ void PHI::compute(const Unit delta, Crew *para)
         run(mono);
     }
 }
+
+void PHI:: prepareMixed()
+{
+    std::cerr << "Preparing " << mixed.capacity << " Mixed terms..." << std::endl;
+    for(size_t i=0;i<neurones;++i)
+    {
+        for(size_t k=0;k<K;++k)
+        {
+            const size_t I_i_k = i*K + k;
+            //std::cerr << "I_i_k=" << I_i_k << ": I_l_m=";
+            for(size_t l=i;l<neurones;++l)
+            {
+                const size_t lk = l*K;
+                for(size_t m=0;m<K;++m)
+                {
+                    const size_t I_l_m = lk+m;
+                    if(I_l_m>=I_i_k)
+                    {
+                        //std::cerr << I_l_m << '/';
+                        Mix gm(i,k,l,m,1+I_i_k,1+I_l_m);
+                        mixed.push_back(gm);
+                    }
+                }
+            }
+            //std::cerr << std::endl;
+        }
+    }
+    //std::cerr << "#mixed=" << mixed.size << "/" << mixed.capacity << std::endl;
+}
+
 
 #include "yocto/code/unroll.hpp"
 
