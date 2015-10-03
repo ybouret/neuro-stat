@@ -97,7 +97,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
         auto_ptr<Records> pRec;
         do
         {
-            pRec.reset( Records::CreateRandom(1,1,1000,3) );
+            pRec.reset( Records::CreateRandom(1,1,100,3) );
         }
         while( (*pRec)(0).size() <= 0);
         Records     &records = *pRec;
@@ -105,8 +105,8 @@ YOCTO_UNIT_TEST_IMPL(cpw)
         const Unit   tIni    = train[0];
         const Unit   tEnd    = train[train.size()-1];
         const Unit   wMax    = 50;
-        const Unit   tLo = tIni - wMax-2;
-        const Unit   tUp = tEnd+1;
+        const Unit   tLo     = tIni - wMax-2;
+        const Unit   tUp     = tEnd+1;
         const Unit   tMid    = (tIni+tEnd)/2;
 
         CPW F(10);
