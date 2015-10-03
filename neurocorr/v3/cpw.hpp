@@ -16,6 +16,23 @@ YOCTO_PAIR_END();
 
 typedef dynamic_slots<coord> _CPW;
 
+
+YOCTO_TRIPLE_DECL(Moments,Unit,mu1,Unit,mu2,Unit,muA);
+YOCTO_DISABLE_ASSIGN(Moments);
+public:
+inline Moments() throw() : mu1(0), mu2(0), muA(0) {}
+void   reset()   throw() { mu1=mu2=muA=0; }
+inline friend bool operator==(const Moments &lhs,const Moments &rhs) throw()
+{
+    return (lhs.mu1 == rhs.mu1) && (lhs.mu1==rhs.mu2) && (lhs.muA==rhs.muA);
+}
+inline friend bool operator!=(const Moments &lhs,const Moments &rhs) throw()
+{
+    return (lhs.mu1!=rhs.mu1) || (lhs.mu2!=rhs.mu2) || (lhs.muA!=rhs.muA);
+}
+
+YOCTO_TRIPLE_END();
+
 //! warning, assuming sorted coordinates
 class CPW : public object, public _CPW
 {
@@ -37,14 +54,16 @@ public:
     Unit operator()(const Unit tau) const throw();
     
     //! multiple evaluations
-    Unit evalSumOn(const Train &tr,
+    void evalSumOn(const Train &tr,
                    const size_t length,
-                   const size_t offset) const throw();
+                   const size_t offset,
+                   Moments     &moments) const throw();
     
     //! multiple evaluations, naive version
-    Unit evalSumOn_(const Train &tr,
+    void evalSumOn_(const Train &tr,
                     const size_t length,
-                    const size_t offset) const throw();
+                    const size_t offset,
+                    Moments     &moments) const throw();
     
 private:
     YOCTO_DISABLE_ASSIGN(CPW);

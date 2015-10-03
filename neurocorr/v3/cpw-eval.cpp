@@ -58,14 +58,24 @@ Unit CPW:: operator()(const Unit tau) const throw()
     
 }
 
-Unit CPW:: evalSumOn(const Train &tr,
+
+static inline Unit UnitAbs(const Unit x)  throw()
+{
+    return (x < 0) ? -x : x;
+}
+
+void CPW:: evalSumOn(const Train &tr,
                      const size_t length,
-                     const size_t offset) const throw()
+                     const size_t offset,
+                     Moments     &moments) const throw()
 {
     
+    moments.reset();
     
     if(length<=0)
-        return 0;
+    {
+        return;
+    }
     
     assert(offset<tr.size());
     assert(offset+length-1<tr.size());
@@ -76,10 +86,14 @@ Unit CPW:: evalSumOn(const Train &tr,
     switch(N)
     {
         case 0:
-            return length*foot;
+            moments.mu1 = length*foot;
+            moments.mu2 = moments.mu1 * foot;
+            moments.muA = UnitAbs(foot);
+            return;
             
         case 1:
         {
+            
             const coord &C   = self[0];
             const Unit   tau = C.tau;
             
@@ -90,11 +104,30 @@ Unit CPW:: evalSumOn(const Train &tr,
                     break;
                 ++ii;
             }
-            const Unit Vprev = foot;
-            const Unit Vnext = C.value;
-            const Unit Nprev = ii;
-            const Unit Nnext = length-ii;
-            return Nprev*Vprev + Nnext * Vnext;
+            const Unit Vprev  = foot;
+            const Unit Vnext  = C.value;
+            const Unit Nprev  = ii;
+            const Unit Nnext  = length-ii;
+            const Unit NVprev = Nprev*Vprev;
+            const Unit NVnext = Nnext*Vnext;
+            moments.mu1 = NVprev + NVnext;
+            moments.mu2 = NVprev*Vprev + NVnext*Vnext;
+            if(ii<=0)
+            {
+                moments.muA = UnitAbs(Vnext);
+            }
+            else
+            {
+                if(ii>=length)
+                {
+                    moments.muA = UnitAbs(Vprev);
+                }
+                else
+                {
+                    moments.muA = max_of(UnitAbs(Vnext), UnitAbs(Vprev));
+                }
+            }
+            return;
         }
             
         default:
@@ -104,14 +137,14 @@ Unit CPW:: evalSumOn(const Train &tr,
     assert(N>=2);
     
     
-    return 0;
-    
 }
 
-Unit CPW:: evalSumOn_(const Train &tr,
+void CPW:: evalSumOn_(const Train &tr,
                       const size_t length,
-                      const size_t offset) const throw()
+                      const size_t offset,
+                      Moments     &moments) const throw()
 {
+    moments.reset();
 #ifndef NDEBUG
     if(length>0)
     {
@@ -121,13 +154,20 @@ Unit CPW:: evalSumOn_(const Train &tr,
 #endif
     
     const CPW &self = *this;
-    Unit ans = 0;
+    Unit sum1  = 0;
+    Unit sum2  = 0;
+    Unit maxA  = 0;
     for(size_t i=0,k=offset;i<length;++i,++k)
     {
         const Unit tmp = self(tr[k]);
-        ans += tmp;
+        sum1 += tmp;
+        const Unit a = UnitAbs(tmp);
+        sum2 += tmp*tmp;
+        if(a>maxA) maxA = a;
     }
-    return ans;
+    moments.mu1 = sum1;
+    moments.mu2 = sum2;
+    moments.muA = maxA;
 }
 
 
