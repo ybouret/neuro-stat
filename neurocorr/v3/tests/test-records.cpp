@@ -71,8 +71,8 @@ YOCTO_UNIT_TEST_IMPL(records)
     
     const double optTime = chrono(tmx);
     const double rawTime = chrono(tmx_);
-    std::cerr << "rawTime=" << rawTime << std::endl;
-    std::cerr << "optTime=" << optTime << std::endl;
+    std::cerr << "FINDrawTime=" << rawTime << std::endl;
+    std::cerr << "FINDoptTime=" << optTime << std::endl;
     
 
 }

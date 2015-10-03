@@ -80,113 +80,109 @@ YOCTO_UNIT_TEST_IMPL(cpw)
         }
     }
     
-    uint64_t raw =0, opt=0;
+    uint64_t raw0 =0, opt0=0;
+    uint64_t raw1 =0, opt1=0;
     uint64_t mark = 0;
     wtime chrono;
     chrono.start();
     
-    std::cerr << "Testing Sums" << std::endl;
+#define MARK()       mark = chrono.ticks()
+#define CHRONO(val) val += chrono.ticks() - mark
     
-    for(size_t iter=0;iter<100;++iter)
-    {
-        auto_ptr<Records> pRec( Records::CreateRandom(1,1,100,3) );
-        pRec->display();
-        CPW F(100);
-        const Train &train = (*pRec)[0][0];
-        if(train.size())
-        {
-            Moments rawM, optM;
-            const Unit   tLo = train[0]-5;
-            const Unit   tUp = train[train.size()-1]+1;
-            const Unit   tMid = tLo+ (tUp-tLo)/2;
-            for(Unit tau=tLo;tau<=tUp;++tau)
-            {
-                for(Unit len=1;len<=50;++len)
-                {
-                    const Unit   tauEnd = tau+len;
-                    size_t       offset = 0;
-                    const size_t length = train.findIndicesWithin(tau,tauEnd, offset);
-                    // constant expression
-                    F.free();
-                    F.foot = 1;
-                    
-                    {
-                        mark = chrono.ticks();
-                        F.evalSumOn_(train, length, offset,rawM);
-                        raw += chrono.ticks()-mark;
-                        
-                        F.evalSumOn(train, length, offset,optM);
-                        opt += chrono.ticks()-mark;
-                        
-                        if(rawM!=optM)
-                        {
-                            throw exception("Mismatch results, Level 0");
-                        }
-                    }
-                    
-                    F.insert(tMid,2); assert(1==F.size);
-                    {
-                        mark = chrono.ticks();
-                        F.evalSumOn_(train, length, offset,rawM);
-                        raw += chrono.ticks()-mark;
-                        
-                        F.evalSumOn(train, length, offset,optM);
-                        opt += chrono.ticks()-mark;
-                        if(rawM!=optM)
-                        {
-                            std::cerr << "rawM=" << rawM << ", optM=" << optM << std::endl;
-                            throw exception("Mismatch results, Level 1");
-                        }
-                    }
-                    
-                }
-                
-            }
+    std::cerr << "Testing Moments" << std::endl;
+    Moments rawM, optM;
 
-            if(true)
+    for(size_t iter=0;iter<10;++iter)
+    {
+        auto_ptr<Records> pRec;
+        do
+        {
+            pRec.reset( Records::CreateRandom(1,1,1000,3) );
+        }
+        while( (*pRec)(0).size() <= 0);
+        Records     &records = *pRec;
+        const Train &train   = records(0);
+        const Unit   tIni    = train[0];
+        const Unit   tEnd    = train[train.size()-1];
+        const Unit   wMax    = 50;
+        const Unit   tLo = tIni - wMax-2;
+        const Unit   tUp = tEnd+1;
+        const Unit   tMid    = (tIni+tEnd)/2;
+
+        CPW F(10);
+        
+        for(Unit tau=tLo;tau<=tUp;++tau)
+        {
+            for(Unit len=1;len<=wMax;++len)
             {
-                F.buildFrom(train,5);
-                std::cerr << "F.size=" << F.size << std::endl;
-                for(Unit tau=tLo;tau<=tUp;++tau)
+                const Unit tauEnd = tau+len;
+                size_t       offset = 0;
+                const size_t length = train.findIndicesWithin(tau, tauEnd, offset);
                 {
-                    for(Unit len=1;len<=50;++len)
+                    size_t       offset_ = 0;
+                    const size_t length_ = train.findIndicesWithin_(tau, tauEnd, offset_);
+                    if(length_!=length)
                     {
-                        const Unit   tauEnd = tau+len;
-                        size_t       offset = 0;
-                        const size_t length = train.findIndicesWithin(tau,tauEnd, offset);
-                        {
-                            size_t offset_ = 0;
-                            const size_t length_ = train.findIndicesWithin_(tau,tauEnd, offset_);
-                            if(length_!=length)
-                            {
-                                throw exception("Length Mismatch!");
-                            }
-                            if(length>0 && offset!=offset_) throw exception("Offset Mismatch!");
-                        }
-                        mark = chrono.ticks();
-                        F.evalSumOn_(train, length, offset,rawM);
-                        raw += chrono.ticks()-mark;
-                        
-                        mark = chrono.ticks();
-                        F.evalSumOn(train, length, offset,optM);
-                        opt += chrono.ticks()-mark;
-                        if(rawM!=optM)
-                        {
-                            throw exception("Mismatch results!");
-                        }
+                        throw exception("CPW: length mismatch!");
+                    }
+                    if(length>0&& (offset!=offset_) )
+                    {
+                        throw exception("CPW: offset mismatch!");
                     }
                 }
                 
+                // level 0
+                F.free();
+                F.foot = 3;
+                
+                MARK();
+                F.evalSumOn_(train, length, offset, rawM);
+                CHRONO(raw0);
+                MARK();
+                F.evalSumOn(train,length,offset,optM);
+                CHRONO(opt0);
+                if(rawM!=optM)
+                {
+                    throw exception("Moments Mismatch @Level-0");
+                }
+                
+                
+                // level 1
+                F.free();
+                F.foot = 2;
+                F.insert(tMid, 3);
+                MARK();
+                F.evalSumOn_(train, length, offset, rawM);
+                CHRONO(raw1);
+                MARK();
+                F.evalSumOn(train,length,offset,optM);
+                CHRONO(opt1);
+                if(rawM!=optM)
+                {
+                    throw exception("Moments Mismatch@Level-0");
+                }
+
+                
             }
-            
         }
+        
+        
+        
     }
-    const double rawTime = chrono(raw);
-    const double optTime = chrono(opt);
-    std::cerr << "rawTime=" << rawTime << std::endl;
-    std::cerr << "optTime=" << optTime << std::endl;
     
+    const double raw0Time = chrono(raw0);
+    const double opt0Time = chrono(opt0);
+    std::cerr << "raw0Time=" << raw0Time << std::endl;
+    std::cerr << "opt0Time=" << opt0Time << std::endl;
     
+    std::cerr << std::endl;
+    const double raw1Time = chrono(raw1);
+    const double opt1Time = chrono(opt1);
+    std::cerr << "raw1Time=" << raw1Time << std::endl;
+    std::cerr << "opt1Time=" << opt1Time << std::endl;
+
+    
+    return 0;
     
 }
 YOCTO_UNIT_TEST_DONE()
