@@ -80,23 +80,62 @@ void CPW:: evalSumOn(const Train &tr,
     assert(offset<tr.size());
     assert(offset+length-1<tr.size());
     
-    const Unit  *Tau = &tr[offset];
-    const size_t N   = size;
+    const Unit  *Tau  = &tr[offset];
+    const size_t N    = size;
     const CPW   &self = *this;
     switch(N)
     {
+            //__________________________________________________________________
+            //
+            // constant function....
+            //__________________________________________________________________
         case 0:
             moments.mu1 = length*foot;
             moments.mu2 = moments.mu1 * foot;
             moments.muA = UnitAbs(foot);
             return;
-            
+
+            //__________________________________________________________________
+            //
+            // one point
+            //__________________________________________________________________
         case 1:
         {
             
             const coord &C   = self[0];
             const Unit   tau = C.tau;
-            
+
+            //__________________________________________________________________
+            //
+            // locate tau in Tau's
+            //__________________________________________________________________
+            if(tau<Tau[0])
+            {
+                // every times are "at right"
+                moments.mu1 = length      * C.value;
+                moments.mu2 = moments.mu1 * C.value;
+                moments.muA = UnitAbs(C.value);
+                return;
+            }
+            else
+            {
+                const size_t last = length - 1;
+                if(Tau[last]<=tau)
+                {
+                    // every times are "at left"
+                    moments.mu1 = foot*length;
+                    moments.mu2 = moments.mu1 * foot;
+                    moments.muA = UnitAbs(foot);
+                    return;
+                }
+                else
+                {
+                    assert(tau>=Tau[0]);
+                    assert(tau<Tau[last]);
+
+                }
+            }
+
             size_t       ii  = 0;
             while(ii<length)
             {
