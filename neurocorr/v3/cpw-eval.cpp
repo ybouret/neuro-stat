@@ -130,43 +130,36 @@ void CPW:: evalSumOn(const Train &tr,
                 }
                 else
                 {
+                    // the splitting time is somewhere in between
                     assert(tau>=Tau[0]);
                     assert(tau<Tau[last]);
-
+                    size_t jlo = 0;
+                    size_t jup = last;
+                    while(jup-jlo>1)
+                    {
+                        const size_t jmid=(jup+jlo)>>1;
+                        const Unit   tmid=Tau[jmid];
+                        if(tau<tmid)
+                        {
+                            jup = jmid;
+                        }
+                        else
+                        {
+                            jlo = jmid;
+                        }
+                    }
+                    const Unit   nNext = length-jup;
+                    const Unit   nPrev = jup;
+                    const Unit   vPrev = foot;
+                    const Unit   vNext = C.value;
+                    const Unit   m1Prev = nPrev*vPrev;
+                    const Unit   m1Next = nNext*vNext;
+                    moments.mu1 = m1Prev+m1Next;
+                    moments.mu2 = m1Prev*vPrev+m1Next*vNext;
+                    moments.muA = max_of( UnitAbs(vPrev), UnitAbs(vNext) );
+                    return ;
                 }
             }
-
-            size_t       ii  = 0;
-            while(ii<length)
-            {
-                if(Tau[ii]>tau)
-                    break;
-                ++ii;
-            }
-            const Unit Vprev  = foot;
-            const Unit Vnext  = C.value;
-            const Unit Nprev  = ii;
-            const Unit Nnext  = length-ii;
-            const Unit NVprev = Nprev*Vprev;
-            const Unit NVnext = Nnext*Vnext;
-            moments.mu1 = NVprev + NVnext;
-            moments.mu2 = NVprev*Vprev + NVnext*Vnext;
-            if(ii<=0)
-            {
-                moments.muA = UnitAbs(Vnext);
-            }
-            else
-            {
-                if(ii>=length)
-                {
-                    moments.muA = UnitAbs(Vprev);
-                }
-                else
-                {
-                    moments.muA = max_of(UnitAbs(Vnext), UnitAbs(Vprev));
-                }
-            }
-            return;
         }
             
         default:

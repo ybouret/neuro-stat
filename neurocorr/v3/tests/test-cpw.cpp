@@ -87,9 +87,10 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     
     std::cerr << "Testing Sums" << std::endl;
     
-    for(size_t iter=0;iter<10;++iter)
+    for(size_t iter=0;iter<100;++iter)
     {
         auto_ptr<Records> pRec( Records::CreateRandom(1,1,100,3) );
+        pRec->display();
         CPW F(100);
         const Train &train = (*pRec)[0][0];
         if(train.size())
@@ -141,11 +142,11 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                 }
                 
             }
-            continue;
-            
-            if(false)
+
+            if(true)
             {
                 F.buildFrom(train,5);
+                std::cerr << "F.size=" << F.size << std::endl;
                 for(Unit tau=tLo;tau<=tUp;++tau)
                 {
                     for(Unit len=1;len<=50;++len)
@@ -169,7 +170,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                         mark = chrono.ticks();
                         F.evalSumOn(train, length, offset,optM);
                         opt += chrono.ticks()-mark;
-                        if(false)
+                        if(rawM!=optM)
                         {
                             throw exception("Mismatch results!");
                         }
