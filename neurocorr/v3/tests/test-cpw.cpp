@@ -180,6 +180,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                 if(rawM!=optM)
                 {
                     std::cerr << "raw=" << rawM << ", opt=" << optM << std::endl;
+                    std::cerr << "length=" << length << ", offset=" << offset << std::endl;
                     throw exception("Moments Mismatch @Level-2");
                 }
 

@@ -197,10 +197,11 @@ void CPW:: evalSumOn(const Train &tr,
     }
     if(indx>0)
     {
+        //std::cerr << "indx=" << indx << "/length=" << length << " <=" << tBot << std::endl;
         sum1 = indx * foot;
         maxA = UnitAbs(foot);
         sum2 = sum1 * foot;
-    }
+    } //else { std::cerr << "no points before <=" << tBot << std::endl; }
     
     //__________________________________________________________________________
     //
@@ -210,8 +211,6 @@ void CPW:: evalSumOn(const Train &tr,
     const Unit   tTop  = Ctop.tau;
     size_t jprev = 0;
     size_t jnext = 1; //! partition upper index
-    Unit   vCurr   = Ctop.value;
-    Unit   vCurrSq = vCurr*vCurr;
     while(indx<length)
     {
         const Unit tau = Tau[indx];
@@ -223,24 +222,24 @@ void CPW:: evalSumOn(const Train &tr,
         {
             ++jprev;
             ++jnext;
-            vCurr   = self[jprev].value;
-            vCurrSq = vCurr*vCurr;
         }
+        const Unit vCurr = self[jprev].value;
         sum1 += vCurr;
-        sum2 += vCurrSq;
+        sum2 += vCurr*vCurr;
         maxA  = max_of(maxA,vCurr);
         ++indx;
     }
     
     const Unit remaining = length-indx;
+    //std::cerr << "remaining=" << remaining << std::endl;
     if(remaining>0)
     {
         assert(Tau[indx]>tTop);
-        const Unit vBot = Cbot.value;
-        const Unit nv   = remaining*vBot;
-        sum1 += nv;
-        sum2 += nv * vBot;
-        maxA = max_of(vBot,maxA);
+        const Unit vCurr = Ctop.value;
+        const Unit n1    = remaining*vCurr;
+        sum1 += n1;
+        sum2 += n1 * vCurr;
+        maxA = max_of(vCurr,maxA);
     }
     
     moments.mu1 = sum1;
