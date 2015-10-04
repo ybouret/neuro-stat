@@ -5,6 +5,7 @@
 
 #include "yocto/ios/ocstream.hpp"
 #include "yocto/sys/wtime.hpp"
+#include "yocto/string/conv.hpp"
 
 YOCTO_UNIT_TEST_IMPL(cpw)
 {
@@ -83,9 +84,12 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     uint64_t raw0 =0, opt0=0;
     uint64_t raw1 =0, opt1=0;
     uint64_t raw2 =0, opt2=0;
+    uint64_t rawN =0, optN=0;
     uint64_t mark = 0;
     wtime chrono;
     chrono.start();
+    size_t maxSpikes = 100;
+    if(argc>1) maxSpikes = strconv::to<size_t>(argv[1],"maxSpikes");
     
 #define MARK()       mark = chrono.ticks()
 #define CHRONO(val) val += chrono.ticks() - mark
@@ -99,7 +103,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
         auto_ptr<Records> pRec;
         do
         {
-            pRec.reset( Records::CreateRandom(1,1,100,3) );
+            pRec.reset( Records::CreateRandom(2,1,maxSpikes,3) );
         }
         while( (*pRec)(0).size() <= 0);
         Records     &records = *pRec;
@@ -111,8 +115,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
         const Unit   tLo     = tIni - wMax-2;
         const Unit   tUp     = tEnd+1;
         const Unit   tMid    = (tIni+tEnd)/2;
-
-        CPW F(10);
+        CPW F(100);
         
         for(Unit tau=tLo;tau<=tUp;++tau)
         {
@@ -172,7 +175,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                 F.insert(tMid+dT/4,5);
                 
                 MARK();
-                F.evalSumOn_(train, length, offset, rawM);
+                F.evalSumOn_(train,length,offset,rawM);
                 CHRONO(raw2);
                 MARK();
                 F.evalSumOn(train,length,offset,optM);
@@ -180,9 +183,24 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                 if(rawM!=optM)
                 {
                     std::cerr << "raw=" << rawM << ", opt=" << optM << std::endl;
-                    std::cerr << "length=" << length << ", offset=" << offset << std::endl;
                     throw exception("Moments Mismatch @Level-2");
                 }
+                
+                // level N...
+                F.free();
+                F.buildFrom(records(1), 5);
+                MARK();
+                F.evalSumOn_(train,length,offset,rawM);
+                CHRONO(rawN);
+                MARK();
+                F.evalSumOn(train,length,offset,optM);
+                CHRONO(optN);
+                if(rawM!=optM)
+                {
+                    std::cerr << "raw=" << rawM << ", opt=" << optM << std::endl;
+                    throw exception("Moments Mismatch @Level-N");
+                }
+
 
             }
         }
@@ -208,6 +226,13 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     std::cerr << "raw2Time=" << raw2Time << std::endl;
     std::cerr << "opt2Time=" << opt2Time << std::endl;
     
+    std::cerr << std::endl;
+    const double rawNTime = chrono(rawN);
+    const double optNTime = chrono(optN);
+    std::cerr << "rawNTime=" << rawNTime << std::endl;
+    std::cerr << "optNTime=" << optNTime << std::endl;
+    
+
     return 0;
     
 }
