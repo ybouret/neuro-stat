@@ -165,7 +165,6 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                     throw exception("Moments Mismatch@Level-1");
                 }
 
-                continue;
                 // level 2
                 F.free();
                 F.foot = 2;
@@ -180,6 +179,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                 CHRONO(opt2);
                 if(rawM!=optM)
                 {
+                    std::cerr << "raw=" << rawM << ", opt=" << optM << std::endl;
                     throw exception("Moments Mismatch @Level-2");
                 }
 

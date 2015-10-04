@@ -210,6 +210,8 @@ void CPW:: evalSumOn(const Train &tr,
     const Unit   tTop  = Ctop.tau;
     size_t jprev = 0;
     size_t jnext = 1; //! partition upper index
+    Unit   vCurr   = Ctop.value;
+    Unit   vCurrSq = vCurr*vCurr;
     while(indx<length)
     {
         const Unit tau = Tau[indx];
@@ -221,13 +223,19 @@ void CPW:: evalSumOn(const Train &tr,
         {
             ++jprev;
             ++jnext;
+            vCurr   = self[jprev].value;
+            vCurrSq = vCurr*vCurr;
         }
+        sum1 += vCurr;
+        sum2 += vCurrSq;
+        maxA  = max_of(maxA,vCurr);
         ++indx;
     }
     
     const Unit remaining = length-indx;
-    if(remaining)
+    if(remaining>0)
     {
+        assert(Tau[indx]>tTop);
         const Unit vBot = Cbot.value;
         const Unit nv   = remaining*vBot;
         sum1 += nv;
@@ -235,7 +243,9 @@ void CPW:: evalSumOn(const Train &tr,
         maxA = max_of(vBot,maxA);
     }
     
-    
+    moments.mu1 = sum1;
+    moments.mu2 = sum2;
+    moments.muA = maxA;
 }
 
 void CPW:: evalSumOn_(const Train &tr,
