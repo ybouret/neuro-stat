@@ -72,6 +72,10 @@ void CPW:: evalSumOn(const Train &tr,
     
     moments.reset();
     
+    //__________________________________________________________________________
+    //
+    // Get rid of trivial cases
+    //__________________________________________________________________________
     if(length<=0)
     {
         return;
@@ -83,6 +87,11 @@ void CPW:: evalSumOn(const Train &tr,
     const Unit  *Tau  = &tr[offset];
     const size_t N    = size;
     const CPW   &self = *this;
+    
+    //__________________________________________________________________________
+    //
+    // not that trivial cases
+    //__________________________________________________________________________
     switch(N)
     {
             //__________________________________________________________________
@@ -148,10 +157,10 @@ void CPW:: evalSumOn(const Train &tr,
                             jlo = jmid;
                         }
                     }
-                    const Unit   nNext = length-jup;
-                    const Unit   nPrev = jup;
-                    const Unit   vPrev = foot;
-                    const Unit   vNext = C.value;
+                    const Unit   nNext  = length-jup;
+                    const Unit   nPrev  = jup;
+                    const Unit   vPrev  = foot;
+                    const Unit   vNext  = C.value;
                     const Unit   m1Prev = nPrev*vPrev;
                     const Unit   m1Next = nNext*vNext;
                     moments.mu1 = m1Prev+m1Next;
@@ -167,6 +176,57 @@ void CPW:: evalSumOn(const Train &tr,
     }
     
     assert(N>=2);
+    
+    //__________________________________________________________________________
+    //
+    // find where the first point enters the function
+    //__________________________________________________________________________
+    const coord &Cbot  = self[0];
+    const Unit   tBot  = Cbot.tau;
+    Unit   sum1 = 0;
+    Unit   sum2 = 0;
+    Unit   maxA = 0;
+    size_t indx = 0;
+    while(indx<length)
+    {
+        if(Tau[indx]>tBot)
+        {
+            break;
+        }
+        ++indx;
+    }
+    if(indx>0)
+    {
+        sum1 = indx * foot;
+        maxA = UnitAbs(foot);
+        sum2 = sum1 * foot;
+    }
+    
+    //__________________________________________________________________________
+    //
+    // scan within points
+    //__________________________________________________________________________
+    const coord &Ctop  = self[N-1];
+    const Unit   tTop  = Ctop.tau;
+    size_t jnext = 1; //! index of next valid point of partition
+    while(indx<length)
+    {
+        const Unit tau = Tau[indx];
+        if(tau>tTop)
+            break;
+        
+        ++indx;
+    }
+    
+    const Unit remaining = length-indx;
+    if(remaining)
+    {
+        const Unit vBot = Cbot.value;
+        const Unit nv   = remaining*vBot;
+        sum1 += nv;
+        sum2 += nv * vBot;
+        maxA = max_of(vBot,maxA);
+    }
     
     
 }
