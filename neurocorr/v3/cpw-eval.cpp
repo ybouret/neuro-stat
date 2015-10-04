@@ -208,13 +208,20 @@ void CPW:: evalSumOn(const Train &tr,
     //__________________________________________________________________________
     const coord &Ctop  = self[N-1];
     const Unit   tTop  = Ctop.tau;
-    size_t jnext = 1; //! index of next valid point of partition
+    size_t jprev = 0;
+    size_t jnext = 1; //! partition upper index
     while(indx<length)
     {
         const Unit tau = Tau[indx];
         if(tau>tTop)
             break;
-        
+        assert(tau>tBot);
+        assert(tau<=tTop);
+        while(! ( (self[jprev].tau<tau) && (tau<=self[jnext].tau) ) )
+        {
+            ++jprev;
+            ++jnext;
+        }
         ++indx;
     }
     
