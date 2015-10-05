@@ -46,10 +46,11 @@ YOCTO_UNIT_TEST_IMPL(box)
             const Box::Kind kind      = boxes.size%2;
             const Box box(j,tauStart,tauFinal,kind);
             boxes.push_back(box);
-            std::cerr << boxes[boxes.size-1] << std::endl;
+            //std::cerr << boxes[boxes.size-1] << std::endl;
         }
     }
 
+    {
     const size_t num_matrices = boxes.assignIndices(GroupByKind);
     std::cerr << "Allocating " << num_matrices <<  " matrices, " << Phi.dim << " x " << Phi.neurones << std::endl;
     MatricesOf<Unit,CMatrix> mu1(num_matrices,Phi.dim,Phi.neurones);
@@ -99,7 +100,22 @@ YOCTO_UNIT_TEST_IMPL(box)
     {
         std::cerr << "muA_" << i << "=" << muA[i] << std::endl;
     }
+    }
 
+    if(false)
+    {
+        const size_t num_matrices = boxes.assignIndices(GroupByBox);
+        std::cerr << "Allocating " << num_matrices <<  " matrices, " << Phi.dim << " x " << Phi.neurones << std::endl;
+        MatricesOf<Unit,CMatrix> mu1(num_matrices,Phi.dim,Phi.neurones);
+        MatricesOf<Unit,CMatrix> mu2(num_matrices,Phi.dim,Phi.neurones);
+        MatricesOf<Unit,CMatrix> muA(num_matrices,Phi.dim,Phi.neurones);
+        { VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,NULL); }
+        mu1.neg();
+        mu2.neg();
+        muA.ld(0);
+        { VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,&para); }
+
+    }
     
 }
 YOCTO_UNIT_TEST_DONE()
