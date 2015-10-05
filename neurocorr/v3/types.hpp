@@ -25,9 +25,10 @@ private:
     YOCTO_DISABLE_ASSIGN(Converter);
 };
 
-typedef threading::crew Crew;
-typedef Crew::context   Context;
-typedef Crew::kernel    Kernel;
-
+typedef threading::crew                Crew;
+typedef threading::context             Context;
+typedef threading::kernel              Kernel;
+typedef threading::kernel_executor     KernelExecutor;
+typedef threading::sequential_executor SequentialExecutor;
 #endif
 

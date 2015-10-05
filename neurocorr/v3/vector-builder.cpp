@@ -19,27 +19,17 @@ Phi(usrPhi)
 {
     assert(Mu1.count==Mu2.count);
     assert(Mu1.count==MuA.count);
-    Crew::single_context mono;
-    Kernel       run(this,&VectorBuilder::compute);
+    Kernel             run(this,&VectorBuilder::compute);
+    KernelExecutor    &kExec = *(para ? ((KernelExecutor *)para) : ((KernelExecutor *)&Phi.seq));
+
     const size_t nb = boxes.size;
-
-    if(para)
+    for(size_t b=0;b<nb;++b)
     {
-        for(size_t b=0;b<nb;++b)
-        {
-            box = &boxes[b];
-            (*para)(run);
-        }
-    }
-    else
-    {
-        for(size_t b=0;b<nb;++b)
-        {
-            box = &boxes[b];
-            run(mono);
-        }
+        box = &boxes[b];
+        kExec(run);
     }
 
+    
     // finalizing
     const size_t neurones = Phi.neurones;
     const size_t count    = Mu1.count;
@@ -109,5 +99,5 @@ void VectorBuilder:: compute(Context &ctx)
             }
         }
     }
-
+    
 }

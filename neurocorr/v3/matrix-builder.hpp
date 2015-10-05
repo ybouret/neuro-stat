@@ -7,6 +7,7 @@
 
 typedef addr_list<const Box> BoxList;
 typedef addr_node<const Box> BoxNode;
+
 class MatrixBuilder
 {
 public:
@@ -22,13 +23,15 @@ public:
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(MatrixBuilder);
-    const Box        *box;
+    const Box        *box; // shared box for linear computation
+    size_t            J;   // shared trial index for mixed computation
     Matrices<Unit>   &MG;
     const PHI        &Phi;
     slots_of<BoxList> mgr;
     slots_of<Task>    tasks;
 
     void computeSide(Context &ctx);
+    void computeCore(Context &ctx);
     
 };
 

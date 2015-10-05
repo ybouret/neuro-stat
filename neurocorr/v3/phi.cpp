@@ -50,18 +50,9 @@ PHI:: ~PHI() throw()
 
 void PHI::compute(const Unit delta, Crew *para)
 {
+    KernelExecutor    &kExec = *(para ? ((KernelExecutor *)para) : ((KernelExecutor *)&seq));
     delta_ = delta;
-    if(para)
-    {
-        //std::cerr << "PHI: Parallel" << std::endl;
-        (*para)(run);
-    }
-    else
-    {
-        //std::cerr << "PHI: Sequential" << std::endl;
-        Crew::single_context mono;
-        run(mono);
-    }
+    kExec(run);
 }
 
 void PHI:: prepareMixed()

@@ -1,5 +1,6 @@
 #include "matrix-builder.hpp"
 
+
 MatrixBuilder:: ~MatrixBuilder() throw()
 {
 
@@ -11,11 +12,14 @@ MatrixBuilder:: MatrixBuilder(Matrices<Unit> &matrices,
                               const PHI      &usrPhi,
                               Crew           *para) :
 box(0),
+J(0),
 MG(matrices),
 Phi(usrPhi),
 mgr(Phi.trials),
 tasks(boxes.size*Phi.NK)
 {
+    KernelExecutor    &kExec = *(para ? ((KernelExecutor *)para) : ((KernelExecutor *)&Phi.seq));
+
     //__________________________________________________________________________
     //
     // build manager
@@ -38,12 +42,10 @@ tasks(boxes.size*Phi.NK)
     {
         box = &boxes[b];
         assert(box->trial<trials);
-        mgr[box->trial].append(box);
-
         assert(box->indx<MG.count);
+
+        mgr[box->trial].append(box);
         MG[box->indx](0,0) += (1+box->tauFinal-box->tauStart);
-
-
     }
 
     //__________________________________________________________________________
@@ -62,27 +64,30 @@ tasks(boxes.size*Phi.NK)
         }
     }
 
-    Crew::single_context mono;
     {
         Kernel kSide(this, & MatrixBuilder::computeSide);
-        if(para)
+        for(size_t b=0;b<nb;++b)
         {
-            for(size_t b=0;b<nb;++b)
-            {
-                box = &boxes[b];
-                (*para)(kSide);
-            }
+            box = &boxes[b];
+            kExec(kSide);
         }
-        else
+
+    }
+
+    //__________________________________________________________________________
+    //
+    // Mixed Part
+    //__________________________________________________________________________
+    {
+        Kernel kCore(this, & MatrixBuilder::computeCore);
+        for(J=0;J<trials;++J)
         {
-            for(size_t b=0;b<nb;++b)
+            if(mgr[J].size>0)
             {
-                box = &boxes[b];
-                kSide(mono);
+                kExec(kCore);
             }
         }
     }
-
 
 }
 
@@ -90,11 +95,12 @@ tasks(boxes.size*Phi.NK)
 void MatrixBuilder::computeSide(Context &ctx)
 {
     assert(box); assert(box->trial<Phi.trials); assert(box->indx<MG.count);
-    const size_t j  = box->trial;
-    Matrix<Unit> &G = MG[box->indx];
-    size_t offset = 0;
-    size_t length = tasks.size;
+    const size_t j       = box->trial;
+    Matrix<Unit> &G      = MG[box->indx];
+    size_t        offset = 0;
+    size_t        length = tasks.size;
     ctx.split(offset,length);
+
     const PHI::row &Phi_j = Phi[j];
     const Unit      tauStart = box->tauStart;
     const Unit      tauFinal = box->tauFinal;
@@ -107,4 +113,33 @@ void MatrixBuilder::computeSide(Context &ctx)
         G(0,task.I) = ( G(task.I,0) += ans);
     }
 }
+
+
+void MatrixBuilder:: computeCore(Context &ctx)
+{
+    assert(J<Phi.trials);
+    const PHI::row &PHI_J = Phi[J];
+    const Mixed    &mixed = Phi.mixed;
+    size_t offset = 0;
+    size_t length = mixed.size;
+    ctx.split(offset,length);
+    CPW F(Phi.maxCount*2);
+    for(size_t t=offset,counting=0;counting<length;++t,++counting)
+    {
+        const Mix mix( mixed[t] );
+        const CPW &lhs = PHI_J[mix.i][mix.k];
+        const CPW &rhs = PHI_J[mix.l][mix.m];
+        F.productOf(lhs, rhs);
+        for(const BoxNode *node = mgr[J].head; node; node=node->next)
+        {
+            const Box    *bb  = node->addr; assert(bb->trial==J); assert(bb->indx<MG.count);
+            const Unit    ans = F.integrate_(bb->tauStart,bb->tauFinal);
+            Matrix<Unit> &G   = MG[bb->indx];
+
+            G(mix.I_i_k,mix.I_l_m) = ( G(mix.I_l_m,mix.I_i_k) += ans );
+        }
+    }
+    
+}
+
 

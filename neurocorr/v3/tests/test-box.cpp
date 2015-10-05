@@ -69,6 +69,7 @@ void test_vector_values( const Boxes &boxes,PHI &Phi, const Grouping group, Crew
 static inline
 void test_vector_perfs( const Boxes &boxes,PHI &Phi, const Grouping group, Crew &para )
 {
+    std::cerr << std::endl << "\t<VectorPerfs>" << std::endl;
     const size_t num_matrices = boxes.assignIndices(group);
     std::cerr << "Allocating " << num_matrices <<  " matrices, " << Phi.dim << " x " << Phi.neurones << std::endl;
     MatricesOf<Unit,CMatrix> mu1(num_matrices,Phi.dim,Phi.neurones);
@@ -78,7 +79,7 @@ void test_vector_perfs( const Boxes &boxes,PHI &Phi, const Grouping group, Crew 
 
         // Testing performances
         std::cerr << std::endl << "Performances..." << std::endl;
-#define PERF_DURATION 2.0
+#define PERF_DURATION 3.0
         timings tmx;
         YOCTO_TIMINGS(tmx, PERF_DURATION, VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,NULL) );
         const double seqSpeed = tmx.speed;
@@ -88,7 +89,7 @@ void test_vector_perfs( const Boxes &boxes,PHI &Phi, const Grouping group, Crew 
         std::cerr << "parSpeed=" << parSpeed << std::endl;
         std::cerr << "SpeedUp =" << parSpeed/seqSpeed  << std::endl;
     }
-    
+    std::cerr << "\t</VectorPerfs>" << std::endl << std::endl ;
 
 }
 
@@ -113,6 +114,29 @@ void test_matrix_values(const Boxes &boxes,PHI &Phi, const Grouping group, Crew 
     {
         std::cerr << "G" << i << "=" << MG[i] << std::endl;
     }
+
+}
+
+static inline
+void test_matrix_perfs(const Boxes &boxes,PHI &Phi, const Grouping group, Crew &para )
+{
+    std::cerr << std::endl << "\t<MatrixPerfs>" << std::endl;
+    const size_t num_matrices = boxes.assignIndices(group);
+    std::cerr << "Allocating " << num_matrices <<  " matrices, " << Phi.dim << " x " << Phi.dim << std::endl;
+    MatricesOf<Unit,CMatrix> MG(num_matrices,Phi.dim,Phi.dim);
+
+#define PERF_DURATION 3.0
+    timings tmx;
+    YOCTO_TIMINGS(tmx, PERF_DURATION, MatrixBuilder mbuild(MG,boxes,Phi,NULL) );
+    const double seqSpeed = tmx.speed;
+    std::cerr << "seqSpeed=" << seqSpeed << std::endl;
+    YOCTO_TIMINGS(tmx, PERF_DURATION, MatrixBuilder mbuild(MG,boxes,Phi,&para)  );
+    const double parSpeed = tmx.speed;
+    std::cerr << "parSpeed=" << parSpeed << std::endl;
+    std::cerr << "SpeedUp =" << parSpeed/seqSpeed  << std::endl;
+
+
+    std::cerr  << "\t</MatrixPerfs>" << std::endl << std::endl;
 
 }
 
@@ -159,7 +183,7 @@ YOCTO_UNIT_TEST_IMPL(box)
     test_vector_values(boxes, Phi, GroupByKind, para);
     if(false) test_vector_perfs( boxes, Phi, GroupByKind, para);
     test_matrix_values(boxes, Phi, GroupByKind, para);
-
+    if(false) test_matrix_perfs( boxes, Phi, GroupByKind,para);
 }
 YOCTO_UNIT_TEST_DONE()
 
