@@ -109,7 +109,7 @@ void test_matrix_values(const Boxes &boxes,PHI &Phi, const Grouping group, Crew 
 
     MG.neg();
     { MatrixBuilder mbuild(MG,boxes,Phi,NULL);}
-    
+
     for(size_t i=0;i<num_matrices;++i)
     {
         std::cerr << "G" << i << "=" << MG[i] << std::endl;
@@ -180,10 +180,18 @@ YOCTO_UNIT_TEST_IMPL(box)
         }
     }
 
-    test_vector_values(boxes, Phi, GroupByKind, para);
-    if(false) test_vector_perfs( boxes, Phi, GroupByKind, para);
-    test_matrix_values(boxes, Phi, GroupByKind, para);
-    if(false) test_matrix_perfs( boxes, Phi, GroupByKind,para);
+    if(false)
+    {
+        test_vector_values(boxes, Phi, GroupByKind, para);
+        test_matrix_values(boxes, Phi, GroupByKind, para);
+    }
+
+    if(true)
+    {
+        test_vector_perfs( boxes, Phi, GroupByKind, para);
+        test_matrix_perfs( boxes, Phi, GroupByKind,para);
+    }
+    
 }
 YOCTO_UNIT_TEST_DONE()
 
