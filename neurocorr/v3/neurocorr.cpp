@@ -1,6 +1,6 @@
 #include "yocto/R/R++.hpp"
 #include "yocto/rtld/export.hpp"
-#include "types.hpp"
+#include "boxes.hpp"
 
 using namespace yocto;
 
@@ -80,6 +80,35 @@ SEXP NeuroCorr_Version() throw()
 //______________________________________________________________________________
 //
 //
-// Used to check I/O
+// Load Data
 //
 //______________________________________________________________________________
+static inline
+Records *CreateRecordsFrom(SEXP &dataNeurR, SEXP &numNeuronesR, SEXP &scaleR)
+{
+    RMatrix<double> dataNeur(dataNeurR);
+    const int       numNeurones = R2Scalar<int>(numNeuronesR);
+    const Real      scale       = R2Scalar<Real>(scaleR);
+    if(numNeurones<=0)
+        throw exception("[NeuroCorr] numNeurones=%d", numNeurones);
+    if(scale<=0)
+        throw exception("[NeuroCorr] scale=%g", scale);
+
+    return new Records(scale,dataNeur,numNeurones);
+}
+
+extern "C"
+SEXP NeuroCorr_CheckData(SEXP dataNeurR, SEXP numNeuronesR, SEXP scaleR) throw()
+{
+    YOCTO_R_PROLOG()
+    {
+
+        auto_ptr<Records> pR( CreateRecordsFrom(dataNeurR,numNeuronesR,scaleR) );
+        const Records &records = *pR;
+        records.display();
+        return R_NilValue;
+    }
+    YOCTO_R_EPILOG()
+}
+
+

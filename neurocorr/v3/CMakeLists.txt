@@ -16,6 +16,10 @@ cpw-eval.cpp
 cpw-intg.cpp
 phi.hpp
 phi.cpp
+box.hpp
+box.cpp
+boxes.hpp
+boxes.cpp
 )
 
 ADD_LIBRARY(ncv3 STATIC ${srcs})

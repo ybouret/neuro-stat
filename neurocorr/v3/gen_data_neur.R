@@ -79,6 +79,6 @@ for (n in 1:Ntrial)
 ### in line first all the trials for the first neuron then all the trials for the second etc
 
 
-#DataNeur		= Hawkesmulti(Ntrial,delay,BoxComp,spontComp,interacComp)
+DataNeur		= Hawkesmulti(Ntrial,delay,BoxComp,spontComp,interacComp)
 BoxEst=t(matrix(c(rep(1,2*Tend/10),t(boxes)),ncol=4))
 
