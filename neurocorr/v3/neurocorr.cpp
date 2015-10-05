@@ -111,4 +111,32 @@ SEXP NeuroCorr_CheckData(SEXP dataNeurR, SEXP numNeuronesR, SEXP scaleR) throw()
     YOCTO_R_EPILOG()
 }
 
+//______________________________________________________________________________
+//
+//
+// Compute Phi0
+//
+//______________________________________________________________________________
+extern "C"
+SEXP NeuroCorr_ComputePhi0(SEXP dataNeurR,
+                           SEXP numNeuronesR,
+                           SEXP scaleR,
+                           SEXP deltaR) throw()
+{
+    YOCTO_R_PROLOG()
+    {
+        auto_ptr<Records> pR( CreateRecordsFrom(dataNeurR,numNeuronesR,scaleR) );
+        const Records &records = *pR;
+        const Unit     delta   = records.toUnit( R2Scalar<Real>(deltaR) );
+        if(delta<=0) throw exception("[NeuroCorr] ComputePhi0: delta<=0");
+        PHI Phi(records,0);
+        Phi.compute(delta,team);
+        const char *names[] = { "train", "graph" };
+        RList ans(names,sizeof(names)/sizeof(names[0]));
+
+
+        return *ans;
+    }
+    YOCTO_R_EPILOG()
+}
 

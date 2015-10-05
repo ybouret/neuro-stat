@@ -66,7 +66,7 @@ void PHI::compute(const Unit delta, Crew *para)
 
 void PHI:: prepareMixed()
 {
-    std::cerr << "Preparing " << mixed.capacity << " Mixed terms..." << std::endl;
+    //std::cerr << "Preparing " << mixed.capacity << " Mixed terms..." << std::endl;
     for(size_t i=0;i<neurones;++i)
     {
         for(size_t k=0;k<K;++k)

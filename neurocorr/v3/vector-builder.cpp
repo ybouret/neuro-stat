@@ -4,6 +4,8 @@ VectorBuilder:: ~VectorBuilder() throw()
 {
 }
 
+
+
 VectorBuilder:: VectorBuilder(Matrices<Unit> &mu1,
                               Matrices<Unit> &mu2,
                               Matrices<Unit> &muA,
@@ -21,6 +23,7 @@ Phi(usrPhi)
     Crew::single_context mono;
     Kernel       run(this,&VectorBuilder::compute);
     const size_t nb = boxes.size;
+
     if(para)
     {
         for(size_t b=0;b<nb;++b)
@@ -37,6 +40,24 @@ Phi(usrPhi)
             run(mono);
         }
     }
+
+    // finalizing
+    const size_t neurones = Phi.neurones;
+    const size_t count    = Mu1.count;
+    for(size_t I=0;I<count;++I)
+    {
+        Matrix<Unit> &m1 = Mu1[I];
+        Matrix<Unit> &m2 = Mu2[I];
+        Matrix<Unit> &mA = MuA[I];
+        for(size_t i=0;i<neurones;++i)
+        {
+            const Unit nn = m1(0,i);
+            m2(0,i) = nn*nn;
+            mA(0,i) = 1;
+        }
+    }
+
+
 }
 
 
@@ -68,10 +89,10 @@ void VectorBuilder:: compute(Context &ctx)
         const Train         &train   = PHI_j[i].train;
         size_t               start   = 0;
         const size_t         num     = train.findIndicesWithin(tauStart,tauFinal,start);
+
         // first row : the counts
         m1(0,i) += num;
-        m2(0,i) += num*num;
-        mA(0,i) =  1;
+
 
         // then computation
         size_t r = 0;
