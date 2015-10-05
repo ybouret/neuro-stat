@@ -17,7 +17,6 @@ Mu2(mu2),
 MuA(muA),
 Phi(usrPhi)
 {
-    std::cerr << "Start VectorBuilder" << std::endl;
     assert(Mu1.count==Mu2.count);
     assert(Mu1.count==MuA.count);
     Crew::single_context mono;

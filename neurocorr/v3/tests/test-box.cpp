@@ -51,56 +51,70 @@ YOCTO_UNIT_TEST_IMPL(box)
     }
 
     {
-    const size_t num_matrices = boxes.assignIndices(GroupByKind);
-    std::cerr << "Allocating " << num_matrices <<  " matrices, " << Phi.dim << " x " << Phi.neurones << std::endl;
-    MatricesOf<Unit,CMatrix> mu1(num_matrices,Phi.dim,Phi.neurones);
-    MatricesOf<Unit,CMatrix> mu2(num_matrices,Phi.dim,Phi.neurones);
-    MatricesOf<Unit,CMatrix> muA(num_matrices,Phi.dim,Phi.neurones);
+        const size_t num_matrices = boxes.assignIndices(GroupByKind);
+        std::cerr << "Allocating " << num_matrices <<  " matrices, " << Phi.dim << " x " << Phi.neurones << std::endl;
+        MatricesOf<Unit,CMatrix> mu1(num_matrices,Phi.dim,Phi.neurones);
+        MatricesOf<Unit,CMatrix> mu2(num_matrices,Phi.dim,Phi.neurones);
+        MatricesOf<Unit,CMatrix> muA(num_matrices,Phi.dim,Phi.neurones);
 
-    mu1.ld(0);
-    mu2.ld(0);
-    muA.ld(0);
+        mu1.ld(0);
+        mu2.ld(0);
+        muA.ld(0);
 
-    {
-        VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,NULL);
+        {
+            VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,NULL);
+        }
+
+        for(size_t i=0;i<num_matrices;++i)
+        {
+            std::cerr << "mu1_" << i << "=" << mu1[i] << std::endl;
+        }
+
+        for(size_t i=0;i<num_matrices;++i)
+        {
+            std::cerr << "mu2_" << i << "=" << mu2[i] << std::endl;
+        }
+
+        for(size_t i=0;i<num_matrices;++i)
+        {
+            std::cerr << "muA_" << i << "=" << muA[i] << std::endl;
+        }
+
+        mu1.neg();
+        mu2.neg();
+        muA.ld(0);
+        {
+            VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,&para);
+        }
+        for(size_t i=0;i<num_matrices;++i)
+        {
+            std::cerr << "mu1_" << i << "=" << mu1[i] << std::endl;
+        }
+
+        for(size_t i=0;i<num_matrices;++i)
+        {
+            std::cerr << "mu2_" << i << "=" << mu2[i] << std::endl;
+        }
+
+        for(size_t i=0;i<num_matrices;++i)
+        {
+            std::cerr << "muA_" << i << "=" << muA[i] << std::endl;
+        }
+
+
+        // Testing performances
+        std::cerr << std::endl << "Performances..." << std::endl;
+#define PERF_DURATION 2.0
+        timings tmx;
+        YOCTO_TIMINGS(tmx, PERF_DURATION, VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,NULL) );
+        const double seqSpeed = tmx.speed;
+        std::cerr << "seqSpeed=" << seqSpeed << std::endl;
+        YOCTO_TIMINGS(tmx, PERF_DURATION, VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,&para) );
+        const double parSpeed = tmx.speed;
+        std::cerr << "parSpeed=" << parSpeed << std::endl;
+        std::cerr << "SpeedUp =" << parSpeed/seqSpeed  << std::endl;
     }
 
-    for(size_t i=0;i<num_matrices;++i)
-    {
-        std::cerr << "mu1_" << i << "=" << mu1[i] << std::endl;
-    }
-
-    for(size_t i=0;i<num_matrices;++i)
-    {
-        std::cerr << "mu2_" << i << "=" << mu2[i] << std::endl;
-    }
-
-    for(size_t i=0;i<num_matrices;++i)
-    {
-        std::cerr << "muA_" << i << "=" << muA[i] << std::endl;
-    }
-
-    mu1.neg();
-    mu2.neg();
-    muA.ld(0);
-    {
-        VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,&para);
-    }
-    for(size_t i=0;i<num_matrices;++i)
-    {
-        std::cerr << "mu1_" << i << "=" << mu1[i] << std::endl;
-    }
-
-    for(size_t i=0;i<num_matrices;++i)
-    {
-        std::cerr << "mu2_" << i << "=" << mu2[i] << std::endl;
-    }
-
-    for(size_t i=0;i<num_matrices;++i)
-    {
-        std::cerr << "muA_" << i << "=" << muA[i] << std::endl;
-    }
-    }
 
     if(false)
     {
@@ -114,7 +128,7 @@ YOCTO_UNIT_TEST_IMPL(box)
         mu2.neg();
         muA.ld(0);
         { VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,&para); }
-
+        
     }
     
 }
