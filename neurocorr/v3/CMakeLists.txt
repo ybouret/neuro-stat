@@ -20,6 +20,8 @@ box.hpp
 box.cpp
 boxes.hpp
 boxes.cpp
+vector-builder.hpp
+vector-builder.cpp
 )
 
 ADD_LIBRARY(ncv3 STATIC ${srcs})

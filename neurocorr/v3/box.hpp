@@ -18,10 +18,10 @@ public:
     const   Kind     kind;      //!< label
     mutable size_t   indx;      //!< index for collecting data
 
-    explicit Box(const size_t indx,
+    explicit Box(const size_t iTrial,
                  const Unit   ini,
                  const Unit   end,
-                 const Kind   aka=0) throw();
+                 const Kind   aka) throw();
     virtual ~Box() throw();
     Box(const Box &) throw();
     

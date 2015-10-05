@@ -5,11 +5,11 @@ Box:: ~Box() throw()
 {
 }
 
-Box:: Box(const size_t indx,
+Box:: Box(const size_t iTrial,
           const Unit   ini,
           const Unit   end,
           const Kind   aka) throw() :
-trial(indx),
+trial(iTrial),
 tauStart(ini),
 tauFinal(end),
 kind(aka),
