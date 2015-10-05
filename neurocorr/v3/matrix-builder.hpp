@@ -7,10 +7,6 @@
 
 typedef addr_list<const Box> BoxList;
 typedef addr_node<const Box> BoxNode;
-//YOCTO_SUPPORT_BITWISE_OPS(BoxList);
-
-//#include "yocto/sequence/vector.hpp"
-
 class MatrixBuilder
 {
 public:
@@ -20,11 +16,20 @@ public:
                   const PHI      &usrPhi,
                   Crew           *para);
 
+    YOCTO_TRIPLE_DECL(Task,const size_t,i,const size_t,k,const size_t,I);
+    YOCTO_DISABLE_ASSIGN(Task);
+    YOCTO_TRIPLE_END();
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(MatrixBuilder);
+    const Box        *box;
     Matrices<Unit>   &MG;
     const PHI        &Phi;
     slots_of<BoxList> mgr;
+    slots_of<Task>    tasks;
+
+    void computeSide(Context &ctx);
+    
 };
 
 
