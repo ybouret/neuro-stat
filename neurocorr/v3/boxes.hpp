@@ -3,14 +3,9 @@
 
 #include "box.hpp"
 #include "yocto/bitwise.hpp"
-#include "yocto/sequence/addr-list.hpp"
 #include "yocto/associative/map.hpp"
 
 typedef map<Box::Kind,size_t> BoxKindDB;
-
-typedef addr_list<const Box> BoxList;
-typedef addr_node<const Box> BoxNode;
-YOCTO_SUPPORT_BITWISE_OPS(BoxList);
 
 enum Grouping
 {

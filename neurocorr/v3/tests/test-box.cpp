@@ -9,6 +9,7 @@
 #include "yocto/sys/timings.hpp"
 
 #include "../vector-builder.hpp"
+#include "../matrix-builder.hpp"
 
 YOCTO_UNIT_TEST_IMPL(box)
 {
