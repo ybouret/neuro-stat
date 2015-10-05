@@ -231,9 +231,6 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     const double optNTime = chrono(optN);
     std::cerr << "rawNTime=" << rawNTime << std::endl;
     std::cerr << "optNTime=" << optNTime << std::endl;
-    
 
-    return 0;
-    
 }
 YOCTO_UNIT_TEST_DONE()

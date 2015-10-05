@@ -3,6 +3,7 @@ main.cpp
 test-types.cpp
 test-records.cpp
 test-cpw.cpp
+test-intg.cpp
 test-phi.cpp
 test-box.cpp
 )
@@ -15,6 +16,7 @@ ENABLE_TESTING()
 ADD_TEST(Types   test-ncv3 types)
 ADD_TEST(Records test-ncv3 records)
 ADD_TEST(CPW     test-ncv3 cpw)
+ADD_TEST(Intg    test-ncv3 intg)
 ADD_TEST(PHI     test-ncv3 phi)
 ADD_TEST(Box     test-ncv3 box)
 

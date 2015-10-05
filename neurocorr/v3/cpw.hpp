@@ -65,8 +65,12 @@ public:
                     const size_t offset,
                     Moments     &moments) const throw();
 
-    //! integrtation, naive function
-    Unit integrate_(const Unit tauStart, const Unit tauFinal) const;
+    //! integration, naive function
+    //Unit integrate_(const Unit tauStart, const Unit tauFinal) const;
+
+    //! integration, better function ?
+    Unit integrate(const Unit tauStart, const Unit tauFinal) const;
+
 
 private:
     YOCTO_DISABLE_ASSIGN(CPW);

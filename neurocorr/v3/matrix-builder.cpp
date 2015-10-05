@@ -109,7 +109,7 @@ void MatrixBuilder::computeSide(Context &ctx)
         const Task  &task = tasks[t];
         const size_t i    = task.i;
         const size_t k    = task.k;
-        const Unit   ans  = Phi_j[i][k].integrate_(tauStart,tauFinal);
+        const Unit   ans  = Phi_j[i][k].integrate(tauStart,tauFinal);
         G(0,task.I) = ( G(task.I,0) += ans);
     }
 }
@@ -133,7 +133,7 @@ void MatrixBuilder:: computeCore(Context &ctx)
         for(const BoxNode *node = mgr[J].head; node; node=node->next)
         {
             const Box    *bb  = node->addr; assert(bb->trial==J); assert(bb->indx<MG.count);
-            const Unit    ans = F.integrate_(bb->tauStart,bb->tauFinal);
+            const Unit    ans = F.integrate(bb->tauStart,bb->tauFinal);
             Matrix<Unit> &G   = MG[bb->indx];
 
             G(mix.I_i_k,mix.I_l_m) = ( G(mix.I_l_m,mix.I_i_k) += ans );
