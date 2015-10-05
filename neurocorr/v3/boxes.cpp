@@ -12,7 +12,7 @@ _Boxes(nboxes)
 
 #include "yocto/exception.hpp"
 
-void Boxes:: buildDB( Box::KindDB &db ) const
+void Boxes:: buildDB( BoxKindDB &db ) const
 {
     db.free();
     for(size_t i=0;i<size;++i)
@@ -34,6 +34,8 @@ void Boxes:: buildDB( Box::KindDB &db ) const
     }
 }
 
+
+
 size_t Boxes:: assignIndices(const Grouping mode) const
 {
     size_t ans = 0;
@@ -41,7 +43,7 @@ size_t Boxes:: assignIndices(const Grouping mode) const
     {
         case GroupByKind:
         {
-            Box::KindDB db;
+            BoxKindDB db;
             buildDB(db);
             ans = db.size();
         }

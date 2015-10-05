@@ -4,6 +4,9 @@
 #include "box.hpp"
 #include "yocto/bitwise.hpp"
 #include "yocto/sequence/addr-list.hpp"
+#include "yocto/associative/map.hpp"
+
+typedef map<Box::Kind,size_t> BoxKindDB;
 
 typedef addr_list<const Box> BoxList;
 typedef addr_node<const Box> BoxNode;
@@ -34,7 +37,7 @@ public:
     /**
      \return the number of matrices to allocate
      */
-    void buildDB( Box::KindDB &db ) const;
+    void buildDB( BoxKindDB &db ) const;
     
     
     //! prepare boxes and return the number of needed Matrices
