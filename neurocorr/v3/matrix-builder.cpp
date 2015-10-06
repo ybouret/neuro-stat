@@ -45,7 +45,7 @@ tasks(boxes.size*Phi.NK)
         assert(box->indx<MG.count);
 
         mgr[box->trial].append(box);
-        MG[box->indx](0,0) += (1+box->tauFinal-box->tauStart);
+        MG[box->indx](0,0) += (box->tauFinal-box->tauStart);
     }
 
     //__________________________________________________________________________

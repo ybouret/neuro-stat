@@ -15,7 +15,8 @@ VectorBuilder:: VectorBuilder(Matrices<Unit> &mu1,
 Mu1(mu1),
 Mu2(mu2),
 MuA(muA),
-Phi(usrPhi)
+Phi(usrPhi),
+box(0)
 {
     assert(Mu1.count==Mu2.count);
     assert(Mu1.count==MuA.count);

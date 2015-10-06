@@ -4,8 +4,6 @@ types.cpp
 train.hpp
 train.cpp
 train-find.cpp
-experiment.hpp
-experiment.cpp
 records.hpp
 records.cpp
 cpw.hpp

@@ -38,7 +38,8 @@ dim(1+NK),
 mixed( (NK*dim)/2 ),
 maxCount(records.maxCount),
 delta_(0),
-run(this, & PHI::computeOn)
+run(this, & PHI::computeOn),
+seq()
 {
     procedural_build_with<Records,size_t>(records,extra);
     prepareMixed();

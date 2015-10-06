@@ -1,3 +1,4 @@
+#include "yocto/string.hpp"
 #include "yocto/R/R++.hpp"
 #include "yocto/rtld/export.hpp"
 #include "boxes.hpp"
@@ -195,6 +196,32 @@ Grouping ParseGroupingFrom( SEXP &groupingR )
     throw exception("[NeuroCorr] invalid grouping '%s'", grp);
 }
 
+#include "vector-builder.hpp"
+#include "matrix-builder.hpp"
+
+#include "yocto/sequence/vector.hpp"
+
+static inline
+void BuildListOfMoments(RList                 &L,
+                        const  Matrices<Unit> &mu,
+                        const  Real            scale=1.0)
+{
+    for(size_t m=0;m<mu.count;++m)
+    {
+        const Matrix<Unit> &src = mu[m];
+        RMatrix<Real>       tgt(src.rows,src.cols);
+        for(size_t c=0;c<tgt.cols;++c)
+        {
+            for(size_t r=0;r<tgt.rows;++r)
+            {
+                tgt[c][r] = src(r,c)/scale;
+            }
+        }
+        L.set(m,tgt);
+    }
+
+}
+
 extern "C"
 SEXP NeuroCorr_Compute(SEXP dataNeurR,
                        SEXP numNeuronesR,
@@ -212,8 +239,8 @@ SEXP NeuroCorr_Compute(SEXP dataNeurR,
         //
         // Get The Parameters
         //______________________________________________________________________
-        Grouping kind = ParseGroupingFrom(groupingR);
-        switch(kind)
+        Grouping policy = ParseGroupingFrom(groupingR);
+        switch(policy)
         {
             case GroupByKind: Rprintf("[NeuroCorr] Compute: Grouping By Kind\n"); break;
             case GroupByBox:  Rprintf("[NeuroCorr] Compute: Grouping By Box\n" ); break;
@@ -262,10 +289,71 @@ SEXP NeuroCorr_Compute(SEXP dataNeurR,
         //
         // Computing Matrices
         //______________________________________________________________________
+        const size_t num_matrices = boxes.assignIndices(policy);
+        Rprintf("[NeuroCorr] Compute: Allocating %u Matrices of Moments (%ux%u)\n",unsigned(num_matrices), unsigned(Phi.dim), unsigned(Phi.neurones));
+        MatricesOf<Unit,CMatrix> mu1(num_matrices,Phi.dim,Phi.neurones);
+        MatricesOf<Unit,CMatrix> mu2(num_matrices,Phi.dim,Phi.neurones);
+        MatricesOf<Unit,CMatrix> muA(num_matrices,Phi.dim,Phi.neurones);
+        Rprintf("[NeuroCorr] Compute: Computing Matrices of Moments with #CPU=%u\n", np);
+        VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,team);
 
+        Rprintf("[NeuroCorr] Compute: Allocating %u Matrices of Moments (%ux%u)\n",unsigned(num_matrices), unsigned(Phi.dim), unsigned(Phi.dim));
+        MatricesOf<Unit,CMatrix> G(num_matrices,Phi.dim,Phi.dim);
+        Rprintf("[NeuroCorr] Compute: Computing Main Matrix with #CPU=%u\n", np);
+        MatrixBuilder mbuild(G,boxes,Phi,team);
 
+        //______________________________________________________________________
+        //
+        // Formating...
+        //______________________________________________________________________
+        static const char *ansNames[] = { "mu1" , "mu2", "muA", "G" };
+        RList              ans( ansNames, sizeof(ansNames)/sizeof(ansNames[0]) );
 
-        return R_NilValue;
+        vector<string>     subNames(num_matrices,as_capacity);
+        {
+            for(size_t sub=0;sub<num_matrices;++sub)
+            {
+                const string subName = vformat("%u",unsigned(sub+1));
+                subNames.push_back(subName);
+            }
+        }
+        CVector<const char *> labels(num_matrices);
+        for(size_t i=0;i<num_matrices;++i)
+        {
+            labels[i] = &(subNames[i+1][0]);
+        }
+
+        //______________________________________________________________________
+        //
+        // Formatting
+        //______________________________________________________________________
+        {
+
+            RList mu1_list(labels);
+            BuildListOfMoments(mu1_list,mu1);
+            ans.set(0,mu1_list);
+        }
+
+        {
+            RList mu2_list(labels);
+            BuildListOfMoments(mu2_list,mu2);
+            ans.set(1,mu2_list);
+        }
+
+        {
+            RList muA_list(labels);
+            BuildListOfMoments(muA_list,muA);
+            ans.set(2,muA_list);
+        }
+
+        {
+            RList G_list(labels);
+            BuildListOfMoments(G_list,G,records.scale);
+            ans.set(3,G_list);
+        }
+
+        
+        return *ans;
     }
     YOCTO_R_EPILOG()
 }

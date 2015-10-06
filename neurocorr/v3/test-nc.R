@@ -21,3 +21,5 @@ NeuroCorr_SetParallel(4);
 mtx=NeuroCorr_Compute(DataNeur,Nneur,scale,0.05,3,BoxEst,"byKind");
 
 NeuroCorr_CleanUp();
+
+print(mtx);

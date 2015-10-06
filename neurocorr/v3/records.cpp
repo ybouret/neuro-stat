@@ -67,7 +67,7 @@ tauMax(0)
                 _Train tmp(numSpikes);
                 train.swap_with(tmp);
             }
-            assert(numSpikes==train.size());
+            assert(unsigned(numSpikes)==train.size());
             
             // convert
             for(int k=1;k<=numSpikes;++k)
