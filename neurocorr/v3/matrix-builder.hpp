@@ -29,7 +29,8 @@ private:
     const PHI        &Phi;
     slots_of<BoxList> mgr;
     slots_of<Task>    tasks;
-
+    slots_of<CPW>     prods;
+    
     void computeSide(Context &ctx);
     void computeCore(Context &ctx);
     

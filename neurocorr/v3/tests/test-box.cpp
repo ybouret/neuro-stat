@@ -145,8 +145,8 @@ YOCTO_UNIT_TEST_IMPL(box)
 {
     Crew para(true);
 
-    size_t trials   = 4;   if( argc>1 ) trials   = strconv::to<size_t>(argv[1],"trials");
-    size_t neurones = 10;  if( argc>2 ) neurones = strconv::to<size_t>(argv[2],"neurones");
+    size_t trials   = 5;   if( argc>1 ) trials   = strconv::to<size_t>(argv[1],"trials");
+    size_t neurones = 4;   if( argc>2 ) neurones = strconv::to<size_t>(argv[2],"neurones");
     size_t spikes   = 100; if( argc>3 ) spikes   = strconv::to<size_t>(argv[3],"spikes");
     size_t extra    = 2;   if( argc>4 ) extra    = strconv::to<size_t>(argv[4],"extra");
 

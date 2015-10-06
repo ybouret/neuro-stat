@@ -11,6 +11,8 @@ test-box.cpp
 TARGET_LINK_LIBRARIES(test-ncv3 ncv3)
 TARGET_LINK_YOCTO(test-ncv3)
 
+INSTALL(TARGETS test-ncv3 RUNTIME DESTINATION bin)
+
 
 ENABLE_TESTING()
 ADD_TEST(Types   test-ncv3 types)

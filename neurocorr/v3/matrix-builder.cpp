@@ -16,7 +16,8 @@ J(0),
 MG(matrices),
 Phi(usrPhi),
 mgr(Phi.trials),
-tasks(boxes.size*Phi.NK)
+tasks(boxes.size*Phi.NK),
+prods(para?para->size:1)
 {
     KernelExecutor    &kExec = *(para ? ((KernelExecutor *)para) : ((KernelExecutor *)&Phi.seq));
 
@@ -78,6 +79,13 @@ tasks(boxes.size*Phi.NK)
     //
     // Mixed Part
     //__________________________________________________________________________
+    assert(kExec.num_threads()==prods.capacity);
+    const size_t maxProdSize = Phi.maxCount * 2;
+    for(size_t i=0;i<kExec.num_threads();++i)
+    {
+        prods.append<size_t>(maxProdSize);
+    }
+    
     {
         Kernel kCore(this, & MatrixBuilder::computeCore);
         for(J=0;J<trials;++J)
@@ -123,7 +131,8 @@ void MatrixBuilder:: computeCore(Context &ctx)
     size_t offset = 0;
     size_t length = mixed.size;
     ctx.split(offset,length);
-    CPW F(Phi.maxCount*2);
+    CPW &F = prods[ctx.rank];
+    
     for(size_t t=offset,counting=0;counting<length;++t,++counting)
     {
         const Mix mix( mixed[t] );
