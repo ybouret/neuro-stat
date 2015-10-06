@@ -75,3 +75,23 @@ NeuroCorr_ComputePhi0 <- function(dataNeur,numNeurones,scale,delta)
     .Call("NeuroCorr_ComputePhi0",dataNeur,numNeurones,scale,delta);
 }
 
+################################################################################
+##
+## Compute Matrices
+##
+################################################################################
+NeuroCorr_Compute <- function(dataNeur,numNeurones,scale,delta,K,boxes,grouping)
+{
+    if( !is.matrix(dataNeur)    ) stop("[Compute] : dataNeur must be a matrix");
+    if( !is.double(numNeurones) ) stop("[Compute] : numNeurones must be a number");
+    if( !is.double(scale)       ) stop("[Compute] : scale must be a number");
+    if( !is.double(delta)       ) stop("[Compute] : delta must be a number");
+    if( !is.double(K)           ) stop("[Compute] : K must be a number");
+    if( !is.character(grouping) ) stop("[Compute] : grouping must be 'byKind' or 'byBox'");
+    if( !is.matrix(boxes)       ) stop("[Compute] : boxes must be a matrix (4 lines, #boxes columns)");
+
+    .Call("NeuroCorr_Compute",dataNeur,numNeurones,scale,delta,K,boxes,grouping);
+    
+}
+
+

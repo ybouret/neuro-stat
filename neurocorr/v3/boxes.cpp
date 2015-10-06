@@ -12,6 +12,25 @@ _Boxes(nboxes)
 
 #include "yocto/exception.hpp"
 
+Boxes:: Boxes(const Real usr_scale, const Matrix<Real> &RBoxes):
+Converter(usr_scale),
+_Boxes(RBoxes.cols)
+{
+    if(RBoxes.rows<4) throw exception("Boxes: need at least 4 rows!");
+    for(unsigned c=0;c<RBoxes.cols;++c)
+    {
+        const int  iTrial   = int(RBoxes(0,c)); if(iTrial<0) throw exception("Box #%u: invalid trial=%d",c,iTrial);
+        const Unit tauStart = toUnit(RBoxes(1,c));
+        const Unit tauFinal = toUnit(RBoxes(2,c));
+        if(tauFinal<=tauStart) throw exception("Box #%u: times are not well separated (check scale=%g)",c,scale);
+        const int  kind     = int(RBoxes(3,c));
+        const Box  box(iTrial,tauStart,tauFinal,kind);
+        push_back(box);
+    }
+}
+
+
+
 void Boxes:: buildDB( BoxKindDB &db ) const
 {
     const _Boxes &self = *this;

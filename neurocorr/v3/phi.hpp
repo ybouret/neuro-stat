@@ -48,9 +48,10 @@ private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(PHI);
     mutable Unit       delta_;
     Kernel             run;
+
     // computing using delta_
     void computeOn(Context &ctx);
-    void     prepareMixed();
+    void prepareMixed();
 
 public:
     mutable SequentialExecutor seq;
