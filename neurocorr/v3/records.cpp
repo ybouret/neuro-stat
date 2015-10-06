@@ -96,7 +96,7 @@ tauMax(0)
             {
                 if(train[k-1]>=train[k])
                 {
-                    throw exception("Records: invalid coordinate for train #%d (check scaling...)", iTrain);
+                    throw exception("Records: invalid coordinate for train #%d: %g>=%g (check scaling...)", iTrain, data(iTrain,k), data(iTrain,k+1));
                 }
             }
             ++iTrain;
