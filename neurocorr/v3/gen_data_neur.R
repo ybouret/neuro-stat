@@ -33,9 +33,9 @@ source('../codes/SimuHawkes.R',chdir=TRUE)
 #																									   #
 ########################################################################################################
 
-Nneur=2  # number of neurons
-Ntrial=7 # number of trials
-Ncomp=2 # number of comportments, for the moment just one relaxation state and one exciting state
+Nneur=2   # number of neurons
+Ntrial=20 # number of trials
+Ncomp=2   # number of comportments, for the moment just one relaxation state and one exciting state
 
 delay=0 # time in second during which the process warms up
 Tend = 100 # duration in second of the trial, each process is simulated on [0,Tend], here for this simulation should be a multiple of 10

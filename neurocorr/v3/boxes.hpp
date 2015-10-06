@@ -3,9 +3,6 @@
 
 #include "box.hpp"
 #include "yocto/bitwise.hpp"
-#include "yocto/associative/map.hpp"
-
-typedef map<Box::Kind,size_t> BoxKindDB;
 
 enum Grouping
 {
@@ -28,12 +25,6 @@ public:
 
     virtual ~Boxes() throw();
 
-    //! build database and assign indices to boxes
-    /**
-     \return the number of matrices to allocate
-     */
-    void buildDB( BoxKindDB &db ) const;
-    
     
     //! prepare boxes and return the number of needed Matrices
     size_t assignIndices(const Grouping mode) const;

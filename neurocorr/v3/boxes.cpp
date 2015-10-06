@@ -30,10 +30,19 @@ _Boxes(RBoxes.cols)
 }
 
 
-
+#if 0
 void Boxes:: buildDB( BoxKindDB &db ) const
 {
     const _Boxes &self = *this;
+    sorted_vector<Box::Kind> kvec;
+    size_t                   knum=0;
+
+    for(size_t i=0;i<size;++i)
+    {
+        if(kvec.insert(self[i].kind)) ++knum;
+    }
+    //std::cerr << "kvec=" << kvec << std::endl;
+
     db.free();
     for(size_t i=0;i<size;++i)
     {
@@ -53,28 +62,60 @@ void Boxes:: buildDB( BoxKindDB &db ) const
         b.indx = *pIndx;
     }
 }
+#endif
+
+#include "yocto/ordered/sorted-vector.hpp"
+#include "yocto/associative/map.hpp"
+
+typedef map<Box::Kind,size_t> BoxKindDB;
 
 
 
 size_t Boxes:: assignIndices(const Grouping mode) const
 {
-    size_t ans = 0;
+    static const char fn[] = "Boxes::assignIndices";
+
+    const _Boxes &self = *this;
+
     switch(mode)
     {
         case GroupByKind:
         {
-            BoxKindDB db;
-            buildDB(db);
-            ans = db.size();
+
+            // collected all different kinds, SORTED
+            sorted_vector<Box::Kind> kvec;
+            size_t                   knum=0;
+
+            for(size_t i=0;i<size;++i)
+            {
+                if(kvec.insert(self[i].kind)) ++knum;
+            }
+
+            // sorted association
+            BoxKindDB db(knum,as_capacity);
+            for(size_t i=1;i<=knum;++i)
+            {
+                if(!db.insert(kvec[i],i-1)) throw exception("%s: unexpected db.insert failure!",fn);
+            }
+
+            // assign indices
+            for(size_t i=0;i<size;++i)
+            {
+                const Box &b = self[i];
+                const size_t *pIndx = db.search(b.kind);
+                if(!pIndx) throw exception("%s: unexpected missing box kind !!!",fn);
+                b.indx = *pIndx;
+            }
+
+            return knum;
         }
-            break;
 
         case GroupByBox:
         {
-            for(size_t i=0;i<size;++i) (*this)[i].indx = i;
-            ans = size;
+            for(size_t i=0;i<size;++i) self[i].indx = i;
+            return size;
         }
-            break;
     }
-    return ans;
+
+    throw exception("%s: should never get here!!!",fn);
 }
