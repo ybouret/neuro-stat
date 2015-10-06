@@ -42,7 +42,7 @@ box(0)
         for(size_t i=0;i<neurones;++i)
         {
             const Unit nn = m1(0,i);
-            m2(0,i) = nn*nn;
+            m2(0,i) = nn;
             mA(0,i) = 1;
         }
     }

@@ -106,8 +106,8 @@ NeuroCorr_ComputePhi0 <- function(dataNeur,numNeurones,scale,delta)
 ## are continuous and starting from 1...
 ##
 ## - The main list contains 4 Sub-Lists:
-## |_$mu1: (1+neurones*K)*neurones, counting values, first line is #count
-## |_$mu2: (1+neurones*K)*neurones, counting values^2, first line is #count^2
+## |_$mu1: (1+neurones*K)*neurones, counting values,   first line is #count
+## |_$mu2: (1+neurones*K)*neurones, counting values^2, first line is #count, same as mu1
 ## |_$muA: (1+neurones*K)*neurones, max |count|, first  line is 1
 ## |_$G:   (1+neurones*K)*(1+neurones*L), values of integrals
 ##
