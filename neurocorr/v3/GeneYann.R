@@ -4,7 +4,7 @@ source('SimuHawkesPatou.R')
 
 Nneur=8
 Tfin=20
-Nessai=1
+Nessai=8
 delai= 1
 
 spontComp=matrix(rep(20,Nneur), nrow=Nneur)
@@ -96,6 +96,6 @@ DataNeur[,1]
 l=ncol(DataNeur)
 
 d=diff(DataNeur[1,2:l])
-BoxEst=matrix(c(1,0,Tfin,1),nrow=4)
+#BoxEst=matrix(c(1,0,Tfin,1),nrow=4)
 options(digits=12)
 
