@@ -17,7 +17,7 @@ points(Phi0$train,col="red");
 }
 
 NeuroCorr_SetParallel(0);
-
+scale=1e6;
 mtx=NeuroCorr_Compute(DataNeur,Nneur,scale,0.005,10,BoxEst,"byKind");
 
 NeuroCorr_CleanUp();

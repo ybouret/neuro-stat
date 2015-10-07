@@ -242,28 +242,29 @@ SEXP NeuroCorr_Compute(SEXP dataNeurR,
         Grouping policy = ParseGroupingFrom(groupingR);
         switch(policy)
         {
-            case GroupByKind: Rprintf("[NeuroCorr] Compute: Grouping By Kind\n"); break;
-            case GroupByBox:  Rprintf("[NeuroCorr] Compute: Grouping By Box\n" ); break;
+            case GroupByKind: Rprintf("[NeuroCorr] Compute | Grouping By Kind\n"); break;
+            case GroupByBox:  Rprintf("[NeuroCorr] Compute | Grouping By Box\n" ); break;
         }
 
         //______________________________________________________________________
         //
         // Get The Data
         //______________________________________________________________________
-        Rprintf("[NeuroCorr] Compute: Loading Data\n");
+        Rprintf("[NeuroCorr] Compute | Loading Data\n");
         auto_ptr<Records> pR( CreateRecordsFrom(dataNeurR,numNeuronesR,scaleR) );
         const Records &records = *pR;
+        Rprintf("[NeuroCorr] Compute | #neurones=%u, #trials=%u, scale=%g\n", unsigned(records.neurones), unsigned(records.trials), records.scale);
 
         //______________________________________________________________________
         //
         // Get The Boxes
         //______________________________________________________________________
-        Rprintf("[NeuroCorr] Compute: Loading Boxes\n");
+        Rprintf("[NeuroCorr] Compute | Loading Boxes\n");
         RMatrix<Real> MatBoxes(BoxesR);
         Boxes boxes(records.scale,MatBoxes);
         for(unsigned i=0;i<boxes.size;++i)
         {
-            Rprintf("[NeuroCorr] Compute: box #%u: trial=%u, %ld->%ld, kind=%d\n", i, unsigned(boxes[i].trial), long(boxes[i].tauStart), long(boxes[i].tauFinal), int(boxes[i].kind) );
+            Rprintf("[NeuroCorr] Compute |__box #%u: trial=%u, %ld->%ld, kind=%d\n", i, unsigned(boxes[i].trial), long(boxes[i].tauStart), long(boxes[i].tauFinal), int(boxes[i].kind) );
         }
 
         //______________________________________________________________________
@@ -271,8 +272,8 @@ SEXP NeuroCorr_Compute(SEXP dataNeurR,
         // Allocating Phi functions
         //______________________________________________________________________
         const int      K       = R2Scalar<int>(KR);
-        if(K<=0) throw exception("[NeuroCorr] Compute: K=%d", K);
-        Rprintf("[NeuroCorr] Compute: Allocating Memory for Phi | K=%d\n",K);
+        if(K<=0) throw exception("[NeuroCorr] Compute K=%d", K);
+        Rprintf("[NeuroCorr] Compute | Allocating Memory for Phi | K=%d\n",K);
         PHI Phi(records,K-1);
 
         //______________________________________________________________________
@@ -281,7 +282,7 @@ SEXP NeuroCorr_Compute(SEXP dataNeurR,
         //______________________________________________________________________
         const Unit     delta   = records.toUnit( R2Scalar<Real>(deltaR) );
         if(delta<=0) throw exception("[NeuroCorr] Compute: delta<=0 units");
-        Rprintf("[NeuroCorr] Compute: Computing Phi with delta=%ld units, #CPU=%u\n", long(delta),np);
+        Rprintf("[NeuroCorr] Compute | Computing Phi with delta=%ld units, #CPU=%u\n", long(delta),np);
         Phi.compute(delta,team);
 
 
@@ -290,16 +291,16 @@ SEXP NeuroCorr_Compute(SEXP dataNeurR,
         // Computing Matrices
         //______________________________________________________________________
         const size_t num_matrices = boxes.assignIndices(policy);
-        Rprintf("[NeuroCorr] Compute: Allocating %u Matrices of Moments (%ux%u)\n",unsigned(num_matrices), unsigned(Phi.dim), unsigned(Phi.neurones));
+        Rprintf("[NeuroCorr] Compute | Allocating %u Matrices of Moments (%ux%u)\n",unsigned(num_matrices), unsigned(Phi.dim), unsigned(Phi.neurones));
         MatricesOf<Unit,CMatrix> mu1(num_matrices,Phi.dim,Phi.neurones);
         MatricesOf<Unit,CMatrix> mu2(num_matrices,Phi.dim,Phi.neurones);
         MatricesOf<Unit,CMatrix> muA(num_matrices,Phi.dim,Phi.neurones);
-        Rprintf("[NeuroCorr] Compute: Computing Matrices of Moments with #CPU=%u\n", np);
+        Rprintf("[NeuroCorr] Compute | Computing Matrices of Moments with #CPU=%u\n", np);
         VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,team);
 
-        Rprintf("[NeuroCorr] Compute: Allocating %u Matrices of Moments (%ux%u)\n",unsigned(num_matrices), unsigned(Phi.dim), unsigned(Phi.dim));
+        Rprintf("[NeuroCorr] Compute | Allocating %u Matrices of Moments (%ux%u)\n",unsigned(num_matrices), unsigned(Phi.dim), unsigned(Phi.dim));
         MatricesOf<Unit,CMatrix> G(num_matrices,Phi.dim,Phi.dim);
-        Rprintf("[NeuroCorr] Compute: Computing Main Matrix with #CPU=%u\n", np);
+        Rprintf("[NeuroCorr] Compute | Computing Main Matrix with #CPU=%u\n", np);
         MatrixBuilder mbuild(G,boxes,Phi,team);
 
         //______________________________________________________________________

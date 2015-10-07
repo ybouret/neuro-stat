@@ -24,45 +24,11 @@ _Boxes(RBoxes.cols)
         const Unit tauFinal = toUnit(RBoxes(2,c));
         if(tauFinal<=tauStart) throw exception("Box #%u: times are not well separated (check scale=%g)",c,scale);
         const int  kind     = int(RBoxes(3,c));
-        const Box  box(iTrial,tauStart,tauFinal,kind);
+        const Box  box(iTrial-1,tauStart,tauFinal,kind);
         push_back(box);
     }
 }
 
-
-#if 0
-void Boxes:: buildDB( BoxKindDB &db ) const
-{
-    const _Boxes &self = *this;
-    sorted_vector<Box::Kind> kvec;
-    size_t                   knum=0;
-
-    for(size_t i=0;i<size;++i)
-    {
-        if(kvec.insert(self[i].kind)) ++knum;
-    }
-    //std::cerr << "kvec=" << kvec << std::endl;
-
-    db.free();
-    for(size_t i=0;i<size;++i)
-    {
-        const Box::Kind k = self[i].kind;
-        if(!db.search(k))
-        {
-            if(!db.insert(k,db.size())) throw exception("Unexpected Failure in Boxes::buildDB");
-        }
-    }
-
-    // one matrix per kind
-    for(size_t i=0;i<size;++i)
-    {
-        const Box &b = self[i];
-        const size_t *pIndx = db.search(b.kind);
-        if(!pIndx) throw exception("Boxes::buildDB:: unexpected missing box kind !!!");
-        b.indx = *pIndx;
-    }
-}
-#endif
 
 #include "yocto/ordered/sorted-vector.hpp"
 #include "yocto/associative/map.hpp"

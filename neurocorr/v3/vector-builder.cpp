@@ -1,4 +1,5 @@
 #include "vector-builder.hpp"
+#include "yocto/exception.hpp"
 
 VectorBuilder:: ~VectorBuilder() throw()
 {
@@ -23,10 +24,12 @@ box(0)
     Kernel             run(this,&VectorBuilder::compute);
     KernelExecutor    &kExec = *(para ? ((KernelExecutor *)para) : ((KernelExecutor *)&Phi.seq));
 
-    const size_t nb = boxes.size;
+    const size_t trials = Phi.trials;
+    const size_t nb     = boxes.size;
     for(size_t b=0;b<nb;++b)
     {
         box = &boxes[b];
+        if(box->trial>=trials) throw exception("Box[%u]: invalid trial index (%u/%u)",unsigned(b+1),unsigned(box->trial),unsigned(trials));
         kExec(run);
     }
 
@@ -53,9 +56,9 @@ box(0)
 
 void VectorBuilder:: compute(Context &ctx)
 {
-    assert(box!=NULL);
-    assert(box->trial<Phi.trials);
-    assert(box->indx<Mu1.count);
+    assert(box!=NULL);              //checked
+    assert(box->trial<Phi.trials);  //checked
+    assert(box->indx<Mu1.count);    //unchecked
 
     const size_t j = box->trial;
     const size_t I = box->indx;
