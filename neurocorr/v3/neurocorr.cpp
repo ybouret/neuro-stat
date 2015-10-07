@@ -222,6 +222,8 @@ void BuildListOfMoments(RList                 &L,
 
 }
 
+#include "yocto/math/kernel/jacobi.hpp"
+
 extern "C"
 SEXP NeuroCorr_Compute(SEXP dataNeurR,
                        SEXP numNeuronesR,
@@ -303,6 +305,7 @@ SEXP NeuroCorr_Compute(SEXP dataNeurR,
         Rprintf("[NeuroCorr] Compute | Computing Main Matrix with #CPU=%u\n", np);
         MatrixBuilder mbuild(G,boxes,Phi,team);
 
+
         //______________________________________________________________________
         //
         // Formating...
@@ -353,6 +356,34 @@ SEXP NeuroCorr_Compute(SEXP dataNeurR,
             ans.set(3,G_list);
         }
 
+#if 0
+        const size_t       n = Phi.dim;
+        math::matrix<Real> H(n,n);
+        math::matrix<Real> P(n,n);
+        vector<Real>       lam(n,0);
+
+        for(size_t count=0;count<G.count;++count)
+        {
+            const Matrix<Unit> &MG = G[count];
+            for(size_t i=0;i<n;++i)
+            {
+                math::matrix<Real>::row &r = H[i+1];
+                for(size_t j=0;j<n;++j)
+                {
+                    r[j+1] = MG(i,j);
+                }
+            }
+            std::cerr << "G=" << MG << std::endl;
+            //std::cerr << "H=" << H << std::endl;
+            if(!math::jacobi<Real>::build(H,lam,P))
+            {
+                throw exception("jacobi failure!");
+            }
+            math::jacobi<Real>::eigsrt(lam,P);
+            std::cerr << "lam=diag(" << lam << ");" << std::endl;
+            std::cerr << "P  =" << P << std::endl;
+        }
+#endif
         
         return *ans;
     }

@@ -41,7 +41,7 @@ MESSAGE( STATUS "Will Compile R Code..." )
 
 ADD_CUSTOM_TARGET(neurocorr_Rv3 ALL
 COMMAND
-${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/${THE_DLL} ${CMAKE_CURRENT_SOURCE_DIR}/neurocorr.cpp "$<TARGET_FILE:ncv3>" -L${SDK}/lib -lyocto
+${R_EXE} CMD SHLIB -c --preclean -o ${CMAKE_CURRENT_SOURCE_DIR}/${THE_DLL} ${CMAKE_CURRENT_SOURCE_DIR}/neurocorr.cpp "$<TARGET_FILE:ncv3>" -L${SDK}/lib -ly-mk -lyocto
 COMMENT "Building .Call module: ${THE_DLL}"
 SOURCES neurocorr.cpp neurocorr.R ${srcs} 
 gen_data_neur.R test-nc.R test-simu.R GeneYann.R SimuHawkesPatou.R
