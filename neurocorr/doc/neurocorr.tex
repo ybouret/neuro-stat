@@ -68,44 +68,66 @@ Mine: Specific List Fusion + doublons removal.
 A box $B$ is described by a trial index $j$ (with its $N$ corresponding trains, one per neurone),
 a starting time $\tau_{s}$, a final time $\tau_{f}$, and a biological behaviour $\beta$.
 
-\subsection{Right-hand column-vectors $\mathcal{B}$}
-The matrix $\mathcal{B}$ has $N$ columns and $1+NK$ rows.\\
-For each neurone $N_{j,i}$, we make a new column $\mathcal{B}_i$.
+\subsection{Right-hand column-vectors $\mu_1,\mu_2,\mu_A$}
+Those matrices  have $N$ columns and $1+NK$ rows.\\
+For each neurone $N_{j,i}$, we make a new column $\mu_{X,_i}$.
 We start by collecting the list $\lambda_{j,i}=\lbrace\tau_{j,i}\in\left[\tau_s,\tau_f\right]\rbrace$,
 which is a (shorter) list of sorted times.
 \begin{itemize}
 \item
-The first line is
+The first line are
 $$
-	\mathcal{B}_{i,0} = \#\lbrace\lambda_{j,i}\rbrace
+	\mu_1(0,i) = \mu_2(0,i) = \#\lbrace\lambda_{j,i}\rbrace, \mu_A(0,i) =1.
 $$
 \item
-The following lines are defined for each neurone $l$, append the $K$ values
+The following lines are defined for each neurone $l$, using the $K$ values
 $$
-	\mathcal{B}_{i,1+(Kl)+k} = \sum_{\tau\in\lambda_{j,i}} \Phi_{j,l,k,\delta}(\tau)
+	\mu_1(1+(Kl)+k,i) = \sum_{\tau\in\lambda_{j,i}} \Phi_{j,l,k,\delta}(\tau)
 $$
+$$
+	\mu_2(1+(Kl)+k,i) = \sum_{\tau\in\lambda_{j,i}} \left(\Phi_{j,l,k,\delta}(\tau)\right)^2
+$$
+$$
+	\mu_A(1+(Kl)+k,i) = \max_{\tau\in\lambda_{j,i}} \left| \Phi_{j,l,k,\delta}(\tau) \right|
+$$
+\item During aggregation, by kind or by box, we add values or take the maximum value of the target matrix...
 \end{itemize}
 
 \subsection{Left-hand Symmetric Matrix $\mathcal{G}$}
+\subsubsection{Definition}
 The $\mathcal{G}$ matrix has $1+NK$ lines and columns.
 \begin{itemize}
 	\item 
 		$$ 
-		\mathcal{G}_{0,0} = \tau_f-\tau_s+1
+		\mathcal{G}_{0,0} = \tau_f-\tau_s
 		$$
 	\item for each neurone $i$, then for each index $k$, using $I_{i,k}=1+K\times i + k$,
 		\begin{itemize}
-		\item compute the border term
+		\item compute the side terms
 		$$
 			\mathcal{G}_{0,I_{i,k}} = \mathcal{G}_{I_{i,k},0} = \int_{\tau_s}^{\tau_f} \Phi_{j,i,k}(\tau) \, \mathrm{d}\tau
 		$$
-		\item for each neuron $l\geq i$, then for each index $m$
+		\item for each neuron $l\geq i$, then for each index $m$, compute the core term
 		$$
 			\mathcal{G}_{I_{l,m},I_{i,k}} = \mathcal{G}_{I_{i,k},I_{l,m}}  =
 			\int_{\tau_s}^{\tau_f}  \Phi_{j,i,k}(\tau) \Phi_{j,l,m}(\tau) \, \mathrm{d}\tau
 		$$
 		\end{itemize}
-	
 \end{itemize}
+
+\subsubsection{Evaluation}
+\begin{itemize}
+\item The side terms may be evaluated in parallel from the precomputed functions.
+
+\item The core terms requires the computation of a function product, with is costly
+in memory and time. So it is better to evaluate a product, and then 
+every box using it perform its own evaluation.
+ The parallelism occurs
+on the computation of the different products.
+\end{itemize}
+
+\section{Coefficients Evaluation}
+
+
 
 \end{document}
