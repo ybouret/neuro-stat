@@ -38,6 +38,7 @@ YOCTO_UNIT_TEST_IMPL(phi)
     const double parSpeed = tmx.speed;
     std::cerr << "parSpeed=" << parSpeed << std::endl;
 
+    std::cerr << "speedUp =" << parSpeed/seqSpeed << std::endl;
 
 }
 YOCTO_UNIT_TEST_DONE()
