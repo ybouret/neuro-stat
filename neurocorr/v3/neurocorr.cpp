@@ -222,7 +222,7 @@ void BuildListOfMoments(RList                 &L,
 
 }
 
-#include "yocto/math/kernel/jacobi.hpp"
+//#include "yocto/math/core/symdiag.hpp"
 
 extern "C"
 SEXP NeuroCorr_Compute(SEXP dataNeurR,
