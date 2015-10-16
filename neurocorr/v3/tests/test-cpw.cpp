@@ -270,6 +270,12 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     const double Aopt0Time = chrono(Aopt0);
     std::cerr << "Araw0Time=" << Araw0Time << std::endl;
     std::cerr << "Aopt0Time=" << Aopt0Time << std::endl;
+    std::cerr << std::endl;
+
+    const double Araw1Time = chrono(Araw1);
+    const double Aopt1Time = chrono(Aopt1);
+    std::cerr << "Araw1Time=" << Araw1Time << std::endl;
+    std::cerr << "Aopt1Time=" << Aopt1Time << std::endl;
 
 
 }
