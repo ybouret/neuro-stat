@@ -81,12 +81,14 @@ YOCTO_UNIT_TEST_IMPL(cpw)
         }
     }
     
-    uint64_t raw0 =0, opt0=0;
-    uint64_t raw1 =0, opt1=0;
-    uint64_t raw2 =0, opt2=0;
-    uint64_t rawN =0, optN=0;
+    uint64_t raw0  = 0, opt0  = 0;
+    uint64_t raw1  = 0, opt1  = 0;
+    uint64_t raw2  = 0, opt2  = 0;
+    uint64_t rawN  = 0, optN  = 0;
     uint64_t Araw0 = 0, Aopt0 = 0;
     uint64_t Araw1 = 0, Aopt1 = 0;
+    uint64_t Araw2 = 0, Aopt2 = 0;
+    uint64_t ArawN = 0, AoptN = 0;
 
     uint64_t mark = 0;
     wtime chrono;
@@ -218,7 +220,22 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                     std::cerr << "raw=" << rawM << ", opt=" << optM << std::endl;
                     throw exception("Moments Mismatch @Level-2");
                 }
-                
+
+                MARK();
+                maxA_raw = F.maxAbsOn_(tau,tauEnd);
+                CHRONO(Araw2);
+
+                MARK();
+                maxA_opt = F.maxAbsOn(tau,tauEnd);
+                CHRONO(Aopt2);
+
+                if(maxA_raw!=maxA_opt)
+                {
+                    throw exception("Max Mismatch @Level-2 (%d/%d)", int(maxA_raw), int(maxA_opt) );
+                }
+
+
+
                 // level N...
                 F.free();
                 F.buildFrom(records(1), 5);
@@ -234,6 +251,20 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                     throw exception("Moments Mismatch @Level-N");
                 }
 
+                MARK();
+                maxA_raw = F.maxAbsOn_(tau,tauEnd);
+                CHRONO(ArawN);
+
+                MARK();
+                maxA_opt = F.maxAbsOn(tau,tauEnd);
+                CHRONO(AoptN);
+
+                if(maxA_raw!=maxA_opt)
+                {
+                    throw exception("Max Mismatch @Level-N (%d/%d)", int(maxA_raw), int(maxA_opt) );
+                }
+
+
 
             }
         }
@@ -246,36 +277,57 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     const double opt0Time = chrono(opt0);
     std::cerr << "raw0Time=" << raw0Time << std::endl;
     std::cerr << "opt0Time=" << opt0Time << std::endl;
+    std::cerr << "speedUp =" << raw0Time/opt0Time << std::endl;
     
     std::cerr << std::endl;
     const double raw1Time = chrono(raw1);
     const double opt1Time = chrono(opt1);
     std::cerr << "raw1Time=" << raw1Time << std::endl;
     std::cerr << "opt1Time=" << opt1Time << std::endl;
-    
+    std::cerr << "speedUp =" << raw1Time/opt1Time << std::endl;
+
+
     std::cerr << std::endl;
     const double raw2Time = chrono(raw2);
     const double opt2Time = chrono(opt2);
     std::cerr << "raw2Time=" << raw2Time << std::endl;
     std::cerr << "opt2Time=" << opt2Time << std::endl;
-    
+    std::cerr << "speedUp =" << raw2Time/opt2Time << std::endl;
+
     std::cerr << std::endl;
     const double rawNTime = chrono(rawN);
     const double optNTime = chrono(optN);
     std::cerr << "rawNTime=" << rawNTime << std::endl;
     std::cerr << "optNTime=" << optNTime << std::endl;
+    std::cerr << "speedUp =" << rawNTime/optNTime << std::endl;
 
     std::cerr << std::endl;
     const double Araw0Time = chrono(Araw0);
     const double Aopt0Time = chrono(Aopt0);
     std::cerr << "Araw0Time=" << Araw0Time << std::endl;
     std::cerr << "Aopt0Time=" << Aopt0Time << std::endl;
-    std::cerr << std::endl;
+    std::cerr << "speedUp =" << Araw0Time/Aopt0Time << std::endl;
 
+    std::cerr << std::endl;
     const double Araw1Time = chrono(Araw1);
     const double Aopt1Time = chrono(Aopt1);
     std::cerr << "Araw1Time=" << Araw1Time << std::endl;
     std::cerr << "Aopt1Time=" << Aopt1Time << std::endl;
+    std::cerr << "speedUp ="  << Araw1Time/Aopt1Time << std::endl;
+
+    std::cerr << std::endl;
+    const double Araw2Time = chrono(Araw2);
+    const double Aopt2Time = chrono(Aopt2);
+    std::cerr << "Araw2Time=" << Araw2Time << std::endl;
+    std::cerr << "Aopt2Time=" << Aopt2Time << std::endl;
+    std::cerr << "speedUp ="  << Araw2Time/Aopt2Time << std::endl;
+
+    std::cerr << std::endl;
+    const double ArawNTime = chrono(ArawN);
+    const double AoptNTime = chrono(AoptN);
+    std::cerr << "ArawNTime=" << ArawNTime << std::endl;
+    std::cerr << "AoptNTime=" << AoptNTime << std::endl;
+    std::cerr << "speedUp ="  << ArawNTime/AoptNTime << std::endl;
 
 
 }

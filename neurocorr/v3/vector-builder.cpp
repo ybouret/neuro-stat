@@ -161,7 +161,7 @@ void VectorBuilder:: computeA(Context &ctx)
         const size_t k = q%K; assert(K*i+k==q);
         ++q;
         const CPW   &PHI_j_i_k = PHI_j[i][k];
-        const Unit   maxA = PHI_j_i_k.maxAbsOn_(tauStart,tauFinal);
+        const Unit   maxA = PHI_j_i_k.maxAbsOn(tauStart,tauFinal);
         const Unit   curr = mA(q,0);
         if(maxA>curr) mA(q,0) = maxA;
     }
