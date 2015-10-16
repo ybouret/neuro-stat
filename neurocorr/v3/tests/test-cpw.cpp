@@ -85,6 +85,9 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     uint64_t raw1 =0, opt1=0;
     uint64_t raw2 =0, opt2=0;
     uint64_t rawN =0, optN=0;
+    uint64_t Araw0 = 0, Aopt0 = 0;
+    uint64_t Araw1 = 0, Aopt1 = 0;
+
     uint64_t mark = 0;
     wtime chrono;
     chrono.start();
@@ -151,8 +154,23 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                 {
                     throw exception("Moments Mismatch @Level-0");
                 }
-                
-                
+
+                Unit maxA_raw = 0;
+                Unit maxA_opt = 0;
+
+                MARK();
+                maxA_raw = F.maxAbsOn_(tau,tauEnd);
+                CHRONO(Araw0);
+
+                MARK();
+                maxA_opt = F.maxAbsOn(tau,tauEnd);
+                CHRONO(Aopt0);
+
+                if(maxA_raw!=maxA_opt)
+                {
+                    throw exception("Max Mismatch @Level-0");
+                }
+
                 // level 1
                 F.free();
                 F.foot = 2;
@@ -167,6 +185,21 @@ YOCTO_UNIT_TEST_IMPL(cpw)
                 {
                     throw exception("Moments Mismatch@Level-1");
                 }
+
+
+                MARK();
+                maxA_raw = F.maxAbsOn_(tau,tauEnd);
+                CHRONO(Araw1);
+
+                MARK();
+                maxA_opt = F.maxAbsOn(tau,tauEnd);
+                CHRONO(Aopt1);
+
+                if(maxA_raw!=maxA_opt)
+                {
+                    throw exception("Max Mismatch @Level-1");
+                }
+
 
                 // level 2
                 F.free();
@@ -231,6 +264,13 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     const double optNTime = chrono(optN);
     std::cerr << "rawNTime=" << rawNTime << std::endl;
     std::cerr << "optNTime=" << optNTime << std::endl;
+
+    std::cerr << std::endl;
+    const double Araw0Time = chrono(Araw0);
+    const double Aopt0Time = chrono(Aopt0);
+    std::cerr << "Araw0Time=" << Araw0Time << std::endl;
+    std::cerr << "Aopt0Time=" << Aopt0Time << std::endl;
+
 
 }
 YOCTO_UNIT_TEST_DONE()

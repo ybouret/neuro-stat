@@ -183,7 +183,7 @@ YOCTO_UNIT_TEST_IMPL(box)
     if(true)
     {
         test_vector_values(boxes, Phi, GroupByKind, para);
-        //test_matrix_values(boxes, Phi, GroupByKind, para);
+        test_matrix_values(boxes, Phi, GroupByKind, para);
     }
 
     if(false)

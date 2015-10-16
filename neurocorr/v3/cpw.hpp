@@ -87,6 +87,7 @@ public:
     Unit integrate(Unit tauStart, Unit tauFinal) const;
 
     Unit maxAbsOn_(Unit tauStart, Unit tauFinal) const;
+    Unit maxAbsOn( Unit tauStart, Unit tauFinal) const;
 
 
 private:
