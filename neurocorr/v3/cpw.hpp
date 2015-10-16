@@ -16,7 +16,7 @@ YOCTO_PAIR_END();
 
 typedef dynamic_slots<coord> _CPW;
 
-
+#if 0
 YOCTO_TRIPLE_DECL(Moments,Unit,mu1,Unit,mu2,Unit,muA);
 YOCTO_DISABLE_ASSIGN(Moments);
 public:
@@ -32,6 +32,22 @@ inline friend bool operator!=(const Moments &lhs,const Moments &rhs) throw()
 }
 
 YOCTO_TRIPLE_END();
+#endif
+
+YOCTO_PAIR_DECL(Moments,Unit,mu1,Unit,mu2);
+YOCTO_DISABLE_ASSIGN(Moments);
+public:
+inline Moments() throw() : mu1(0), mu2(0){}
+void   reset()   throw() { mu1=mu2=0; }
+inline friend bool operator==(const Moments &lhs,const Moments &rhs) throw()
+{
+    return (lhs.mu1 == rhs.mu1) && (lhs.mu1==rhs.mu2);
+}
+inline friend bool operator!=(const Moments &lhs,const Moments &rhs) throw()
+{
+    return (lhs.mu1!=rhs.mu1) || (lhs.mu2!=rhs.mu2);
+}
+YOCTO_PAIR_END();
 
 //! warning, assuming sorted coordinates
 class CPW : public object, public _CPW
@@ -69,6 +85,8 @@ public:
 
     //! integration, better function ?
     Unit integrate(Unit tauStart, Unit tauFinal) const;
+
+    Unit maxAbsOn_(Unit tauStart, Unit tauFinal) const;
 
 
 private:

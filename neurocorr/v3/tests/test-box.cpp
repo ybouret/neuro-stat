@@ -18,7 +18,7 @@ void test_vector_values( const Boxes &boxes,PHI &Phi, const Grouping group, Crew
     std::cerr << "Allocating " << num_matrices <<  " matrices, " << Phi.dim << " x " << Phi.neurones << std::endl;
     MatricesOf<Unit,CMatrix> mu1(num_matrices,Phi.dim,Phi.neurones);
     MatricesOf<Unit,CMatrix> mu2(num_matrices,Phi.dim,Phi.neurones);
-    MatricesOf<Unit,CMatrix> muA(num_matrices,Phi.dim,Phi.neurones);
+    MatricesOf<Unit,CMatrix> muA(num_matrices,Phi.dim,1);
 
     mu1.ld(0);
     mu2.ld(0);
@@ -180,13 +180,13 @@ YOCTO_UNIT_TEST_IMPL(box)
         }
     }
 
-    if(false)
+    if(true)
     {
         test_vector_values(boxes, Phi, GroupByKind, para);
-        test_matrix_values(boxes, Phi, GroupByKind, para);
+        //test_matrix_values(boxes, Phi, GroupByKind, para);
     }
 
-    if(true)
+    if(false)
     {
         test_vector_perfs( boxes, Phi, GroupByKind, para);
         test_matrix_perfs( boxes, Phi, GroupByKind,para);

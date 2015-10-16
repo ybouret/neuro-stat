@@ -296,7 +296,7 @@ SEXP NeuroCorr_Compute(SEXP dataNeurR,
         Rprintf("[NeuroCorr] Compute | Allocating %u Matrices of Moments (%ux%u)\n",unsigned(num_matrices), unsigned(Phi.dim), unsigned(Phi.neurones));
         MatricesOf<Unit,CMatrix> mu1(num_matrices,Phi.dim,Phi.neurones);
         MatricesOf<Unit,CMatrix> mu2(num_matrices,Phi.dim,Phi.neurones);
-        MatricesOf<Unit,CMatrix> muA(num_matrices,Phi.dim,Phi.neurones);
+        MatricesOf<Unit,CMatrix> muA(num_matrices,Phi.dim,1);
         Rprintf("[NeuroCorr] Compute | Computing Matrices of Moments with #CPU=%u\n", np);
         VectorBuilder vbuild(mu1,mu2,muA,boxes,Phi,team);
 

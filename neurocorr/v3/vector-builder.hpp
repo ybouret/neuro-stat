@@ -18,7 +18,7 @@ public:
 
      \param mu1      matrices of count,sum Phi...
      \param mu2      matrices of count^2,sum Phi^2
-     \param muA      matrices of 1, max(|Phi|)
+     \param muA      COLUMN matrices of 1, max(|Phi|)
      \param boxes    boxes with precomputed indices
      \param phi      precomputed phi functions with a given delta
      
@@ -34,6 +34,8 @@ public:
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(VectorBuilder);
     void compute(Context &ctx);
+    void computeA(Context &ctx);
+
     Matrices<Unit> &Mu1;
     Matrices<Unit> &Mu2;
     Matrices<Unit> &MuA;

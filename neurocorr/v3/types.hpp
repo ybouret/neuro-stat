@@ -10,6 +10,11 @@ using namespace yocto;
 typedef unit_t Unit;
 typedef double Real;
 
+inline Unit UnitAbs(const Unit x)  throw()
+{
+    return (x < 0) ? -x : x;
+}
+
 class Converter
 {
 public:

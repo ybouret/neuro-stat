@@ -69,7 +69,8 @@ A box $B$ is described by a trial index $j$ (with its $N$ corresponding trains, 
 a starting time $\tau_{s}$, a final time $\tau_{f}$, and a biological behaviour $\beta$.
 
 \subsection{Right-hand column-vectors $\mu_1,\mu_2,\mu_A$}
-Those matrices  have $N$ columns and $1+NK$ rows.\\
+{\bf For a given $j$}, the matrices $\mu_1$ and $\mu_2$ have $N$ columns and $1+NK$ rows,
+the matrix $\mu_A$ got 1 column and $1+NK$ rows.
 For each neurone $N_{j,i}$, we make a new column $\mu_{X,_i}$.
 We start by collecting the list $\lambda_{j,i}=\lbrace\tau_{j,i}\in\left[\tau_s,\tau_f\right]\rbrace$,
 which is a (shorter) list of sorted times.
@@ -77,7 +78,7 @@ which is a (shorter) list of sorted times.
 \item
 The first line are
 $$
-	\mu_1(0,i) = \mu_2(0,i) = \#\lbrace\lambda_{j,i}\rbrace, \mu_A(0,i) =1.
+	\mu_1(0,i) = \mu_2(0,i) = \#\lbrace\lambda_{j,i}\rbrace, \mu_A(0,0) =1.
 $$
 \item
 The following lines are defined for each neurone $l$, using the $K$ values
@@ -88,9 +89,9 @@ $$
 	\mu_2(1+(Kl)+k,i) = \sum_{\tau\in\lambda_{j,i}} \left(\Phi_{j,l,k,\delta}(\tau)\right)^2
 $$
 $$
-	\mu_A(1+(Kl)+k,i) = \max_{\tau\in\lambda_{j,i}} \left| \Phi_{j,l,k,\delta}(\tau) \right|
+	\mu_A(1+(Kl)+k,0) = \max_{\tau\in[\tau_s,\tau_f]} \left| \Phi_{j,l,k,\delta}(\tau) \right|
 $$
-\item During aggregation, by kind or by box, we add values or take the maximum value of the target matrix...
+\item During \emph{aggregation}, by kind or by box, we add values or take the maximum value of the target matrix...
 \end{itemize}
 
 \subsection{Left-hand Symmetric Matrix $\mathcal{G}$}
@@ -125,8 +126,6 @@ every box using it perform its own evaluation.
  The parallelism occurs
 on the computation of the different products.
 \end{itemize}
-
-\section{Coefficients Evaluation}
 
 
 

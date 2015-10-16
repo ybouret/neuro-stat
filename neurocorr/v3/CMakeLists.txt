@@ -12,6 +12,7 @@ cpw-from-spikes.cpp
 cpw-product.cpp
 cpw-eval.cpp
 cpw-intg.cpp
+cpw-max-on.cpp
 phi.hpp
 phi.cpp
 box.hpp

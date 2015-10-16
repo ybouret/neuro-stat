@@ -59,10 +59,7 @@ Unit CPW:: operator()(const Unit tau) const throw()
 }
 
 
-static inline Unit UnitAbs(const Unit x)  throw()
-{
-    return (x < 0) ? -x : x;
-}
+
 
 void CPW:: evalSumOn(const Train &tr,
                      const size_t length,
@@ -101,7 +98,7 @@ void CPW:: evalSumOn(const Train &tr,
         case 0:
             moments.mu1 = length*foot;
             moments.mu2 = moments.mu1 * foot;
-            moments.muA = UnitAbs(foot);
+            //moments.muA = UnitAbs(foot);
             return;
 
             //__________________________________________________________________
@@ -123,7 +120,7 @@ void CPW:: evalSumOn(const Train &tr,
                 // every times are "at right"
                 moments.mu1 = length      * C.value;
                 moments.mu2 = moments.mu1 * C.value;
-                moments.muA = UnitAbs(C.value);
+                //moments.muA = UnitAbs(C.value);
                 return;
             }
             else
@@ -134,7 +131,7 @@ void CPW:: evalSumOn(const Train &tr,
                     // every times are "at left"
                     moments.mu1 = foot*length;
                     moments.mu2 = moments.mu1 * foot;
-                    moments.muA = UnitAbs(foot);
+                    //moments.muA = UnitAbs(foot);
                     return;
                 }
                 else
@@ -165,7 +162,7 @@ void CPW:: evalSumOn(const Train &tr,
                     const Unit   m1Next = nNext*vNext;
                     moments.mu1 = m1Prev+m1Next;
                     moments.mu2 = m1Prev*vPrev+m1Next*vNext;
-                    moments.muA = max_of( UnitAbs(vPrev), UnitAbs(vNext) );
+                    //moments.muA = max_of( UnitAbs(vPrev), UnitAbs(vNext) );
                     return ;
                 }
             }
@@ -185,7 +182,7 @@ void CPW:: evalSumOn(const Train &tr,
     const Unit   tBot  = Cbot.tau;
     Unit   sum1 = 0;
     Unit   sum2 = 0;
-    Unit   maxA = 0;
+    //Unit   maxA = 0;
     size_t indx = 0;
     while(indx<length)
     {
@@ -197,11 +194,10 @@ void CPW:: evalSumOn(const Train &tr,
     }
     if(indx>0)
     {
-        //std::cerr << "indx=" << indx << "/length=" << length << " <=" << tBot << std::endl;
         sum1 = indx * foot;
-        maxA = UnitAbs(foot);
+        //maxA = UnitAbs(foot);
         sum2 = sum1 * foot;
-    } //else { std::cerr << "no points before <=" << tBot << std::endl; }
+    }
     
     //__________________________________________________________________________
     //
@@ -226,7 +222,7 @@ void CPW:: evalSumOn(const Train &tr,
         const Unit vCurr = self[jprev].value;
         sum1 += vCurr;
         sum2 += vCurr*vCurr;
-        maxA  = max_of(maxA,vCurr);
+        //maxA  = max_of(maxA,vCurr);
         ++indx;
     }
     
@@ -239,12 +235,12 @@ void CPW:: evalSumOn(const Train &tr,
         const Unit n1    = remaining*vCurr;
         sum1 += n1;
         sum2 += n1 * vCurr;
-        maxA = max_of(vCurr,maxA);
+        //maxA = max_of(vCurr,maxA);
     }
     
     moments.mu1 = sum1;
     moments.mu2 = sum2;
-    moments.muA = maxA;
+    //moments.muA = maxA;
 }
 
 void CPW:: evalSumOn_(const Train &tr,
@@ -264,18 +260,18 @@ void CPW:: evalSumOn_(const Train &tr,
     const CPW &self = *this;
     Unit sum1  = 0;
     Unit sum2  = 0;
-    Unit maxA  = 0;
+    //Unit maxA  = 0;
     for(size_t i=0,k=offset;i<length;++i,++k)
     {
         const Unit tmp = self(tr[k]);
         sum1 += tmp;
-        const Unit a = UnitAbs(tmp);
+        //const Unit a = UnitAbs(tmp);
         sum2 += tmp*tmp;
-        if(a>maxA) maxA = a;
+        //if(a>maxA) maxA = a;
     }
     moments.mu1 = sum1;
     moments.mu2 = sum2;
-    moments.muA = maxA;
+    //moments.muA = maxA;
 }
 
 
