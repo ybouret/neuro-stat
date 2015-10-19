@@ -8,8 +8,9 @@ typedef vector<CPW> CPW_Functions;
 class PHI_Functions : public CPW_Functions
 {
 public:
-    const array<Unit> &train;
+    const array<Unit> *train;
     explicit PHI_Functions(const array<Unit> &spikes, const size_t extra);
+    explicit PHI_Functions() throw();
     virtual ~PHI_Functions() throw();
 
     //! build all function using delta
@@ -27,11 +28,24 @@ typedef matrix<PHI_Functions> _PHI;
 class PHI : public _PHI
 {
 public:
-    explicit PHI(const Records &records);
+    explicit PHI(const Records &records,const size_t extra);
     virtual ~PHI() throw();
+
+    const size_t K;         //!< 1+extra
+    const size_t &trials;   //!< rows
+    const size_t &neurones; //!< cols;
+    threading::sequential_executor kSeq;
+
+    void build(const Unit deltaUnits, threading::crew *team );
+
+
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(PHI);
+    Unit              delta;   //!< shared delta for threads
+    threading::kernel kBuild;  //!< the kernel
+    void onBuild( threading::context &ctx );
+
 };
 
 
