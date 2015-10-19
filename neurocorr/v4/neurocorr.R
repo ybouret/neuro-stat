@@ -23,3 +23,11 @@ NeuroCorr_Version <- function()
 {
     .Call("NeuroCorr_Version");
 }
+
+NeuroCorr_CheckData <- function(dataNeur,numNeurones,scale)
+{
+    if( !is.matrix(dataNeur) )    stop("[CheckData] : dataNeur must be a matrix");
+    if( !is.double(numNeurones) ) stop("[CheckData] : numNeurones must be a number");
+    if( !is.double(scale)       ) stop("[CheckData] : scale must be a number");
+    .Call("NeuroCorr_CheckData",dataNeur,numNeurones,scale);
+}

@@ -7,7 +7,7 @@ source("neurocorr.R");
 Nneur=8;
 scale=1e6;
 
-
+NeuroCorr_CheckData(DataNeur,Nneur,scale);
 
 delta=0.005;
 K=20;
