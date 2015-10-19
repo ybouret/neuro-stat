@@ -1,6 +1,10 @@
 ADD_LIBRARY(ncv4 STATIC
 types.hpp
 types.cpp
+train.hpp
+train.cpp
+records.hpp
+records.cpp
 )
 
 ADD_SUBDIRECTORY(tests)
