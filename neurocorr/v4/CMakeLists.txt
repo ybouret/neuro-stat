@@ -5,6 +5,8 @@ train.hpp
 train.cpp
 records.hpp
 records.cpp
+cpw.hpp
+cpw.cpp
 )
 
 ADD_SUBDIRECTORY(tests)
