@@ -24,7 +24,10 @@ public:
 
     const Real scale;
 
+    //! convention is 'to nearest'
     Unit toUnit(const Real x) const throw();
+
+    //! u/scale
     Real toReal(const Unit u) const throw();
 
 private:
