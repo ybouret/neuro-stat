@@ -3,6 +3,7 @@ main.cpp
 test-types.cpp
 test-records.cpp
 test-cpw.cpp
+test-phi.cpp
 )
 
 TARGET_LINK_LIBRARIES(test-ncv4 ncv4)

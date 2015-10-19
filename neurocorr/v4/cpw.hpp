@@ -4,8 +4,10 @@
 #include "train.hpp"
 #include "yocto/container/tuple.hpp"
 
-YOCTO_PAIR_DECL(coord,const Unit,tau,Unit,value);
+YOCTO_PAIR_DECL(coord,const Unit,tau,const Unit,value);
 YOCTO_PAIR_END();
+
+YOCTO_SUPPORT_C_STYLE_OPS(coord);
 
 typedef vector<coord> _CPW;
 
@@ -14,12 +16,16 @@ class CPW : public _CPW
 public:
     Unit foot;
     explicit CPW() throw();
+    explicit CPW(size_t n);
     virtual ~CPW() throw();
     CPW(const CPW &);
 
     void add(const Unit tau,const Unit value);
-
     void save(const char *filename) const;
+
+    //! thread save if memory preallocated
+    void buildFrom(const array<Unit> &train, const Unit delta);
+    
 
 private:
     YOCTO_DISABLE_ASSIGN(CPW);

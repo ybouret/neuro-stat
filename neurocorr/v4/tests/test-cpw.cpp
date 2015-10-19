@@ -7,6 +7,7 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     std::cerr << "f0=" << F << std::endl;
     F.save("f0.dat");
 
+
     F.add(0,1);
     std::cerr << "f1=" << F << std::endl;
     F.save("f1.dat");
@@ -16,5 +17,19 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     F.save("f2.dat");
 
 
+    Train train;
+    F.buildFrom(train, 5);
+    F.save("phi0.dat");
+
+    train.push_back(0);
+    F.buildFrom(train, 5);
+    F.save("phi1.dat");
+
+    train.push_back(1);
+    F.buildFrom(train,5);
+    F.save("phi2.dat");
+    train.push_back(5);
+    F.buildFrom(train,5);
+    F.save("phi3.dat");
 }
 YOCTO_UNIT_TEST_DONE()

@@ -7,6 +7,9 @@ records.hpp
 records.cpp
 cpw.hpp
 cpw.cpp
+cpw-build.cpp
+phi.hpp
+phi.cpp
 )
 
 ADD_SUBDIRECTORY(tests)

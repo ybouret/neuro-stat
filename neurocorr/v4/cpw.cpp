@@ -4,6 +4,11 @@ CPW:: CPW() throw() : _CPW(), foot(0)
 {
 }
 
+CPW:: CPW(size_t n) : _CPW(n,as_capacity), foot(0)
+{
+}
+
+
 CPW:: ~CPW() throw()
 {
 }
@@ -63,7 +68,7 @@ void CPW:: save(const char *filename) const
             fp("%ld %ld\n",long(self[1].tau), foot);
             for(size_t i=1;i<n;++i)
             {
-                fp("%ld %ld\n", long(self[i].tau), long(self[i].value));
+                fp("%ld %ld\n", long(self[i].tau),   long(self[i].value));
                 fp("%ld %ld\n", long(self[i+1].tau), long(self[i].value));
             }
             fp("%ld %ld\n", long(self[n].tau), long(self[n].value));
