@@ -31,6 +31,7 @@ public:
 
     void add(const Unit tau,const Unit value);
     void save(const char *filename) const;
+    void save_sample(const char *filename) const;
     friend bool operator==(const CPW &lhs, const CPW &rhs) throw();
     friend bool operator!=(const CPW &lhs, const CPW &rhs) throw();
 

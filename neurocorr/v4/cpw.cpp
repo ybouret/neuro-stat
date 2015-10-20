@@ -61,7 +61,8 @@ void CPW:: add(const Unit tau,const Unit value)
 Unit CPW:: operator()(const Unit tau) const throw()
 {
     const size_t n = size();
-    switch (n) {
+    switch (n)
+    {
         case 0:
             return foot;
 
@@ -76,7 +77,33 @@ Unit CPW:: operator()(const Unit tau) const throw()
     }
     assert(n>=2);
 
-    return 0;
+
+    const coord lo = front();
+    if(tau<=lo.tau) return foot;
+
+    const coord hi = back();
+    if(tau>hi.tau) return hi.value;
+
+    const _CPW &self = *this;
+    size_t jlo = 1;
+    size_t jhi = n;
+
+    // find tau[jlo]<tau<=tau[jhi]
+    while(jhi-jlo>1)
+    {
+        const size_t jmid = (jhi+jlo)>>1;
+        const Unit   tmid = self[jmid].tau;
+        if(tmid<tau)
+        {
+            jlo = jmid;
+        }
+        else
+        {
+            jhi = jmid;
+        }
+    }
+
+    return self[jlo].value;
 }
 
 #include "yocto/ios/ocstream.hpp"
@@ -116,3 +143,23 @@ void CPW:: save(const char *filename) const
 
 
 }
+
+void CPW:: save_sample(const char *filename) const
+{
+    ios::wcstream fp(filename);
+    const size_t n = size();
+
+    Unit tauLo = 0;
+    Unit tauHi = 0;
+    switch(n)
+    {
+        case 0: tauLo=-1;tauHi=1; break;
+        default: tauLo=front().tau-1;tauHi=back().tau+1;break;
+    }
+    for(Unit tau=tauLo;tau<=tauHi;++tau)
+    {
+        const Unit v =(*this)(tau);
+        fp("%ld %ld\n", long(tau), long(v));
+    }
+}
+
