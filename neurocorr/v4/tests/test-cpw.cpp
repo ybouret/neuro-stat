@@ -27,9 +27,11 @@ YOCTO_UNIT_TEST_IMPL(cpw)
     F.buildFrom(train, 5, shift);
     F.save("phi1.dat");
 
+
     train.push_back(1);
     F.buildFrom(train,5,shift);
     F.save("phi2.dat");
+
     return 0;
 
     train.push_back(5);

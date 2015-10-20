@@ -18,6 +18,24 @@ CPW:: CPW( const CPW &other ) : _CPW(other), foot(other.foot)
 }
 
 
+bool operator==(const CPW &lhs, const CPW &rhs) throw()
+{
+    if(lhs.size()!=rhs.size()) return false;
+    if(lhs.foot!=rhs.foot)     return false;
+    for(size_t i=lhs.size();i>0;--i)
+    {
+        if(lhs[i]!=rhs[i]) return false;
+    }
+    return true;
+}
+
+bool operator!=(const CPW &lhs, const CPW &rhs) throw()
+{
+    return !(lhs==rhs);
+}
+
+
+
 void CPW:: add(const Unit tau,const Unit value)
 {
     append<Unit,Unit>(tau,value);
@@ -38,6 +56,27 @@ void CPW:: add(const Unit tau,const Unit value)
         --n;
     }
     
+}
+
+Unit CPW:: operator()(const Unit tau) const throw()
+{
+    const size_t n = size();
+    switch (n) {
+        case 0:
+            return foot;
+
+        case 1:
+        {
+            const coord C = front();
+            return (tau<=C.tau) ? foot : C.value;
+        }
+
+        default:
+            break;
+    }
+    assert(n>=2);
+
+    return 0;
 }
 
 #include "yocto/ios/ocstream.hpp"

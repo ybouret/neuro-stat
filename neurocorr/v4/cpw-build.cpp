@@ -8,8 +8,8 @@ void CPW:: buildFrom(const UArray &train, const Unit delta, UVector &shift)
     shift.free();
     
     const size_t ns = train.size();
-    ensure(2*ns);
-    shift.ensure(ns);
+    ensure(2*ns);     assert(this->capacity()>=2*ns);
+    shift.ensure(ns); assert(shift.capacity()>=ns);
     
     for(size_t i=1;i<=ns;++i)
     {

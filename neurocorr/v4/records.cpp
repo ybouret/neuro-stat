@@ -1,4 +1,5 @@
 #include "records.hpp"
+#include "yocto/code/utils.hpp"
 
 Records::~Records() throw()
 {
@@ -11,7 +12,9 @@ Converter(scal),
 _Records(),
 trials(rows),
 neurones(cols),
-maxCount(0)
+maxCount(0),
+minTau(0),
+maxTau(0)
 {
     static const char __fn[] = "Records";
 
@@ -30,6 +33,10 @@ maxCount(0)
     _Records &self = *this;
     size_t    tr   = 0;
     size_t   &count = (size_t &)maxCount;
+    Unit     &tmin  = (Unit &)minTau;
+    Unit     &tmax  = (Unit &)maxTau;
+    bool      init  = true;
+
     for(size_t j=1;j<=numTrials;++j)
     {
         for(size_t i=1;i<=numNeurones;++i)
@@ -42,7 +49,17 @@ maxCount(0)
             train.make(ns);
             for(size_t k=1,c=2;k<=ns;++k,++c)
             {
-                train[k] = toUnit( data(tr,c) );
+                const Unit tau = (train[k] = toUnit( data(tr,c) ));
+                if(init)
+                {
+                    tmin = tmax = tau;
+                }
+                else
+                {
+                    tmin = min_of(tmin,tau);
+                    tmax = max_of(tmax,tau);
+                    init = false;
+                }
             }
             assert(train.size()==ns);
             for(size_t k=2;k<=ns;++k)
