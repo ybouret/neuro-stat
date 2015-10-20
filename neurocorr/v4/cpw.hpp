@@ -18,6 +18,18 @@ YOCTO_PAIR_END();
 
 YOCTO_SUPPORT_C_STYLE_OPS(coord);
 
+YOCTO_PAIR_DECL(Moments,Unit,mu1,Unit,mu2);
+inline Moments() throw() : mu1(0), mu2(0) {}
+inline friend bool operator==(const Moments &lhs,const Moments &rhs) throw()
+{
+    return lhs.mu1==rhs.mu1 && lhs.mu2==rhs.mu2;
+}
+inline friend bool operator!=(const Moments &lhs, const Moments &rhs) throw()
+{
+    return lhs.mu1!=rhs.mu1 || lhs.mu2!=rhs.mu2;
+}
+YOCTO_PAIR_END();
+
 typedef vector<coord> _CPW;
 
 class CPW : public _CPW
@@ -40,6 +52,12 @@ public:
 
     //! access
     Unit operator()( const Unit tau ) const throw();
+
+    //! evaluating moments
+    void evalMoments_(const UArray &tau,
+                      const size_t start,
+                      const size_t count,
+                      Moments     &moments) const throw();
 
 
 private:

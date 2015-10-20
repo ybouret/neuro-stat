@@ -1,21 +1,17 @@
-#include "train.hpp"
+#include "locate.hpp"
 
-
-size_t Train:: locateIndicesWithin_(const Unit tauStart,
-                                    const Unit tauFinal,
-                                    size_t    &starting ) const throw()
+size_t Locate:: IndicesWithin_( const UArray &tau, const Unit tauStart, const Unit tauFinal, size_t &starting )  throw()
 {
     if(tauStart>=tauFinal)
         return 0;
     else
     {
-        const size_t  n    = size();
-        const _Train &self = *this;
+        const size_t  n    = tau.size();
         size_t i=1;
         size_t org=0;
         for(;i<=n;++i)
         {
-            if(self[i]>tauStart)
+            if(tau[i]>tauStart)
             {
                 org = i;
                 break;
@@ -29,7 +25,7 @@ size_t Train:: locateIndicesWithin_(const Unit tauStart,
 
         for(;i<=n;++i)
         {
-            if(self[i]>tauFinal)
+            if(tau[i]>tauFinal)
             {
                 break;
             }
@@ -38,17 +34,17 @@ size_t Train:: locateIndicesWithin_(const Unit tauStart,
         starting = org;
         return i-org;
     }
+
 }
 
 
-//! find indices such that tauStart<train[i]<=tauFinal
-size_t Train:: locateIndicesWithin( const Unit tauStart, const Unit tauFinal, size_t &starting ) const throw()
+size_t Locate:: IndicesWithin( const UArray &tau, const Unit tauStart, const Unit tauFinal, size_t &starting )  throw()
 {
     if(tauStart>=tauFinal)
         return 0;
     else
     {
-        const size_t  n    = size();
+        const size_t  n    = tau.size();
         //std::cerr << "n=" << n << std::endl;
         //______________________________________________________________________
         //
@@ -61,8 +57,8 @@ size_t Train:: locateIndicesWithin( const Unit tauStart, const Unit tauFinal, si
 
             case 1:
             {
-                const Unit tau = front();
-                if(tauStart<tau&&tau<=tauFinal)
+                const Unit tt = tau[1];
+                if(tauStart<tt&&tt<=tauFinal)
                 {
                     starting=1;
                     return 1;
@@ -83,8 +79,7 @@ size_t Train:: locateIndicesWithin( const Unit tauStart, const Unit tauFinal, si
         //
         // Get rid of trivial cases, level 2
         //______________________________________________________________________
-        const _Train &tau   = *this;
-        const Unit    lower = tau.front();
+        const Unit    lower = tau[1];
         if(tauFinal<lower)
         {
             // everybody at left
@@ -92,7 +87,7 @@ size_t Train:: locateIndicesWithin( const Unit tauStart, const Unit tauFinal, si
         }
         else
         {
-            const Unit upper = tau.back();
+            const Unit upper = tau[n];
             if(tauStart>=upper)
             {
                 //everybody at right
@@ -160,7 +155,7 @@ size_t Train:: locateIndicesWithin( const Unit tauStart, const Unit tauFinal, si
                 return ++end-org;
             }
         }
-
+        
     }
 
 }

@@ -21,18 +21,13 @@ public:
 
     //! copy if needed
     Train(const Train &other);
-
-
-    //! find indices such that tauStart<train[i]<=tauFinal
-    size_t locateIndicesWithin_( const Unit tauStart, const Unit tauFinal, size_t &starting ) const throw();
-
-    //! find indices such that tauStart<train[i]<=tauFinal
-    size_t locateIndicesWithin( const Unit tauStart, const Unit tauFinal, size_t &starting ) const throw();
-
+    
 
 private:
     YOCTO_DISABLE_ASSIGN(Train);
 };
+
+
 
 
 #endif

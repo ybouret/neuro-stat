@@ -1,4 +1,5 @@
 #include "../records.hpp"
+#include "../locate.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/sys/wtime.hpp"
 YOCTO_UNIT_TEST_IMPL(locate)
@@ -34,7 +35,7 @@ YOCTO_UNIT_TEST_IMPL(locate)
                 {
                     const Unit   tauFinal = tauStart+w;
                     mark = chrono.ticks();
-                    const size_t nraw     = train.locateIndicesWithin_(tauStart,tauFinal, iraw);
+                    const size_t nraw     = Locate::IndicesWithin_(train,tauStart,tauFinal,iraw);
                     raw64 += chrono.ticks() - mark;
 
 
@@ -67,7 +68,7 @@ YOCTO_UNIT_TEST_IMPL(locate)
                     }
 
                     mark = chrono.ticks();
-                    const size_t nopt     = train.locateIndicesWithin(tauStart,tauFinal,iopt);
+                    const size_t nopt     = Locate::IndicesWithin(train,tauStart,tauFinal,iopt);
                     opt64 += chrono.ticks()-mark;
 
 

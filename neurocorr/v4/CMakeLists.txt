@@ -3,12 +3,14 @@ types.hpp
 types.cpp
 train.hpp
 train.cpp
-train-locate.cpp
+locate.hpp
+locate.cpp
 records.hpp
 records.cpp
 cpw.hpp
 cpw.cpp
 cpw-build.cpp
+cpw-moments.cpp
 phi.hpp
 phi.cpp
 )
