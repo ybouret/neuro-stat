@@ -72,24 +72,24 @@ a starting time $\tau_{s}$, a final time $\tau_{f}$, and a biological behaviour 
 {\bf For a given $j$}, the matrices $\mu_1$ and $\mu_2$ have $N$ columns and $1+NK$ rows,
 the matrix $\mu_A$ got 1 column and $1+NK$ rows.
 For each neurone $N_{j,i}$, we make a new column $\mu_{X,_i}$.
-We start by collecting the list $\lambda_{j,i}=\lbrace\tau_{j,i}\in\left[\tau_s,\tau_f\right]\rbrace$,
+We start by collecting the list $\lambda_{j,i}=\lbrace\tau_{j,i}\in\left\rbrack\tau_s,\tau_f\right\rbrack\rbrace$,
 which is a (shorter) list of sorted times.
 \begin{itemize}
 \item
 The first line are
 $$
-	\mu_1(0,i) = \mu_2(0,i) = \#\lbrace\lambda_{j,i}\rbrace, \mu_A(0,0) =1.
+	\mu_1(1,i) = \mu_2(1,i) = \#\lbrace\lambda_{j,i}\rbrace, \mu_A(1,1) =1.
 $$
 \item
 The following lines are defined for each neurone $l$, using the $K$ values
 $$
-	\mu_1(1+(Kl)+k,i) = \sum_{\tau\in\lambda_{j,i}} \Phi_{j,l,k,\delta}(\tau)
+	\mu_1(2+(Kl)+k,i) = \sum_{\tau\in\lambda_{j,i}} \Phi_{j,l,k,\delta}(\tau)
 $$
 $$
-	\mu_2(1+(Kl)+k,i) = \sum_{\tau\in\lambda_{j,i}} \left(\Phi_{j,l,k,\delta}(\tau)\right)^2
+	\mu_2(2+(Kl)+k,i) = \sum_{\tau\in\lambda_{j,i}} \left(\Phi_{j,l,k,\delta}(\tau)\right)^2
 $$
 $$
-	\mu_A(1+(Kl)+k,0) = \max_{\tau\in[\tau_s,\tau_f]} \left| \Phi_{j,l,k,\delta}(\tau) \right|
+	\mu_A(2+(Kl)+k,i) = \max_{\tau\in\left\rbrack\tau_s,\tau_f\right\rbrack} \left| \Phi_{j,l,k,\delta}(\tau) \right|
 $$
 \item During \emph{aggregation}, by kind or by box, we add values or take the maximum value of the target matrix...
 \end{itemize}
@@ -100,13 +100,13 @@ The $\mathcal{G}$ matrix has $1+NK$ lines and columns.
 \begin{itemize}
 	\item 
 		$$ 
-		\mathcal{G}_{0,0} = \tau_f-\tau_s
+		\mathcal{G}_{1,1} = \tau_f-\tau_s
 		$$
 	\item for each neurone $i$, then for each index $k$, using $I_{i,k}=1+K\times i + k$,
 		\begin{itemize}
 		\item compute the side terms
 		$$
-			\mathcal{G}_{0,I_{i,k}} = \mathcal{G}_{I_{i,k},0} = \int_{\tau_s}^{\tau_f} \Phi_{j,i,k}(\tau) \, \mathrm{d}\tau
+			\mathcal{G}_{1,I_{i,k}} = \mathcal{G}_{I_{i,k},1} = \int_{\tau_s}^{\tau_f} \Phi_{j,i,k}(\tau) \, \mathrm{d}\tau
 		$$
 		\item for each neuron $l\geq i$, then for each index $m$, compute the core term
 		$$
