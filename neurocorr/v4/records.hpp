@@ -19,7 +19,8 @@ public:
 
     const size_t &trials;
     const size_t &neurones;
-
+    const size_t  maxCount;
+    
     static Records *GenerateRandom(const size_t num_neurones,
                                    const size_t num_trials,
                                    const size_t max_spikes,

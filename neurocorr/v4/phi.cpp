@@ -24,7 +24,7 @@ train(&spikes)
     }
 }
 
-void PHI_Functions:: build(const Unit delta)
+void PHI_Functions:: build(const Unit delta, UVector &shift)
 {
     assert(size()>0);
     assert(train);
@@ -33,11 +33,11 @@ void PHI_Functions:: build(const Unit delta)
     CPW_Functions &self = *this;
 
     CPW &phi1 = self[1];
-    phi1.buildFrom(*train,delta);
-    Unit         shift = delta;
-    const size_t K     = size();
-    const size_t n     = phi1.size();
-    for(size_t k=2;k<=K;++k,shift+=delta)
+    phi1.buildFrom(*train,delta,shift);
+    Unit         k_delta = delta;
+    const size_t K       = size();
+    const size_t n       = phi1.size();
+    for(size_t k=2;k<=K;++k,k_delta+=delta)
     {
         CPW &phi_k = self[k];
         phi_k.foot = phi1.foot;
@@ -45,7 +45,7 @@ void PHI_Functions:: build(const Unit delta)
         for(size_t i=1;i<=n;++i)
         {
             coord tmp(phi1[i]);
-            (Unit &)(tmp.tau) += shift;
+            (Unit &)(tmp.tau) += k_delta;
             phi_k.__push_back(tmp);
         }
     }
@@ -64,23 +64,34 @@ _PHI(records,extra,__buildFlags),
 K(1+extra),
 trials(rows),
 neurones(cols),
+maxCount(records.maxCount),
 delta(0),
 kBuild(this, &PHI::onBuild)
 {
 }
 
+#include "yocto/sequence/slots.hpp"
 
 void PHI:: build(const Unit deltaUnits, threading::crew *team)
 {
     threading::kernel_executor &kExec = team ? *static_cast<threading::kernel_executor*>(team) : kSeq;
     delta = deltaUnits;
+    
 
+    const size_t nthr = kExec.num_threads();
+    shifts.ensure(nthr);
+    while(shifts.size()<nthr)
+    {
+        const UVecPtr p( new UVector(maxCount) );
+        shifts.__push_back(p);
+    }
+    
     kExec( kBuild );
 }
 
 #include "yocto/code/unroll.hpp"
 
-#define NC_BUILD_PHI(I) self.fetch(I).build(delta)
+#define NC_BUILD_PHI(I) self.fetch(I).build(delta,shift)
 
 void PHI:: onBuild(threading::context &ctx)
 {
@@ -88,5 +99,7 @@ void PHI:: onBuild(threading::context &ctx)
     size_t offset = 0;
     size_t length = items;
     ctx.split(offset,length);
+    assert(shifts.size()>=ctx.size);
+    UVector &shift = *shifts[ctx.indx];
     YOCTO_LOOP_FUNC(length,NC_BUILD_PHI, offset);
 }

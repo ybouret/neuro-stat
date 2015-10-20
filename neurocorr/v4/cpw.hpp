@@ -24,7 +24,7 @@ public:
     void save(const char *filename) const;
 
     //! thread save if memory preallocated
-    void buildFrom(const array<Unit> &train, const Unit delta);
+    void buildFrom(const UArray &train, const Unit delta, UVector &shift);
     
 
 private:

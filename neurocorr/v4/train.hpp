@@ -4,7 +4,7 @@
 #include "types.hpp"
 #include "yocto/sequence/vector.hpp"
 
-typedef vector<Unit> _Train;
+typedef UVector _Train;
 
 //! a vector of 1..size() units
 class Train : public _Train

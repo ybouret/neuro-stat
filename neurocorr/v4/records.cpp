@@ -10,7 +10,8 @@ Records:: Records(const Real             scal,
 Converter(scal),
 _Records(),
 trials(rows),
-neurones(cols)
+neurones(cols),
+maxCount(0)
 {
     static const char __fn[] = "Records";
 
@@ -28,6 +29,7 @@ neurones(cols)
     const size_t max_spikes = data.cols-1;
     _Records &self = *this;
     size_t    tr   = 0;
+    size_t   &count = (size_t &)maxCount;
     for(size_t j=1;j<=numTrials;++j)
     {
         for(size_t i=1;i<=numNeurones;++i)
@@ -56,6 +58,7 @@ neurones(cols)
                                     data(tr,k),
                                     long(train[k-1]));
             }
+            count = max_of(count, ns);
         }
     }
 

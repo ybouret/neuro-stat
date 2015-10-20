@@ -1,22 +1,32 @@
 #include "cpw.hpp"
 
-void CPW:: buildFrom(const array<Unit> &train, const Unit delta)
+void CPW:: buildFrom(const UArray &train, const Unit delta, UVector &shift)
 {
     foot = 0;
+    
     free();
+    shift.free();
+    
     const size_t ns = train.size();
     ensure(2*ns);
-
+    shift.ensure(ns);
+    
+    for(size_t i=1;i<=ns;++i)
+    {
+        shift.__push_back( train[i]+delta );
+    }
+    assert(ns==shift.size());
     size_t iTrain = 1;
     size_t iShift = 1;
 
     Unit curr = 0;
-
+    
+    
     // fusion, iTrain will end first
     while(iTrain<=ns)
     {
         const Unit tauTrain = train[iTrain];
-        const Unit tauShift = train[iShift]+delta;
+        const Unit tauShift = shift[iShift];
         if(tauTrain<tauShift)
         {
             const coord point(tauTrain,++curr);
@@ -43,8 +53,7 @@ void CPW:: buildFrom(const array<Unit> &train, const Unit delta)
     // final points
     while(iShift<=ns)
     {
-        const Unit tauShift = train[iShift]+delta;
-        const coord point(tauShift,--curr);
+        const coord point(shift[iShift],--curr);
         __push_back(point);
         ++iShift;
     }
