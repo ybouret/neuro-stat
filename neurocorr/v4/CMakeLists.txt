@@ -11,7 +11,7 @@ cpw.hpp
 cpw.cpp
 cpw-build.cpp
 cpw-moments.cpp
-cpw-max-on.cpp
+cpw-max-abs-on.cpp
 phi.hpp
 phi.cpp
 )
