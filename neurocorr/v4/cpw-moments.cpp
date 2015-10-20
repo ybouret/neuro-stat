@@ -109,7 +109,7 @@ void CPW:: evalMoments(const UArray &tau_,
                 }
             }
 
-                
+
             default:
                 break;
         }
@@ -135,14 +135,92 @@ void CPW:: evalMoments(const UArray &tau_,
             {
                 //______________________________________________________________
                 //
-                // Generic case
+                //
+                // Generic case, at least one point
+                //
                 //______________________________________________________________
+                size_t i=1;
+                for(;i<=count;++i)
+                {
+                    if(bot.tau<tau[i])
+                    {
+                        break;
+                    }
+                }
 
+                //______________________________________________________________
+                //
+                // initialize with the number of points before bot.tau
+                //______________________________________________________________
+                {
+                    const Unit nf = i-1;
+                    mu1 = nf  * foot;
+                    mu2 = mu1 * foot;
+                }
+
+                //______________________________________________________________
+                //
+                // locate self[jlo].tau<tau[i]<=self[jup].tau
+                //______________________________________________________________
+                const _CPW &self = *this;
+                size_t      jlo  = 1;
+                size_t      jup  = n;
+                {
+                    const Unit curr = tau[i]; assert(bot.tau<curr); assert(curr<=top.tau);
+                    while(jup-jlo>1)
+                    {
+                        const size_t jmid = (jlo+jup)>>1;
+                        const Unit   tmid = self[jmid].tau;
+                        if(tmid<curr)
+                        {
+                            jlo = jmid;
+                        }
+                        else
+                        {
+                            jup = jmid;
+                        }
+                    }
+                    assert(1==jup-jlo);
+                    assert(self[jlo].tau<tau[i]);
+                    assert(tau[i]<=self[jup].tau);
+                }
+
+                // start with a point between jlo and jup
+                for(;i<=count;++i)
+                {
+                    const Unit curr = tau[i];
+                    if(curr>top.tau)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        while( !( (self[jlo].tau<curr) && (curr<=self[jup].tau) ) )
+                        {
+                            ++jlo;
+                            ++jup;
+                        }
+                        const Unit value = self[jlo].value;
+                        mu1 += value;
+                        mu2 += value*value;
+                    }
+                }
+
+                //______________________________________________________________
+                //
+                // finalize with the number of points after top.tau
+                //______________________________________________________________
+                {
+                    const Unit remaining = (count+1-i);
+                    const Unit tmp       = remaining*top.value;
+                    mu1 += tmp;
+                    mu2 += tmp * top.value;
+                }
             }
         }
-
+        
     }
-
+    
 FINALIZE:
     moments.mu1 = mu1;
     moments.mu2 = mu2;

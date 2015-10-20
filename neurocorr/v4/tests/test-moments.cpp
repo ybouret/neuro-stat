@@ -17,8 +17,6 @@ void full_test( const CPW &F, const UArray &tau )
     YOCTO_TIMINGS(tmx,DURATION,F.evalMoments (tau, 1, tau.size(), opt));
     const double optSpeed = tmx.speed/1e6;
 
-    //std::cerr << "Raw=" << raw << std::endl;
-    //std::cerr << "Opt=" << opt << std::endl;
     if(raw!=opt)
     {
         throw exception("moments failure!");
@@ -30,7 +28,7 @@ YOCTO_UNIT_TEST_IMPL(moments)
 {
 
     threading::crew team(true);
-    
+
     const size_t extra=1;
     Moments      raw;
     Moments      opt;
@@ -65,14 +63,20 @@ YOCTO_UNIT_TEST_IMPL(moments)
 
     }
 
+    wtime chrono;
+    chrono.start();
+
+    uint64_t raw64 = 0;
+    uint64_t opt64 = 0;
+    uint64_t mark  = 0;
 
     for(size_t max_spikes=2;max_spikes<=128;max_spikes*=2)
     {
         std::cerr << std::endl;
-        for(size_t iter=0;iter<1;++iter)
+        for(size_t iter=0;iter<2;++iter)
         {
             std::cerr << "\tmaxSpikes=" << max_spikes << std::endl;
-            auto_ptr<Records> pRec( Records::GenerateRandom(2, 3, max_spikes, 5) );
+            auto_ptr<Records> pRec( Records::GenerateRandom(1,1, max_spikes, 5) );
             const Records    &records = *pRec;
             PHI Phi(records,extra);
             const Unit tauMin = records.minTau-10;
@@ -80,7 +84,7 @@ YOCTO_UNIT_TEST_IMPL(moments)
             const Unit wmax   = tauMax - tauMin;
             std::cerr << "\t\ttauMin=" << tauMin << ", tauMax=" << tauMax << std::endl;
 
-            for(Unit delta=1;delta<=10;++delta)
+            for(Unit delta=2;delta<=10;delta+=2)
             {
                 std::cerr << delta << ".";
                 Phi.build(delta,&team);
@@ -104,30 +108,35 @@ YOCTO_UNIT_TEST_IMPL(moments)
                                 for(size_t k=1;k<=Phi.K;++k)
                                 {
                                     const CPW    &phi = Phi_ji[k];
+                                    mark = chrono.ticks();
                                     phi.evalMoments_(*train,ip,np,raw);
+                                    raw64 += chrono.ticks() - mark;
+
+                                    mark = chrono.ticks();
                                     phi.evalMoments( *train,ip,np,opt);
-                                    if(raw==opt)
+                                    opt64 += chrono.ticks() - mark;
+                                    if(opt!=raw)
                                     {
-                                        std::cerr << "+";
-                                    }
-                                    else
-                                    {
-                                        std::cerr << "-";
+                                        throw exception("Moments Mismatch...");
                                     }
                                 }
 
                             }
                         }
-
+                        
                     }
                 }
             }
             std::cerr << std::endl;
 
-
         }
-
+        
     }
 
+    const double rawTime = chrono(raw64);
+    const double optTime = chrono(opt64);
+    std::cerr << "rawTime=" << rawTime << std::endl;
+    std::cerr << "optTime=" << optTime << std::endl;
+    std::cerr << "Average SpeedUp: " << rawTime/optTime << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()
