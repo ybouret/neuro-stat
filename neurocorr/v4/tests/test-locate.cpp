@@ -13,82 +13,86 @@ YOCTO_UNIT_TEST_IMPL(locate)
     uint64_t mark  = 0;
     for(size_t max_spikes=2;max_spikes<=512;max_spikes*=2)
     {
-        std::cerr << "maxSpikes=" << max_spikes << std::endl;
-        auto_ptr<Records> pRec( Records::GenerateRandom(1, 1, max_spikes, 5) );
-        const Records    &records = *pRec;
-        const Train      &train   = records[1][1];
-
-        const Unit tauMin = records.minTau-10;
-        const Unit tauMax = records.maxTau+10;
-        const Unit wmax   = tauMax - tauMin;
-        std::cerr << "tauMin=" << tauMin << ", tauMax=" << tauMax << std::endl;
-        size_t iraw=0;
-        size_t iopt=0;
-        size_t ichk=0;
-        for(Unit tauStart=tauMin;tauStart<=tauMax;++tauStart)
+        std::cerr << std::endl;
+        for(size_t iter=0;iter<2;++iter)
         {
-            for(Unit w=1;w<=wmax;++w)
+            std::cerr << "\tmaxSpikes=" << max_spikes << std::endl;
+            auto_ptr<Records> pRec( Records::GenerateRandom(1, 1, max_spikes, 5) );
+            const Records    &records = *pRec;
+            const Train      &train   = records[1][1];
+
+            const Unit tauMin = records.minTau-10;
+            const Unit tauMax = records.maxTau+10;
+            const Unit wmax   = tauMax - tauMin;
+            std::cerr << "\t\ttauMin=" << tauMin << ", tauMax=" << tauMax << std::endl;
+            size_t iraw=0;
+            size_t iopt=0;
+            size_t ichk=0;
+            for(Unit tauStart=tauMin;tauStart<=tauMax;++tauStart)
             {
-                const Unit   tauFinal = tauStart+w;
-                mark = chrono.ticks();
-                const size_t nraw     = train.locateIndicesWithin_(tauStart,tauFinal, iraw);
-                raw64 += chrono.ticks() - mark;
-
-
-                mark = chrono.ticks();
-                bool   init = true;
-                size_t nchk = 0;
-                for(size_t i=1;i<=train.size();++i)
+                for(Unit w=1;w<=wmax;++w)
                 {
-                    const Unit tmp = train[i];
-                    if(tauStart<tmp&&tmp<=tauFinal)
+                    const Unit   tauFinal = tauStart+w;
+                    mark = chrono.ticks();
+                    const size_t nraw     = train.locateIndicesWithin_(tauStart,tauFinal, iraw);
+                    raw64 += chrono.ticks() - mark;
+
+
+                    mark = chrono.ticks();
+                    bool   init = true;
+                    size_t nchk = 0;
+                    for(size_t i=1;i<=train.size();++i)
                     {
-                        ++nchk;
-                        if(init)
+                        const Unit tmp = train[i];
+                        if(tauStart<tmp&&tmp<=tauFinal)
                         {
-                            ichk = i;
-                            init = false;
+                            ++nchk;
+                            if(init)
+                            {
+                                ichk = i;
+                                init = false;
+                            }
                         }
                     }
-                }
-                chk64 += chrono.ticks()-mark;
+                    chk64 += chrono.ticks()-mark;
 
-                if(nchk!=nraw)
-                {
-                    throw exception("Invalid Raw Counting : nraw=%u, nchk=%u!", unsigned(nraw), unsigned(nchk) );
-                }
+                    if(nchk!=nraw)
+                    {
+                        throw exception("Invalid Raw Counting : nraw=%u, nchk=%u!", unsigned(nraw), unsigned(nchk) );
+                    }
 
-                if(nchk>0&&ichk!=iraw)
-                {
-                    throw exception("Invalid Raw Starting Point!");
-                }
+                    if(nchk>0&&ichk!=iraw)
+                    {
+                        throw exception("Invalid Raw Starting Point!");
+                    }
 
-                mark = chrono.ticks();
-                const size_t nopt     = train.locateIndicesWithin(tauStart,tauFinal,iopt);
-                opt64 += chrono.ticks()-mark;
+                    mark = chrono.ticks();
+                    const size_t nopt     = train.locateIndicesWithin(tauStart,tauFinal,iopt);
+                    opt64 += chrono.ticks()-mark;
 
 
-                if(nraw!=nopt)
-                {
-                    throw exception("Invalid Opt Counting: nraw=%u, nopt=%u!",unsigned(nraw),unsigned(nopt));
-                }
+                    if(nraw!=nopt)
+                    {
+                        throw exception("Invalid Opt Counting: nraw=%u, nopt=%u!",unsigned(nraw),unsigned(nopt));
+                    }
 
-                if(nopt>0&&ichk!=iopt)
-                {
-                    throw exception("Invalid Opt Starting Point!");
+                    if(nopt>0&&ichk!=iopt)
+                    {
+                        throw exception("Invalid Opt Starting Point!");
+                    }
                 }
             }
         }
-
+        
     }
-
+    
     const double tchk = chrono(chk64);
     const double traw = chrono(raw64);
     const double topt = chrono(opt64);
     std::cerr << "tchk=" << tchk << std::endl;
     std::cerr << "traw=" << traw << std::endl;
     std::cerr << "topt=" << topt << std::endl;
-
+    std::cerr << "\tSPEEDUP=" << traw/topt << std::endl;
     
     
 }
