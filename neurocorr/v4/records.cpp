@@ -53,12 +53,12 @@ maxTau(0)
                 if(init)
                 {
                     tmin = tmax = tau;
+                    init=false;
                 }
                 else
                 {
                     tmin = min_of(tmin,tau);
                     tmax = max_of(tmax,tau);
-                    init = false;
                 }
             }
             assert(train.size()==ns);

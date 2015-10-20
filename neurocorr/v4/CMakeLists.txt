@@ -3,6 +3,7 @@ types.hpp
 types.cpp
 train.hpp
 train.cpp
+train-locate.cpp
 records.hpp
 records.cpp
 cpw.hpp
