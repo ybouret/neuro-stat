@@ -35,7 +35,7 @@ typedef vector<coord> _CPW;
 class CPW : public _CPW
 {
 public:
-    Unit foot;
+    Unit     foot;
     explicit CPW() throw();
     explicit CPW(size_t n);
     virtual ~CPW() throw();
@@ -59,10 +59,17 @@ public:
                       const size_t count,
                       Moments     &moments) const throw();
 
+    //! evaluating moments, optimised
     void evalMoments(const UArray &tau,
                      const size_t start,
                      const size_t count,
                      Moments     &moments) const throw();
+
+    //! get max of function
+    Unit maxAbsOn_(const Unit tauStart, const Unit tauFinal) const throw();
+    Unit maxAbsOn( const Unit tauStart, const Unit tauFinal) const throw();
+
+
 private:
     YOCTO_DISABLE_ASSIGN(CPW);
 };

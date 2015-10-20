@@ -4,7 +4,7 @@
 
 YOCTO_UNIT_TEST_IMPL(phi)
 {
-    auto_ptr<Records> pRec( Records::GenerateRandom(5, 3, 100, 5) );
+    auto_ptr<Records> pRec( Records::GenerateRandom(8, 4, 1000, 5) );
     Records &records = *pRec;
     const size_t extra = 4;
     PHI Phi(records,extra);
