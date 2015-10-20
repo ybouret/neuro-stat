@@ -59,7 +59,10 @@ public:
                       const size_t count,
                       Moments     &moments) const throw();
 
-
+    void evalMoments(const UArray &tau,
+                     const size_t start,
+                     const size_t count,
+                     Moments     &moments) const throw();
 private:
     YOCTO_DISABLE_ASSIGN(CPW);
 };
