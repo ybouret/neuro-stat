@@ -1,9 +1,8 @@
 #ifndef NC_TYPES_INCLUDED
 #define NC_TYPES_INCLUDED
 
-#include "yocto/R/IR.hpp"
 #include "yocto/threading/crew.hpp"
-#include "yocto/sequence/vector.hpp"
+#include "yocto/math/matrices.hpp"
 
 using namespace yocto;
 
@@ -35,8 +34,9 @@ private:
     YOCTO_DISABLE_ASSIGN(Converter);
 };
 
-typedef array<Unit>  UArray;
-typedef vector<Unit> UVector;
+typedef array<Unit>             UArray;
+typedef vector<Unit>            UVector;
+
 
 #endif
 

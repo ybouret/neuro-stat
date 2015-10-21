@@ -20,6 +20,8 @@ void CPW:: evalMoments_(const UArray &tau,
     moments.mu2 = mu2;
 }
 
+#include "yocto/sequence/lw-array.hpp"
+
 void CPW:: evalMoments(const UArray &tau_,
                        const size_t start,
                        const size_t count,
