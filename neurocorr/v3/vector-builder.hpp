@@ -17,7 +17,7 @@ public:
      Matrices must be initialized before call.
 
      \param mu1      matrices of count,sum Phi...
-     \param mu2      matrices of count^2,sum Phi^2
+     \param mu2      matrices of count,sum Phi^2
      \param muA      COLUMN matrices of 1, max(|Phi|)
      \param boxes    boxes with precomputed indices
      \param phi      precomputed phi functions with a given delta
