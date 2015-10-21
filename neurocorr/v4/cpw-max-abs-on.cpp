@@ -50,8 +50,37 @@ Unit CPW:: maxAbsOn(const Unit tauStart, const Unit tauFinal) const throw()
                     }
                 }
             }
+                assert(die("never get here"));
+
+            default:
+                break;
+        }
+
+        assert(n>=2);
+        const coord lower = front();
+        if(tauFinal<=lower.tau)
+        {
+            // all at left
+            return UnitAbs(foot);
+        }
+        else
+        {
+            const coord upper = back();
+            if(tauStart>=upper.tau)
+            {
+                return UnitAbs(upper.value);
+            }
+            else
+            {
+                //______________________________________________________________
+                //
+                // generic case
+                //______________________________________________________________
+
+                return 0;
+            }
         }
         
-        return 0;
+
     }
 }

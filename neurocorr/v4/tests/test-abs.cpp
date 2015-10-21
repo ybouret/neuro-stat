@@ -3,12 +3,10 @@
 #include "yocto/sys/wtime.hpp"
 
 static inline
-void do_test( const CPW &F )
+void do_test( const CPW &F , uint64_t &raw64, uint64_t &opt64)
 {
     std::cerr << "F.size=" << F.size() << std::endl;
     
-    uint64_t raw64 = 0;
-    uint64_t opt64 = 0;
     uint64_t mark  = 0;
 
     wtime chrono;
@@ -22,6 +20,7 @@ void do_test( const CPW &F )
     {
         for(Unit w=1;w<=wmax;++w)
         {
+            std::cerr << ".";
             const Unit tauEnd = tau+w;
             mark = chrono.ticks();
             const Unit raw    = F.maxAbsOn_(tau,tauEnd);
@@ -37,18 +36,31 @@ void do_test( const CPW &F )
             }
         }
     }
-
-
+    std::cerr << std::endl;
+    const double rawTime = chrono(raw64);
+    const double optTime = chrono(opt64);
+    std::cerr << "rawTime=" << rawTime << std::endl;
+    std::cerr << "optTime=" << optTime << std::endl;
 }
+
 
 YOCTO_UNIT_TEST_IMPL(abs)
 {
+    uint64_t opt64 = 0;
+    uint64_t raw64 = 0;
     CPW F;
 
-    do_test(F);
+    F.foot = 1;
+    do_test(F,raw64,opt64);
 
-    F.add(0,1);
-    do_test(F);
+    raw64 = opt64 = 0;
+    F.add(0,2);
+    do_test(F,raw64,opt64);
+
+    raw64 = opt64 = 0;
+    F.add(1,3);
+    do_test(F,raw64,opt64);
+    
 
 }
 YOCTO_UNIT_TEST_DONE()
