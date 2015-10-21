@@ -14,6 +14,10 @@ cpw-moments.cpp
 cpw-max-abs-on.cpp
 phi.hpp
 phi.cpp
+box.hpp
+box.cpp
+boxes.hpp
+boxes.cpp
 )
 
 ADD_SUBDIRECTORY(tests)
