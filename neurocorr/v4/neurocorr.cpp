@@ -10,30 +10,13 @@ YOCTO_R_FUNCTION(NeuroCorr_Version,())
 YOCTO_R_RETURN()
 
 
-static threading::crew *team = 0;
-
-YOCTO_R_STATIC
-void TeamDelete() throw()
-{
-    if(team)
-    {
-        delete team;
-        team = 0;
-    }
-}
-
-YOCTO_R_FUNCTION(NeuroCorr_CleanUp,())
-{
-    TeamDelete();
-    return R_NilValue;
-}
-YOCTO_R_RETURN()
+static size_t NumThreads = 0;
 
 #include "yocto/sys/hw.hpp"
 
 YOCTO_R_FUNCTION(NeuroCorr_SetParallel,(SEXP numProcsR))
 {
-    TeamDelete();
+    NumThreads = 0;
     int numProcs = R2Scalar<int>(numProcsR);
     if(numProcs>0)
     {
@@ -42,7 +25,7 @@ YOCTO_R_FUNCTION(NeuroCorr_SetParallel,(SEXP numProcsR))
         {
             numProcs=maxProcs;
         }
-        team = new threading::crew(numProcs,0,true);
+        NumThreads = numProcs;
     }
     return R_NilValue;
 

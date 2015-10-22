@@ -7,8 +7,8 @@
 using namespace yocto;
 
 
-typedef unit_t Unit;
-typedef double Real;
+typedef int64_t Unit;
+typedef double  Real;
 
 inline Unit UnitAbs(const Unit x)  throw()
 {

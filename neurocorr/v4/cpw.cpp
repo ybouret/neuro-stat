@@ -122,8 +122,8 @@ void CPW:: save(const char *filename) const
         case 1:
         {
             const coord &C = front();
-            fp("%ld %ld\n", C.tau, foot );
-            fp("%ld %ld\n", C.tau, C.value);
+            fp("%ld %ld\n", long(C.tau), long(foot) );
+            fp("%ld %ld\n", long(C.tau), long(C.value) );
         }
             break;
 
@@ -131,7 +131,7 @@ void CPW:: save(const char *filename) const
         {
             assert(size()>=2);
             const _CPW &self = *this;
-            fp("%ld %ld\n",long(self[1].tau), foot);
+            fp("%ld %ld\n",long(self[1].tau), long(foot));
             for(size_t i=1;i<n;++i)
             {
                 fp("%ld %ld\n", long(self[i].tau),   long(self[i].value));

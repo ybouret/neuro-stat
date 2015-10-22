@@ -24,6 +24,17 @@ NeuroCorr_Version <- function()
     .Call("NeuroCorr_Version");
 }
 
+################################################################################
+##
+## Set Internal #Threads to use
+##
+################################################################################
+NeuroCorr_SetParallel <- function( numThreads )
+{
+    if( !is.double(numThreads) ) stop("[SetParallel] : scale must be a number");
+    .Call("NeuroCorr_SetParallel", numThreads);
+}
+
 NeuroCorr_CheckData <- function(dataNeur,numNeurones,scale)
 {
     if( !is.matrix(dataNeur) )    stop("[CheckData] : dataNeur must be a matrix");
