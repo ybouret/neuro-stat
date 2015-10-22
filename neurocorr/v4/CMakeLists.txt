@@ -18,6 +18,8 @@ box.hpp
 box.cpp
 boxes.hpp
 boxes.cpp
+maxabs-builder.hpp
+maxabs-builder.cpp
 )
 
 ADD_SUBDIRECTORY(tests)

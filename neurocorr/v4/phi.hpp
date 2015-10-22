@@ -40,7 +40,7 @@ public:
     const size_t  NK;       //!< neurones * K
     const size_t  dim;      //!< 1+NK
     const size_t  maxCount; //!< for memory
-    threading::sequential_executor kSeq;
+    mutable threading::sequential_executor kSeq;
 
     void build(const Unit deltaUnits, threading::crew *team );
 
