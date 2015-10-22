@@ -37,6 +37,8 @@ public:
     const size_t K;         //!< 1+extra
     const size_t &trials;   //!< rows
     const size_t &neurones; //!< cols;
+    const size_t  NK;       //!< neurones * K
+    const size_t  dim;      //!< 1+NK
     const size_t  maxCount; //!< for memory
     threading::sequential_executor kSeq;
 

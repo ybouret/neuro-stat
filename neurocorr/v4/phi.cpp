@@ -58,12 +58,15 @@ PHI:: ~PHI() throw()
 }
 
 
-static const int __buildFlags = 0;
+static const int __buildFlags = 0; //!< for matrix
+
 PHI:: PHI(const Records &records, const size_t extra) :
 _PHI(records,extra,__buildFlags),
 K(1+extra),
 trials(rows),
 neurones(cols),
+NK(neurones*K),
+dim(1+NK),
 maxCount(records.maxCount),
 delta(0),
 kBuild(this, &PHI::onBuild)
