@@ -2,7 +2,7 @@
 #define NC_RECORDS_INCLUDED 1
 
 #include "train.hpp"
-#include "yocto/math/matrix.hpp"
+#include "yocto/container/matrix.hpp"
 
 typedef matrix<Train> _Records;
 

@@ -2,7 +2,6 @@
 #define NC_BOXES_INCLUDED 1
 
 #include "box.hpp"
-#include "yocto/math/matrix.hpp"
 
 enum Grouping
 {

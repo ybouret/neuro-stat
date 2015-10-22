@@ -2,7 +2,7 @@
 #define NC_TYPES_INCLUDED
 
 #include "yocto/threading/crew.hpp"
-#include "yocto/math/matrices.hpp"
+#include "yocto/container/matrices.hpp"
 
 using namespace yocto;
 
