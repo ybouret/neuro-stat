@@ -1,4 +1,5 @@
 #include "../maxabs-builder.hpp"
+#include "../vector-builder.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
 #include "yocto/sys/wtime.hpp"
@@ -50,6 +51,9 @@ YOCTO_UNIT_TEST_IMPL(builders)
         std::cerr << "#matrices=" << nm << std::endl;
         UMatrices             seq_muA(nm,Phi.dim,1);
         UMatrices             par_muA(nm,Phi.dim,1);
+
+        UMatrices             seq_mu1(nm,Phi.dim,Phi.neurones);
+        UMatrices             par_mu2(nm,Phi.dim,Phi.neurones);
 
         const Unit deltaMax = 10*pace;
         for(Unit delta=1;delta<=deltaMax;++delta)
