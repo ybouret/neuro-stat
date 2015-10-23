@@ -5,8 +5,8 @@ Boxes:: ~Boxes() throw()
 {
 }
 
-Boxes:: Boxes(const Real            usrScale ,
-              const matrix_of<Real> boxes) :
+Boxes:: Boxes(const Real             usrScale ,
+              const matrix_of<Real> &boxes) :
 Converter(usrScale),
 _Boxes( boxes.cols, as_capacity )
 {
@@ -20,11 +20,12 @@ _Boxes( boxes.cols, as_capacity )
         const size_t iTrial   = size_t(floor(boxes(1,b)+0.5));
         if(iTrial<=0)
             throw exception("Box #%u: invalid trial", unsigned(b));
-
-        const Unit   tauStart = toUnit(boxes(2,b));
-        const Unit   tauFinal = toUnit(boxes(3,b));
-        if(tauFinal>tauStart)
-            throw exception("Box #%u: invalid start_time>final_time", unsigned(b) );
+        const Real   tStart = boxes(2,b);
+        const Real   tFinal = boxes(3,b);
+        const Unit   tauStart = toUnit(tStart);
+        const Unit   tauFinal = toUnit(tFinal);
+        if(tauFinal<tauStart)
+            throw exception("Box #%u: invalid start_time(=%g)>final_time(=%g)", unsigned(b), tStart, tFinal );
 
         const Box::Kind kind = Box::Kind(boxes(4,b));
         const Box box(iTrial,tauStart,tauFinal,kind);

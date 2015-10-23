@@ -37,6 +37,39 @@ private:
 typedef array<Unit>             UArray;
 typedef vector<Unit>            UVector;
 
+typedef matrices<Unit,matrix>   UMatrices;
+
+inline
+bool areEqualMatrix(const matrix_of<Unit> &lhs, const matrix_of<Unit> &rhs) throw()
+{
+    assert(lhs.rows==rhs.rows);
+    assert(rhs.cols==rhs.cols);
+    assert(lhs.items==rhs.items);
+    const size_t items = lhs.items;
+    for(size_t i=0;i<items;++i)
+    {
+        if( lhs.fetch(i) != rhs.fetch(i) )
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+inline
+bool areEqualMatrices(const matrices_of<Unit> &lhs, const matrices_of<Unit> &rhs )
+{
+    assert(lhs.count==rhs.count);
+    const size_t count = lhs.count;
+    for(size_t i=1;i<=count;++i)
+    {
+        if( !areEqualMatrix(lhs[i],rhs[i]) )
+            return false;
+    }
+    return true;
+}
+
+
 
 #endif
 
