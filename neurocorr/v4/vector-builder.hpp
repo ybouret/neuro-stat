@@ -4,8 +4,8 @@
 #include "phi.hpp"
 #include "boxes.hpp"
 
-YOCTO_PAIR_DECL(inside,size_t,count,size_t,start);
-inline inside() throw() : count(0), start(0) {}
+YOCTO_TRIPLE_DECL(inside,size_t,count,size_t,start,const UArray *,arr);
+inline inside() throw() : count(0), start(0), arr(0) {}
 YOCTO_PAIR_END();
 
 class VectorBuilder

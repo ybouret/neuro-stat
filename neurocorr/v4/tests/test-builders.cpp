@@ -92,19 +92,47 @@ YOCTO_UNIT_TEST_IMPL(builders)
         }
 
 
-        for(Unit delta=deltaMax;delta<=deltaMax;++delta)
+        for(Unit delta=1;delta<=deltaMax;++delta)
         {
             seq_mu1.ldz();
             seq_mu2.ldz();
+
+            par_mu1.ldz();
+            par_mu2.ldz();
             Phi.build(delta,&team);
             {
+                mark = chrono.ticks();
                 VectorBuilder vbuild(seq_mu1,seq_mu2,boxes,Phi,NULL);
+                maxabs_seq += chrono.ticks() - mark;
             }
-            for(size_t m=1;m<=nm;++m)
+
             {
-                std::cerr << "seq_mu1_" << m << "=" << seq_mu1[m] << std::endl;
-                std::cerr << "seq_mu2_" << m << "=" << seq_mu2[m] << std::endl;
+                mark = chrono.ticks();
+                VectorBuilder vbuild(par_mu1,par_mu2,boxes,Phi,&team);
+                maxabs_par += chrono.ticks() - mark;
             }
+
+
+            if(delta>=deltaMax)
+            {
+                for(size_t m=1;m<=nm;++m)
+                {
+                    std::cerr << "seq_mu1_" << m << "=" << seq_mu1[m] << std::endl;
+                    std::cerr << "seq_mu2_" << m << "=" << seq_mu2[m] << std::endl;
+                }
+            }
+
+
+            if(!areEqualMatrices(seq_mu1,par_mu1))
+            {
+                throw exception("mismatch mu1");
+            }
+
+            if(!areEqualMatrices(seq_mu2,par_mu2))
+            {
+                throw exception("mismatch muA2");
+            }
+
         }
 
         std::cerr << "boxes=" << boxes << std::endl;

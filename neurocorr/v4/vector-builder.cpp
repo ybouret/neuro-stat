@@ -49,7 +49,7 @@ box(0)
         {
             const PHI_Functions &Phi_ji = Phi_j[i]; assert(Phi_ji.train);
             const UArray        &tau    = *Phi_ji.train;
-
+            tmp.arr   = &tau;
             tmp.count = Locate::IndicesWithin(tau,tauStart,tauFinal,tmp.start);
             ins.push_back(tmp);
 
@@ -73,13 +73,15 @@ void VectorBuilder:: compute( threading::context &ctx )
     matrix_of<Unit>       &mu2    = Mu2[m];
     const size_t           K      = Phi.K;
     const _PHI::row       &Phi_j  = Phi[j];
+    const size_t           neurones = Phi.neurones;
+
+    assert(neurones==ins.size());
 
     // compute work to do
     size_t                 offset = 0;
     size_t                 length = Phi.NK;
     ctx.split(offset,length);
 
-#if 0
     Moments          moments;
     for(size_t idx=offset,counting=length,r=offset+2;counting>0;--counting,++idx,++r)
     {
@@ -99,12 +101,17 @@ void VectorBuilder:: compute( threading::context &ctx )
         //
         // get data for j,l, and the correspond spike trains
         //______________________________________________________________________
-        const PHI_Functions &Phi_jl = Phi_j[l]; assert(Phi_jl.train);
-        const UArray        &tau    = *Phi_jl.train;
-
+        const PHI_Functions &Phi_jl = Phi_j[l];
+        const CPW           &phi    = Phi_jl[k];
+        for(size_t i=neurones;i>0;--i)
+        {
+            const inside info = ins[i]; assert(info.arr);
+            phi.evalMoments(*info.arr, info.start, info.count, moments);
+            mu1(r,i) += moments.mu1;
+            mu2(r,i) += moments.mu2;
+        }
 
     }
-#endif
 
     
 }
