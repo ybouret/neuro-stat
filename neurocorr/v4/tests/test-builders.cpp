@@ -53,36 +53,60 @@ YOCTO_UNIT_TEST_IMPL(builders)
         UMatrices             par_muA(nm,Phi.dim,1);
 
         UMatrices             seq_mu1(nm,Phi.dim,Phi.neurones);
+        UMatrices             seq_mu2(nm,Phi.dim,Phi.neurones);
+
+        UMatrices             par_mu1(nm,Phi.dim,Phi.neurones);
         UMatrices             par_mu2(nm,Phi.dim,Phi.neurones);
 
         const Unit deltaMax = 10*pace;
-        for(Unit delta=1;delta<=deltaMax;++delta)
+        if(false)
         {
-            seq_muA.ldz();
-            par_muA.ldz();
-            Phi.build(delta,&team);
+            for(Unit delta=1;delta<=deltaMax;++delta)
             {
-                mark = chrono.ticks();
-                MaxAbsBuilder mbuild(seq_muA, boxes, Phi, NULL);
-                maxabs_seq += chrono.ticks() - mark;
-            }
-            if(delta>=deltaMax)
-            {
-                for(size_t m=1;m<=nm;++m)
+                seq_muA.ldz();
+                par_muA.ldz();
+                Phi.build(delta,&team);
                 {
-                    std::cerr << "seq_muA" << m << "=" << seq_muA[m] << std::endl;
+                    mark = chrono.ticks();
+                    MaxAbsBuilder mbuild(seq_muA, boxes, Phi, NULL);
+                    maxabs_seq += chrono.ticks() - mark;
                 }
-            }
-            {
-                mark = chrono.ticks();
-                MaxAbsBuilder mbuild(par_muA, boxes, Phi, &team);
-                maxabs_par += chrono.ticks() - mark;
-            }
-            if(!areEqualMatrices(seq_muA,par_muA))
-            {
-                throw exception("mismatch muA");
+                if(delta>=deltaMax)
+                {
+                    for(size_t m=1;m<=nm;++m)
+                    {
+                        std::cerr << "seq_muA" << m << "=" << seq_muA[m] << std::endl;
+                    }
+                }
+                {
+                    mark = chrono.ticks();
+                    MaxAbsBuilder mbuild(par_muA, boxes, Phi, &team);
+                    maxabs_par += chrono.ticks() - mark;
+                }
+                if(!areEqualMatrices(seq_muA,par_muA))
+                {
+                    throw exception("mismatch muA");
+                }
+
             }
         }
+
+
+        for(Unit delta=deltaMax;delta<=deltaMax;++delta)
+        {
+            seq_mu1.ldz();
+            seq_mu2.ldz();
+            Phi.build(delta,&team);
+            {
+                VectorBuilder vbuild(seq_mu1,seq_mu2,boxes,Phi,NULL);
+            }
+            for(size_t m=1;m<=nm;++m)
+            {
+                std::cerr << "seq_mu1_" << m << "=" << seq_mu1[m] << std::endl;
+                std::cerr << "seq_mu2_" << m << "=" << seq_mu2[m] << std::endl;
+            }
+        }
+
         std::cerr << "boxes=" << boxes << std::endl;
     }
 

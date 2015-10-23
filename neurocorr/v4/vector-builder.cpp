@@ -43,16 +43,21 @@ box(0)
         const Unit       tauStart = box->tauStart;
         const Unit       tauFinal = box->tauFinal;
 
+        // pre-compute the count/start values for each concerned trial
         ins.free();
         for(size_t i=1;i<=neurones;++i)
         {
-            const PHI_Functions &Phi_ji = Phi_j[i];
-            assert(Phi_ji.train);
-            tmp.count = Locate::IndicesWithin( *(Phi_ji.train),tauStart,tauFinal, tmp.start);
+            const PHI_Functions &Phi_ji = Phi_j[i]; assert(Phi_ji.train);
+            const UArray        &tau    = *Phi_ji.train;
+
+            tmp.count = Locate::IndicesWithin(tau,tauStart,tauFinal,tmp.start);
             ins.push_back(tmp);
+
+            // and update the first row of each matrices...
             Mu2[m](1,i)  = (Mu1[m](1,i) += tmp.count );
         }
 
+        //
         kExec(kRun);
     }
 
@@ -74,27 +79,32 @@ void VectorBuilder:: compute( threading::context &ctx )
     size_t                 length = Phi.NK;
     ctx.split(offset,length);
 
+#if 0
     Moments          moments;
     for(size_t idx=offset,counting=length,r=offset+2;counting>0;--counting,++idx,++r)
     {
+        //______________________________________________________________________
+        //
         // get the i,k coordinates
-        ldiv_t d = ldiv(idx, K);
-        const size_t i = ++d.quot;
+        //______________________________________________________________________
+        ldiv_t       d = ldiv(idx, K);
+        const size_t l = ++d.quot;
         const size_t k = ++d.rem;
-        assert(i<=Phi.neurones);
+        assert(l<=Phi.neurones);
         assert(k<=Phi.K);
-        assert((i-1)*K+(k-1) == idx);
+        assert((l-1)*K+(k-1) == idx);
 
-        // get data for j,i
-        const PHI_Functions &Phi_ji = Phi_j[i]; assert(Phi_ji.train);
-        const UArray        &tau    = *Phi_ji.train;
-        const inside         info   = ins[i];
 
-        // then process for k
-        const CPW            &phi   = Phi_j[i][k];
-        phi.evalMoments(tau, info.start,info.count,moments);
-        mu1(r,i) += moments.mu1;
-        mu2(r,i) += moments.mu2;
+        //______________________________________________________________________
+        //
+        // get data for j,l, and the correspond spike trains
+        //______________________________________________________________________
+        const PHI_Functions &Phi_jl = Phi_j[l]; assert(Phi_jl.train);
+        const UArray        &tau    = *Phi_jl.train;
+
+
     }
+#endif
+
     
 }
