@@ -9,11 +9,13 @@ VectorBuilder:: ~VectorBuilder() throw()
 
 VectorBuilder:: VectorBuilder(matrices_of<Unit> &usrMu1,
                               matrices_of<Unit> &usrMu2,
+                              matrices_of<Unit> &usrMuA,
                               const Boxes       &boxes,
                               const PHI         &usrPhi,
                               threading::crew  *team) :
 Mu1(usrMu1),
 Mu2(usrMu2),
+MuA(usrMuA),
 Phi(usrPhi),
 ins(Phi.neurones,as_capacity),
 box(0)
@@ -25,10 +27,18 @@ box(0)
     assert(Mu1.rows==Phi.dim);
     assert(Mu2.rows==Phi.dim);
     assert(Mu1.count == Mu2.count );
+    assert(1==MuA.cols);
+    assert(Mu1.count==MuA.count);
+    assert(MuA.rows==Phi.dim);
 
     const size_t neurones = Phi.neurones;
     const size_t count    = Mu1.count;
     const size_t nb       = boxes.size();
+
+    for(size_t m=count;m>0;--m)
+    {
+        MuA[m](1,1) = 1;
+    }
 
     inside tmp;
     for(size_t b=nb;b>0;--b)
@@ -48,16 +58,16 @@ box(0)
         for(size_t i=1;i<=neurones;++i)
         {
             const PHI_Functions &Phi_ji = Phi_j[i]; assert(Phi_ji.train);
-            const UArray        &tau    = *Phi_ji.train;
-            tmp.arr   = &tau;
-            tmp.count = Locate::IndicesWithin(tau,tauStart,tauFinal,tmp.start);
+
+            tmp.train = Phi_ji.train;
+            tmp.count = Locate::IndicesWithin(*tmp.train,tauStart,tauFinal,tmp.start);
             ins.push_back(tmp);
 
             // and update the first row of each matrices...
             Mu2[m](1,i)  = (Mu1[m](1,i) += tmp.count );
         }
 
-        //
+        // fill all other terms
         kExec(kRun);
     }
 
@@ -71,6 +81,7 @@ void VectorBuilder:: compute( threading::context &ctx )
     const size_t           m      = box->indx;
     matrix_of<Unit>       &mu1    = Mu1[m];
     matrix_of<Unit>       &mu2    = Mu2[m];
+    matrix_of<Unit>       &muA    = MuA[m];
     const size_t           K      = Phi.K;
     const _PHI::row       &Phi_j  = Phi[j];
     const size_t           neurones = Phi.neurones;
@@ -83,6 +94,8 @@ void VectorBuilder:: compute( threading::context &ctx )
     ctx.split(offset,length);
 
     Moments          moments;
+    const Unit       tauStart = box->tauStart;
+    const Unit       tauFinal = box->tauFinal;
     for(size_t idx=offset,counting=length,r=offset+2;counting>0;--counting,++idx,++r)
     {
         //______________________________________________________________________
@@ -105,12 +118,19 @@ void VectorBuilder:: compute( threading::context &ctx )
         const CPW           &phi    = Phi_jl[k];
         for(size_t i=neurones;i>0;--i)
         {
-            const inside info = ins[i]; assert(info.arr);
-            phi.evalMoments(*info.arr, info.start, info.count, moments);
+            const inside info = ins[i]; assert(info.train);
+            phi.evalMoments(*info.train, info.start, info.count, moments);
             mu1(r,i) += moments.mu1;
             mu2(r,i) += moments.mu2;
         }
 
+        //______________________________________________________________________
+        //
+        // and the j,l term for muA
+        //______________________________________________________________________
+        const Unit ans    = phi.maxAbsOn(tauStart,tauFinal);
+        Unit      &target = muA(r,1);
+        if(ans>target)  target = ans;
     }
 
     

@@ -1,4 +1,3 @@
-#include "../maxabs-builder.hpp"
 #include "../vector-builder.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
@@ -11,7 +10,7 @@ YOCTO_UNIT_TEST_IMPL(builders)
 
     size_t neurones   = 4;
     size_t trials     = 5;
-    size_t max_spikes = 10000;
+    size_t max_spikes = 1000;
     size_t pace       = 5;
     size_t extra      = 5;
 
@@ -21,8 +20,8 @@ YOCTO_UNIT_TEST_IMPL(builders)
 
 
     uint64_t mark = 0;
-    uint64_t maxabs_seq = 0;
-    uint64_t maxabs_par = 0;
+    uint64_t seq_ticks = 0;
+    uint64_t par_ticks = 0;
     wtime    chrono;
     chrono.start();
 
@@ -58,39 +57,8 @@ YOCTO_UNIT_TEST_IMPL(builders)
         UMatrices             par_mu1(nm,Phi.dim,Phi.neurones);
         UMatrices             par_mu2(nm,Phi.dim,Phi.neurones);
 
+
         const Unit deltaMax = 10*pace;
-        if(false)
-        {
-            for(Unit delta=1;delta<=deltaMax;++delta)
-            {
-                seq_muA.ldz();
-                par_muA.ldz();
-                Phi.build(delta,&team);
-                {
-                    mark = chrono.ticks();
-                    MaxAbsBuilder mbuild(seq_muA, boxes, Phi, NULL);
-                    maxabs_seq += chrono.ticks() - mark;
-                }
-                if(delta>=deltaMax)
-                {
-                    for(size_t m=1;m<=nm;++m)
-                    {
-                        std::cerr << "seq_muA" << m << "=" << seq_muA[m] << std::endl;
-                    }
-                }
-                {
-                    mark = chrono.ticks();
-                    MaxAbsBuilder mbuild(par_muA, boxes, Phi, &team);
-                    maxabs_par += chrono.ticks() - mark;
-                }
-                if(!areEqualMatrices(seq_muA,par_muA))
-                {
-                    throw exception("mismatch muA");
-                }
-
-            }
-        }
-
 
         for(Unit delta=1;delta<=deltaMax;++delta)
         {
@@ -102,14 +70,14 @@ YOCTO_UNIT_TEST_IMPL(builders)
             Phi.build(delta,&team);
             {
                 mark = chrono.ticks();
-                VectorBuilder vbuild(seq_mu1,seq_mu2,boxes,Phi,NULL);
-                maxabs_seq += chrono.ticks() - mark;
+                VectorBuilder vbuild(seq_mu1,seq_mu2,seq_muA,boxes,Phi,NULL);
+                seq_ticks += chrono.ticks() - mark;
             }
 
             {
                 mark = chrono.ticks();
-                VectorBuilder vbuild(par_mu1,par_mu2,boxes,Phi,&team);
-                maxabs_par += chrono.ticks() - mark;
+                VectorBuilder vbuild(par_mu1,par_mu2,par_muA,boxes,Phi,&team);
+                par_ticks += chrono.ticks() - mark;
             }
 
 
@@ -119,6 +87,8 @@ YOCTO_UNIT_TEST_IMPL(builders)
                 {
                     std::cerr << "seq_mu1_" << m << "=" << seq_mu1[m] << std::endl;
                     std::cerr << "seq_mu2_" << m << "=" << seq_mu2[m] << std::endl;
+                    std::cerr << "seq_muA_" << m << "=" << seq_muA[m] << std::endl;
+
                 }
             }
 
@@ -130,19 +100,25 @@ YOCTO_UNIT_TEST_IMPL(builders)
 
             if(!areEqualMatrices(seq_mu2,par_mu2))
             {
-                throw exception("mismatch muA2");
+                throw exception("mismatch mu2");
             }
+
+            if(!areEqualMatrices(seq_muA,par_muA))
+            {
+                throw exception("mismatch muA");
+            }
+
 
         }
 
         std::cerr << "boxes=" << boxes << std::endl;
     }
 
-    const double maxabs_seq_time = chrono(maxabs_seq);
-    const double maxabs_par_time = chrono(maxabs_par);
+    const double seq_time = chrono(seq_ticks);
+    const double par_time = chrono(par_ticks);
 
-    std::cerr << "maxabs_seq_time=" << maxabs_seq_time << std::endl;
-    std::cerr << "maxabs_par_time=" << maxabs_par_time << std::endl;
-    std::cerr << "maxabs_speed_up=" << maxabs_seq_time/maxabs_par_time << std::endl;
+    std::cerr << "seq_time=" << seq_time << std::endl;
+    std::cerr << "par_time=" << par_time << std::endl;
+    std::cerr << "speed_up=" << seq_time/par_time << std::endl;
 }
 YOCTO_UNIT_TEST_DONE()

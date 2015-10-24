@@ -18,8 +18,6 @@ box.hpp
 box.cpp
 boxes.hpp
 boxes.cpp
-maxabs-builder.hpp
-maxabs-builder.cpp
 vector-builder.hpp
 vector-builder.cpp
 )
