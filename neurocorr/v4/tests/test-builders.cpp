@@ -88,7 +88,6 @@ YOCTO_UNIT_TEST_IMPL(builders)
                     std::cerr << "seq_mu1_" << m << "=" << seq_mu1[m] << std::endl;
                     std::cerr << "seq_mu2_" << m << "=" << seq_mu2[m] << std::endl;
                     std::cerr << "seq_muA_" << m << "=" << seq_muA[m] << std::endl;
-
                 }
             }
 
