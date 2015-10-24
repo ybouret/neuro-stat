@@ -8,6 +8,7 @@ test-phi.cpp
 test-moments.cpp
 test-abs.cpp
 test-builders.cpp
+test-intg.cpp
 )
 
 TARGET_LINK_LIBRARIES(test-ncv4 ncv4)
@@ -21,6 +22,7 @@ ADD_TEST(PHI      test-ncv4 phi)
 ADD_TEST(Locate   test-ncv4 locate)
 ADD_TEST(Moments  test-ncv4 moments)
 ADD_TEST(ABS      test-ncv4 abs)
+ADD_TEST(INTG     test-ncv4 intg)
 ADD_TEST(Builders test-ncv4 builders)
 
 

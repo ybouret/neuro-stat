@@ -65,9 +65,14 @@ public:
                      const size_t count,
                      Moments     &moments) const throw();
 
-    //! get max of function
+    //! get max of function, naive function
     Unit maxAbsOn_(const Unit tauStart, const Unit tauFinal) const throw();
+
+    //! get max of function, optimised version
     Unit maxAbsOn( const Unit tauStart, const Unit tauFinal) const throw();
+
+    //! integrate, naive function
+    Unit integrate_(const Unit tauStart, const Unit tauFinal) const throw();
 
 
 private:
