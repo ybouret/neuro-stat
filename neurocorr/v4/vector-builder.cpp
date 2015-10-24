@@ -53,7 +53,10 @@ box(0)
         const Unit       tauStart = box->tauStart;
         const Unit       tauFinal = box->tauFinal;
 
+        //______________________________________________________________________
+        //
         // pre-compute the count/start values for each concerned trial
+        //______________________________________________________________________
         ins.free();
         for(size_t i=1;i<=neurones;++i)
         {
@@ -66,8 +69,12 @@ box(0)
             // and update the first row of each matrices...
             Mu2[m](1,i)  = (Mu1[m](1,i) += tmp.count );
         }
+        assert(neurones==ins.size());
 
-        // fill all other terms
+        //______________________________________________________________________
+        //
+        // fill all other Phi.NK terms
+        //______________________________________________________________________
         kExec(kRun);
     }
 
@@ -77,18 +84,20 @@ box(0)
 void VectorBuilder:: compute( threading::context &ctx )
 {
     assert(box);
-    const size_t           j      = box->trial;
-    const size_t           m      = box->indx;
-    matrix_of<Unit>       &mu1    = Mu1[m];
-    matrix_of<Unit>       &mu2    = Mu2[m];
-    matrix_of<Unit>       &muA    = MuA[m];
-    const size_t           K      = Phi.K;
-    const _PHI::row       &Phi_j  = Phi[j];
+    const size_t           j        = box->trial;
+    const size_t           m        = box->indx;
+    matrix_of<Unit>       &mu1      = Mu1[m];
+    matrix_of<Unit>       &mu2      = Mu2[m];
+    matrix_of<Unit>       &muA      = MuA[m];
+    const size_t           K        = Phi.K;
+    const _PHI::row       &Phi_j    = Phi[j];
     const size_t           neurones = Phi.neurones;
 
-    assert(neurones==ins.size());
 
+    //__________________________________________________________________________
+    //
     // compute work to do
+    //__________________________________________________________________________
     size_t                 offset = 0;
     size_t                 length = Phi.NK;
     ctx.split(offset,length);
@@ -100,9 +109,9 @@ void VectorBuilder:: compute( threading::context &ctx )
     {
         //______________________________________________________________________
         //
-        // get the i,k coordinates
+        // get the l,k coordinates
         //______________________________________________________________________
-        ldiv_t       d = ldiv(idx, K);
+        ldiv_t       d = ldiv(idx,K);
         const size_t l = ++d.quot;
         const size_t k = ++d.rem;
         assert(l<=Phi.neurones);
@@ -112,21 +121,22 @@ void VectorBuilder:: compute( threading::context &ctx )
 
         //______________________________________________________________________
         //
-        // get data for j,l, and the correspond spike trains
+        // get data for j,l,k
         //______________________________________________________________________
-        const PHI_Functions &Phi_jl = Phi_j[l];
-        const CPW           &phi    = Phi_jl[k];
-        for(size_t i=neurones;i>0;--i)
-        {
-            const inside info = ins[i]; assert(info.train);
-            phi.evalMoments(*info.train, info.start, info.count, moments);
-            mu1(r,i) += moments.mu1;
-            mu2(r,i) += moments.mu2;
-        }
+        const CPW           &phi    = Phi_j[l][k];
+
+#define COMPUTE_MU12(I)                                       \
+const inside info = ins[I]; assert(info.train);               \
+phi.evalMoments(*info.train, info.start, info.count, moments);\
+mu1(r,I) += moments.mu1;                                      \
+mu2(r,I) += moments.mu2
+
+        YOCTO_LOOP_FUNC_(neurones,COMPUTE_MU12,1);
+
 
         //______________________________________________________________________
         //
-        // and the j,l term for muA
+        // and the j,l,k term for muA
         //______________________________________________________________________
         const Unit ans    = phi.maxAbsOn(tauStart,tauFinal);
         Unit      &target = muA(r,1);

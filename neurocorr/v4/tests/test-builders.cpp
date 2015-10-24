@@ -10,7 +10,7 @@ YOCTO_UNIT_TEST_IMPL(builders)
 
     size_t neurones   = 4;
     size_t trials     = 5;
-    size_t max_spikes = 1000;
+    size_t max_spikes = 10000;
     size_t pace       = 5;
     size_t extra      = 5;
 
