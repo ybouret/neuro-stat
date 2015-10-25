@@ -21,6 +21,8 @@ boxes.hpp
 boxes.cpp
 vector-builder.hpp
 vector-builder.cpp
+matrix-builder.hpp
+matrix-builder.cpp
 )
 
 ADD_SUBDIRECTORY(tests)

@@ -38,11 +38,13 @@ void CPW:: evalMoments(const UArray &tau_,
         //
         // a least one point to evaluate
         //______________________________________________________________________
+        assert(count>0);
         assert(start>=1);
         assert(start+count-1<=tau_.size());
         const size_t         n = this->size();
         const lw_array<Unit> tau( (Unit *)&tau_[start], count);
-        switch (n) {
+        switch (n)
+        {
                 //______________________________________________________________
                 //
                 // constant function
@@ -116,6 +118,7 @@ void CPW:: evalMoments(const UArray &tau_,
                 break;
         }
         assert(n>=2);
+        assert(count>0);
 
         const coord bot   = front();
         const Unit  upper = tau[count];
@@ -128,7 +131,7 @@ void CPW:: evalMoments(const UArray &tau_,
         {
             const coord top   = back();
             const Unit  lower = tau[1];
-            if(lower>top.tau)
+            if(lower>=top.tau)
             {
                 //everybody at right
                 mu1 = count * top.value; mu2 = mu1 * top.value; goto FINALIZE;

@@ -1,4 +1,5 @@
 #include "../vector-builder.hpp"
+#include "../matrix-builder.hpp"
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
 #include "yocto/sys/wtime.hpp"
@@ -10,7 +11,7 @@ YOCTO_UNIT_TEST_IMPL(builders)
 
     size_t neurones   = 4;
     size_t trials     = 5;
-    size_t max_spikes = 10000;
+    size_t max_spikes = 100;
     size_t pace       = 5;
     size_t extra      = 5;
 
@@ -22,6 +23,10 @@ YOCTO_UNIT_TEST_IMPL(builders)
     uint64_t mark = 0;
     uint64_t seq_ticks = 0;
     uint64_t par_ticks = 0;
+
+    uint64_t G_seq_ticks = 0;
+    uint64_t G_par_ticks = 0;
+
     wtime    chrono;
     chrono.start();
 
@@ -57,6 +62,9 @@ YOCTO_UNIT_TEST_IMPL(builders)
         UMatrices             par_mu1(nm,Phi.dim,Phi.neurones);
         UMatrices             par_mu2(nm,Phi.dim,Phi.neurones);
 
+        UMatrices             seq_G(nm,Phi.dim,Phi.dim);
+        UMatrices             par_G(nm,Phi.dim,Phi.dim);
+
 
         const Unit deltaMax = 10*pace;
 
@@ -68,6 +76,7 @@ YOCTO_UNIT_TEST_IMPL(builders)
             par_mu1.ldz();
             par_mu2.ldz();
             Phi.build(delta,&team);
+
             {
                 mark = chrono.ticks();
                 VectorBuilder vbuild(seq_mu1,seq_mu2,seq_muA,boxes,Phi,NULL);
@@ -80,6 +89,17 @@ YOCTO_UNIT_TEST_IMPL(builders)
                 par_ticks += chrono.ticks() - mark;
             }
 
+            {
+                mark = chrono.ticks();
+                MatrixBuilder mbuild(seq_G, boxes, Phi, NULL);
+                G_seq_ticks += chrono.ticks() - mark;
+            }
+
+            {
+                mark = chrono.ticks();
+                MatrixBuilder mbuild(par_G, boxes, Phi, &team);
+                G_par_ticks += chrono.ticks() - mark;
+            }
 
             if(delta>=deltaMax)
             {
@@ -88,6 +108,7 @@ YOCTO_UNIT_TEST_IMPL(builders)
                     std::cerr << "seq_mu1_" << m << "=" << seq_mu1[m] << std::endl;
                     std::cerr << "seq_mu2_" << m << "=" << seq_mu2[m] << std::endl;
                     std::cerr << "seq_muA_" << m << "=" << seq_muA[m] << std::endl;
+                    std::cerr << "seq_G_"   << m << "=" << seq_G[m]   << std::endl;
                 }
             }
 
@@ -113,11 +134,27 @@ YOCTO_UNIT_TEST_IMPL(builders)
         std::cerr << "boxes=" << boxes << std::endl;
     }
 
-    const double seq_time = chrono(seq_ticks);
-    const double par_time = chrono(par_ticks);
 
-    std::cerr << "seq_time=" << seq_time << std::endl;
-    std::cerr << "par_time=" << par_time << std::endl;
-    std::cerr << "speed_up=" << seq_time/par_time << std::endl;
+    std::cerr << "VectorBuilder:" << std::endl;
+    {
+        const double seq_time = chrono(seq_ticks);
+        const double par_time = chrono(par_ticks);
+        
+        std::cerr << "\tseq_time=" << seq_time << std::endl;
+        std::cerr << "\tpar_time=" << par_time << std::endl;
+        std::cerr << "\tspeed_up=" << seq_time/par_time << std::endl;
+    }
+
+    std::cerr << std::endl;
+    std::cerr << "MatrixBuilder:" << std::endl;
+    {
+        const double seq_time = chrono(G_seq_ticks);
+        const double par_time = chrono(G_par_ticks);
+
+        std::cerr << "\tseq_time=" << seq_time << std::endl;
+        std::cerr << "\tpar_time=" << par_time << std::endl;
+        std::cerr << "\tspeed_up=" << seq_time/par_time << std::endl;
+    }
+    
 }
 YOCTO_UNIT_TEST_DONE()
