@@ -26,7 +26,7 @@ private:
     matrices_of<Unit> &MG;
     const PHI         &Phi;
     const Box         *box;
-    size_t             J;
+    size_t             JJ;
     SymIndex           S;
     vector<BoxList>    mgr;
     vector<CPW>        prod;

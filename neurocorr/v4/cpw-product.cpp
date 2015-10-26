@@ -13,11 +13,11 @@ void CPW::product(const CPW &lhs, const CPW &rhs)
 
     foot = L*R;
 
-    size_t iL = 0;
-    size_t iR = 0;
+    size_t iL = 1;
+    size_t iR = 1;
 
     // mixed area
-    while(iL<nL&&iR<nR)
+    while(iL<=nL&&iR<=nR)
     {
         const coord &lC   = lhs[iL];
         const coord &rC   = rhs[iR];
@@ -50,13 +50,13 @@ void CPW::product(const CPW &lhs, const CPW &rhs)
     }
 
     // end of points, one of the data is done
-    while(iL<nL)
+    while(iL<=nL)
     {
         const coord &C = lhs[iL++];
         add(C.tau,C.value*R);
     }
 
-    while(iR<nR)
+    while(iR<=nR)
     {
         const coord &C = rhs[iR++];
         add(C.tau,C.value*L);

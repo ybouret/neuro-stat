@@ -12,7 +12,7 @@ MatrixBuilder:: MatrixBuilder(matrices_of<Unit> &usrMG,
 MG(usrMG),
 Phi(usrPhi),
 box(0),
-J(0),
+JJ(0),
 S(Phi.NK),
 mgr(Phi.trials),
 prod()
@@ -29,7 +29,7 @@ prod()
 
     //__________________________________________________________________________
     //
-    // Reserve memory for product function
+    // Reserve memory for product functions
     //__________________________________________________________________________
     {
         const size_t num_threads = kExec.num_threads();
@@ -40,6 +40,7 @@ prod()
         {
             prod.append<size_t>(np);
         }
+        assert(num_threads==prod.size());
     }
 
     {
@@ -79,10 +80,10 @@ prod()
         // Loop of trials
         //______________________________________________________________________
         threading::kernel kCore(this, &MatrixBuilder::computeCore);
-        for(J=trials;J>0;--J)
+        for(JJ=trials;JJ>0;--JJ)
         {
 
-            const BoxList &boxlist = mgr[J];
+            const BoxList &boxlist = mgr[JJ];
             if(boxlist.size>0)
             {
                 kExec(kCore);
@@ -109,7 +110,7 @@ void MatrixBuilder:: computeSide( threading::context &ctx )
     const Unit       tauStart = box->tauStart;
     const Unit       tauFinal = box->tauFinal;
 
-    for(size_t idx=offset,r=2,counting=length;counting>0;++idx,++r,--counting)
+    for(size_t idx=offset,r=2;length>0;++idx,++r,--length)
     {
         //______________________________________________________________________
         //
@@ -132,44 +133,49 @@ void MatrixBuilder:: computeSide( threading::context &ctx )
 
 void MatrixBuilder:: computeCore( threading::context &ctx )
 {
-    assert(J>0);
-    assert(J<=Phi.trials);
-    //CPW           &P      = prod[ctx.indx];
-    const BoxNode *i_node = mgr[J].head;
+    assert(JJ>0);
+    assert(JJ<=Phi.trials);
+    CPW           &P      = prod[ctx.indx];
+    const BoxNode *i_node = mgr[JJ].head;
     size_t         offset = 0;
     size_t         length = S.items;
     ctx.split(offset,length);
 
     // loop on elements of matrix
     const size_t    K     = Phi.K;
-    //const PHI::row &Phi_j = Phi[J];
+    const PHI::row &Phi_j = Phi[JJ];
 
-    for(size_t Q=offset,counting=length;counting>0;--counting,++Q)
+    for(size_t Q=offset;length>0;--length,++Q)
     {
-#if 0
+
         // find position in G matrix, J>=I, 0-based, warning
         size_t I=0,J=0;
         S.FindIJ(Q,I,J);
 
-        // find corresponding row neurone and k
+        // find corresponding ROW neurone and k
         ldiv_t rd = ldiv(I,K);
         const size_t ri = ++rd.quot;
         const size_t rk = ++rd.rem;
         assert(I==(ri-1)*K+(rk-1));
 
-        // find corresponding column neurone and k
+        // find corresponding COLUMN neurone and k
         ldiv_t cd = ldiv(J,K);
         const size_t ci = ++cd.quot;
         const size_t ck = ++cd.rem;
         assert(J==(ci-1)*K+(ck-1));
 
         // compute the product
-        //P.product(Phi_j[ri][rk],Phi_j[ci][ck]);
-#endif
+        I+=2;
+        J+=2;
+        P.product(Phi_j[ri][rk],Phi_j[ci][ck]);
 
         for(const BoxNode *node=i_node;node;node=node->next)
         {
-            assert(node->addr->trial==J);
+            const Box *sub = node->addr;
+            assert(sub->trial==JJ);
+            const Unit       intg = P.integrate_(sub->tauStart,sub->tauFinal);
+            matrix_of<Unit> &G    = MG[sub->indx];
+            G(I,J) = ( G(J,I) += intg );
         }
         
         
