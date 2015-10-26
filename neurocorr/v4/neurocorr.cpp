@@ -1,5 +1,5 @@
 #include "yocto/R++/com.hpp"
-#include "records.hpp"
+#include "vector-builder.hpp"
 using namespace yocto;
 
 YOCTO_R_FUNCTION(NeuroCorr_Version,())
@@ -44,6 +44,105 @@ YOCTO_R_FUNCTION(NeuroCorr_CheckData,(SEXP dataNeurR, SEXP numNeuronesR, SEXP sc
 
     const Records records(scale,dataNeur,numNeurones);
     records.display();
+
+    return R_NilValue;
+}
+YOCTO_R_RETURN()
+
+
+    YOCTO_R_STATIC
+    Grouping ParseGroupingFrom( SEXP &groupingR )
+    {
+        const char *grp = R2String(groupingR);
+        if(!grp) throw exception("bad grouping string!!!");
+
+        if(0==strcmp(grp,"byKind"))
+            return GroupByKind;
+
+        if(0==strcmp(grp,"byBox"))
+            return GroupByBox;
+
+        throw exception("invalid grouping '%s'", grp);
+    }
+
+
+YOCTO_R_FUNCTION(NeuroCorr_Compute,
+                   (SEXP dataNeurR,
+                    SEXP numNeuronesR,
+                    SEXP scaleR,
+                    SEXP deltaR,
+                    SEXP KR,
+                    SEXP BoxesR,
+                    SEXP groupingR)
+                   )
+{
+    //__________________________________________________________________________
+    //
+    // acquire records
+    //__________________________________________________________________________
+    const RMatrix<Real> dataNeur( dataNeurR );
+    const int           numNeurones = R2Scalar<int>(numNeuronesR);
+    const Real          scale       = R2Scalar<double>(scaleR);
+    if(scale<=0) throw exception("invalid scale=%g!", scale);
+    const Records       records(scale,dataNeur,numNeurones);
+
+    //__________________________________________________________________________
+    //
+    // check delta
+    //__________________________________________________________________________
+    const Unit          delta       = records.toUnit(R2Scalar<double>(deltaR));
+    if(delta<=0) throw exception("invalid delta: check scale or delta value!");
+
+    //__________________________________________________________________________
+    //
+    // check K
+    //__________________________________________________________________________
+    const int           K           = R2Scalar<int>(KR);
+    if(K<1) throw exception("invalid K=%d", K);
+
+    Rprintf("[%s] #neurones = %u\n",     __fn, unsigned(records.neurones) );
+    Rprintf("[%s] #trials   = %u\n",     __fn, unsigned(records.trials)   );
+    Rprintf("[%s] scale     = %g\n",     __fn, records.scale);
+    Rprintf("[%s] delta     = %ld/%g\n", __fn, long(delta), scale);
+
+    //__________________________________________________________________________
+    //
+    // check grouping
+    //__________________________________________________________________________
+    Grouping policy = ParseGroupingFrom(groupingR);
+    switch(policy)
+    {
+        case GroupByKind: Rprintf("[%s] Grouping By Kind\n", __fn); break;
+        case GroupByBox:  Rprintf("[%s] Grouping By Box\n" , __fn); break;
+    }
+
+    //__________________________________________________________________________
+    //
+    // Read boxes
+    //__________________________________________________________________________
+    RMatrix<Real>       rboxes(BoxesR);
+    Boxes               boxes(records.scale,rboxes);
+    Rprintf("[%s] #Boxes    = %u\n",     __fn, unsigned(boxes.size()));
+
+    for(size_t i=1;i<=boxes.size();++i)
+    {
+        Rprintf("[%s]           |_kind=%3d, %ld -> %ld\n", __fn, int(boxes[i].kind), long(boxes[i].tauStart), long(boxes[i].tauFinal) );
+    }
+
+    //__________________________________________________________________________
+    //
+    // Prepare Matrices
+    //__________________________________________________________________________
+    const size_t nm = boxes.assignIndices(policy);
+    Rprintf("[%s] #Matrices = %u\n", __fn, unsigned(nm) );
+    
+
+
+    auto_ptr<threading::crew> team;
+    if(NumThreads>0) team.reset( new threading::crew(NumThreads,0,false) );
+
+    threading::crew *para = team.is_valid() ? & *team : NULL;
+
 
     return R_NilValue;
 }
