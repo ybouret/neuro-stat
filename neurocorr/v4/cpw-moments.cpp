@@ -6,12 +6,13 @@ void CPW:: evalMoments_(const UArray &tau,
 {
 
 
+    const CPW   &self = *this;
     Unit         mu1 = 0;
     Unit         mu2 = 0;
 
     for(size_t i=start,j=count;j>0;++i,--j)
     {
-        const Unit v = (*this)( tau[i] );
+        const Unit v = self( tau[i] );
         mu1 += v;
         mu2 += v*v;
     }
@@ -21,6 +22,8 @@ void CPW:: evalMoments_(const UArray &tau,
 }
 
 #include "yocto/sequence/lw-array.hpp"
+#include "yocto/code/bzset.hpp"
+
 
 void CPW:: evalMoments(const UArray &tau_,
                        const size_t start,
@@ -28,62 +31,74 @@ void CPW:: evalMoments(const UArray &tau_,
                        Moments     &moments) const throw()
 {
 
-    Unit         mu1 = 0;
-    Unit         mu2 = 0;
-    if(count<=0)
-        goto FINALIZE;
-    else
+    //__________________________________________________________________________
+    //
+    // initializing
+    //__________________________________________________________________________
+    Unit &mu1 = moments.mu1;
+    Unit &mu2 = moments.mu2;
+    mu1=mu2=0;
+
+    if(count>0)
     {
         //______________________________________________________________________
         //
-        // a least one point to evaluate
+        // We have at least one tau to eval: how many CPW points do we have ?
         //______________________________________________________________________
-        assert(count>0);
-        assert(start>=1);
-        assert(start+count-1<=tau_.size());
+        const lw_array<Unit> tau( (Unit *)&tau_[start], count );
         const size_t         n = this->size();
-        const lw_array<Unit> tau( (Unit *)&tau_[start], count);
-        switch (n)
+
+        switch(n)
         {
+
+            case 0:
                 //______________________________________________________________
                 //
-                // constant function
+                // most trivial case
                 //______________________________________________________________
-            case 0: mu1 = count * foot; mu2 = mu1 * foot; goto FINALIZE;
+                mu1 = count*foot;
+                mu2 = mu1*foot;
+                return;
 
-
-                //______________________________________________________________
-                //
-                // one splitting point
-                //______________________________________________________________
             case 1:
+                //______________________________________________________________
+                //
+                // one point in the partition: where is it within
+                // the tau ?
+                //______________________________________________________________
             {
-                const coord C     = front(); // the one coordinate
-                const Unit  tt    = C.tau;   // the splitting value
-                const Unit  lower = tau[1];
-                if(tt<lower)
+                const coord C  = front();
+                const Unit  tt = C.tau;
+
+                const Unit tauMin = tau[1];
+                if( tt < tauMin )
                 {
-                    // all tau's at right
-                    mu1 = count * C.value; mu2 = mu1 * C.value; goto FINALIZE;
+                    // all the points at right => C.value
+                    mu1 = count * C.value;
+                    mu2 = mu1   * C.value;
+                    return;
                 }
                 else
                 {
-                    const Unit upper = tau[count];
-                    if(tt>=upper)
+                    const Unit tauMax = tau[count];
+                    if(tt>=tauMax)
                     {
-                        // all tau's at left
-                        mu1 = count * foot; mu2 = mu1 * foot; goto FINALIZE;
+                        // all the points at left => C.value
+                        mu1 = count*foot;
+                        mu2 = mu1*foot;
+                        return;
                     }
                     else
                     {
-                        assert(tt>=lower);
-                        assert(tt<upper);
-                        assert(count>1);
+                        assert(tt>=tauMin);
+                        assert(tt<tauMax);
+                        assert(count>=2);
+                        // need to locate tau[jlo] <= tt < tau[jup]
                         size_t jlo = 1;
                         size_t jup = count;
                         while(jup-jlo>1)
                         {
-                            const size_t jmid = (jlo+jup)>>1;
+                            const size_t jmid = (jup+jlo)>>1;
                             const Unit   tmid = tau[jmid];
                             if(tt<tmid)
                             {
@@ -94,139 +109,32 @@ void CPW:: evalMoments(const UArray &tau_,
                                 jlo = jmid;
                             }
                         }
-                        assert(1==jup-jlo);
-                        assert(tt<tau[jup]);
+                        assert(jup-jlo==1);
                         assert(tau[jlo]<=tt);
+                        assert(tt<tau[jup]);
+                        //std::cerr << "+" << std::endl;
+                        const Unit nf = jlo;
+                        const Unit nt = count-jlo;
 
-                        const Unit nlo = jlo;
-                        const Unit vlo = foot;
-                        const Unit nhi = (count-jlo);
-                        const Unit vhi = C.value;
+                        const Unit vf = foot;
+                        const Unit vt = C.value;
 
-                        const Unit plo = nlo * vlo;
-                        const Unit phi = nhi * vhi;
-                        mu1 = plo     + phi;
-                        mu2 = plo*vlo + phi*vhi;
+                        const Unit nvf = nf * vf;
+                        const Unit nvt = nt * vt;
 
-                        goto FINALIZE;
+                        mu1 = nvf + nvt;
+                        mu2 = nvf * vf + nvt * vt;
+                        return;
                     }
                 }
             }
-
-
-            default:
-                break;
+                assert(die("never get here"));
+                
+            default: break;
         }
         assert(n>=2);
-        assert(count>0);
-
-        const coord bot   = front();
-        const Unit  upper = tau[count];
-        if(upper<=bot.tau)
-        {
-            //everybody at left
-            mu1 = count * foot; mu2 = mu1 * foot; goto FINALIZE;
-        }
-        else
-        {
-            const coord top   = back();
-            const Unit  lower = tau[1];
-            if(lower>=top.tau)
-            {
-                //everybody at right
-                mu1 = count * top.value; mu2 = mu1 * top.value; goto FINALIZE;
-            }
-            else
-            {
-                //______________________________________________________________
-                //
-                //
-                // Generic case, at least one point
-                //
-                //______________________________________________________________
-                size_t i=1;
-                for(;i<=count;++i)
-                {
-                    if(bot.tau<tau[i])
-                    {
-                        break;
-                    }
-                }
-
-                //______________________________________________________________
-                //
-                // initialize with the number of points before bot.tau
-                //______________________________________________________________
-                {
-                    const Unit nf = i-1;
-                    mu1 = nf  * foot;
-                    mu2 = mu1 * foot;
-                }
-
-                //______________________________________________________________
-                //
-                // locate self[jlo].tau<tau[i]<=self[jup].tau
-                //______________________________________________________________
-                const _CPW &self = *this;
-                size_t      jlo  = 1;
-                size_t      jup  = n;
-                {
-                    const Unit curr = tau[i]; assert(bot.tau<curr); assert(curr<=top.tau);
-                    while(jup-jlo>1)
-                    {
-                        const size_t jmid = (jlo+jup)>>1;
-                        const Unit   tmid = self[jmid].tau;
-                        if(tmid<curr)
-                        {
-                            jlo = jmid;
-                        }
-                        else
-                        {
-                            jup = jmid;
-                        }
-                    }
-                    assert(1==jup-jlo);
-                    assert(self[jlo].tau<tau[i]);
-                    assert(tau[i]<=self[jup].tau);
-                }
-
-                // start with a point between jlo and jup
-                for(;i<=count;++i)
-                {
-                    const Unit curr = tau[i];
-                    if(curr>top.tau)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        while( !( (self[jlo].tau<curr) && (curr<=self[jup].tau) ) )
-                        {
-                            ++jlo;
-                            ++jup;
-                        }
-                        const Unit value = self[jlo].value;
-                        mu1 += value;
-                        mu2 += value*value;
-                    }
-                }
-
-                //______________________________________________________________
-                //
-                // finalize with the number of points after top.tau
-                //______________________________________________________________
-                {
-                    const Unit remaining = (count+1-i);
-                    const Unit tmp       = remaining*top.value;
-                    mu1 += tmp;
-                    mu2 += tmp * top.value;
-                }
-            }
-        }
+        
         
     }
     
-FINALIZE:
-    moments.mu1 = mu1;
-    moments.mu2 = mu2;
 }

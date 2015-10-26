@@ -19,9 +19,9 @@ void full_test( const CPW &F, const UArray &tau )
 
     if(raw!=opt)
     {
-        throw exception("moments failure!");
+        throw exception("moments failure @size=%u!", unsigned(F.size()));
     }
-    std::cerr << "Speed: " << rawSpeed << " -> " << optSpeed << " (x " << optSpeed/rawSpeed << ")" << std::endl;
+    std::cerr << "Speed (size=" << F.size() << "): " << rawSpeed << " -> " << optSpeed << " (x " << optSpeed/rawSpeed << ")" << std::endl;
 }
 
 YOCTO_UNIT_TEST_IMPL(moments)
@@ -70,10 +70,10 @@ YOCTO_UNIT_TEST_IMPL(moments)
     uint64_t opt64 = 0;
     uint64_t mark  = 0;
 
-    for(size_t max_spikes=2;max_spikes<=128;max_spikes*=2)
+    for(size_t max_spikes=1;max_spikes<=128;max_spikes*=2)
     {
         std::cerr << std::endl;
-        for(size_t iter=0;iter<2;++iter)
+        for(size_t iter=0;iter<8;++iter)
         {
             std::cerr << "\tmaxSpikes=" << max_spikes << std::endl;
             auto_ptr<Records> pRec( Records::GenerateRandom(1,1, max_spikes, 5) );
