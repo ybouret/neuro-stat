@@ -50,6 +50,9 @@ public:
     //! thread safe if memory preallocated
     void buildFrom(const UArray &train, const Unit delta, UVector &shift);
 
+    //! thread save if memory is preallocated
+    void product(const CPW &lhs, const CPW &rhs);
+
     //! access
     Unit operator()( const Unit tau ) const throw();
 

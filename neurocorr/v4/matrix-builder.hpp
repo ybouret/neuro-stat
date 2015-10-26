@@ -4,6 +4,7 @@
 
 #include "phi.hpp"
 #include "boxes.hpp"
+#include "symindex.hpp"
 
 #include "yocto/sequence/addr-list.hpp"
 
@@ -19,14 +20,18 @@ public:
 
 private:
     typedef addr_list<const Box> BoxList;
-
+    typedef addr_node<const Box> BoxNode;
+    
     matrices_of<Unit> &MG;
     const PHI         &Phi;
     const Box         *box;
+    size_t             J;
+    SymIndex           S;
     vector<BoxList>    mgr;
-
+    vector<CPW>        prod;
 
     void computeSide( threading::context &ctx );
+    void computeCore( threading::context &ctx );
 };
 
 #endif
