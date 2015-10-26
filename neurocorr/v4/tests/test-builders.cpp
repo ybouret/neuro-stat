@@ -11,9 +11,9 @@ YOCTO_UNIT_TEST_IMPL(builders)
 
     size_t neurones   = 4;
     size_t trials     = 5;
-    size_t max_spikes = 100;
+    size_t max_spikes = 10;
     size_t pace       = 5;
-    size_t extra      = 5;
+    size_t extra      = 2;
 
 
     size_t num_boxes = 3;
@@ -30,6 +30,7 @@ YOCTO_UNIT_TEST_IMPL(builders)
     wtime    chrono;
     chrono.start();
 
+    for(size_t iter=0;iter<8;++iter)
     {
         auto_ptr<Records> pRec( Records::GenerateRandom(neurones, trials, max_spikes, pace));
         const Records    &records = *pRec;

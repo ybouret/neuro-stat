@@ -129,10 +129,162 @@ void CPW:: evalMoments(const UArray &tau_,
                 }
             }
                 assert(die("never get here"));
-                
+
             default: break;
         }
+
+        //______________________________________________________________________
+        //
+        //
+        // Generic case we have multiple partition points
+        // and a few tau's
+        //
+        //______________________________________________________________________
         assert(n>=2);
+
+        //
+        // trivial cases
+        //______________________________________________________________________
+        const coord cmin   = front();
+        const Unit  tauMax = tau[count];
+        if(tauMax<=cmin.tau)
+        {
+            //__________________________________________________________________
+            //
+            // everybody at left
+            //__________________________________________________________________
+            mu1 = count * foot;
+            mu2 = mu1   * foot;
+            return;
+        }
+        else
+        {
+            const coord cmax   = back();
+            const Unit  tauMin = tau[1];
+            if(tauMin>cmax.tau)
+            {
+                //______________________________________________________________
+                //
+                // everybody at right
+                //______________________________________________________________
+                mu1 = count * cmax.value;
+                mu2 = mu1   * cmax.value;
+                return;
+            }
+            else
+            {
+                //______________________________________________________________
+                //
+                // Most generic case: at least one point within the partition
+                //______________________________________________________________
+                assert(tauMin<=cmax.tau);
+                assert(tauMax>cmin.tau);
+
+                //______________________________________________________________
+                //
+                // Let us find how tau's are <= cmin.tau
+                //______________________________________________________________
+                size_t      i    = 1;
+                for(;i<count;++i)
+                {
+                    if(tau[i]>cmin.tau)
+                    {
+                        break;
+                    }
+                }
+
+                //______________________________________________________________
+                //
+                // initialize if any
+                //______________________________________________________________
+                if(i>1)
+                {
+                    const Unit nf = i-1;
+                    const Unit vf = foot;
+                    mu1 = nf  * vf;
+                    mu2 = mu1 * vf;
+                }
+
+                assert(cmin.tau<tau[i]);
+                if(tau[i]<=cmax.tau)
+                {
+
+                    //______________________________________________________________
+                    //
+                    // locate  first point: self[jlo].tau < tau[i] <= self[jhi].tau
+                    //______________________________________________________________
+                    const CPW &self = *this;
+                    size_t jlo = 1;
+                    size_t jup = n;
+                    {
+                        const Unit curr = tau[i];
+                        while(jup-jlo>1)
+                        {
+                            const size_t jmid = (jup+jlo)>>1;
+                            const Unit   tmid = self[jmid].tau;
+                            if(tmid<curr)
+                            {
+                                jlo = jmid;
+                            }
+                            else
+                            {
+                                jup = jmid;
+                            }
+                        }
+                    }
+                    assert(1==jup-jlo);
+                    assert(self[jlo].tau<tau[i]);
+                    assert(tau[i]<=self[jup].tau);
+
+                    for(;i<=count;++i)
+                    {
+                        const Unit curr = tau[i];
+                        if(curr>cmax.tau)
+                            break;
+                        assert(self[jlo].tau<tau[i]);
+                        if(curr>self[jup].tau)
+                        {
+                            jup = n; assert(jup-jlo>1);
+                            while(jup-jlo>1)
+                            {
+                                const size_t jmid = (jup+jlo)>>1;
+                                const Unit   tmid = self[jmid].tau;
+                                if(tmid<curr)
+                                {
+                                    jlo = jmid;
+                                }
+                                else
+                                {
+                                    jup = jmid;
+                                }
+                            }
+
+                        }
+                        assert(1==jup-jlo);
+                        assert(self[jlo].tau<tau[i]);
+                        assert(tau[i]<=self[jup].tau);
+
+                        const Unit value = self[jlo].value;
+                        mu1 += value;
+                        mu2 += value*value;
+                    }
+                }
+                
+                const size_t remaining = count-(i-1);
+                //std::cerr << "remaining=" << remaining << std::endl;
+                if(remaining)
+                {
+                    assert(i<=count);
+                    assert(tau[i]>cmax.tau);
+                    mu1 += cmax.value;
+                    mu2 += cmax.value*cmax.value;
+                }
+                
+                return;
+            }
+        }
+        assert(die("Never Get Here!"));
+        
         
         
     }
