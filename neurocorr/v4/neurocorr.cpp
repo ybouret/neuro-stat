@@ -1,5 +1,7 @@
 #include "yocto/R++/com.hpp"
 #include "vector-builder.hpp"
+#include "matrix-builder.hpp"
+
 using namespace yocto;
 
 YOCTO_R_FUNCTION(NeuroCorr_Version,())
@@ -129,21 +131,42 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
         Rprintf("[%s]           |_kind=%3d, %ld -> %ld\n", __fn, int(boxes[i].kind), long(boxes[i].tauStart), long(boxes[i].tauFinal) );
     }
 
+    
+    
+    //__________________________________________________________________________
+    //
+    // Build Phi
+    //__________________________________________________________________________
+    auto_ptr<threading::crew> team;
+    if(NumThreads>0) team.reset( new threading::crew(NumThreads,0,false) );
+    threading::crew *para = team.__get();
+    
+    Rprintf("[%s] #Threads  = %u\n", __fn, unsigned(NumThreads) );
+    Rprintf("[%s] Allocating Phi with %d segments\n",     __fn, K);
+    PHI Phi(records,K-1);
+    Rprintf("[%s] Computing Phi...\n", __fn);
+    Phi.build(delta,para);
+    
     //__________________________________________________________________________
     //
     // Prepare Matrices
     //__________________________________________________________________________
     const size_t nm = boxes.assignIndices(policy);
     Rprintf("[%s] #Matrices = %u\n", __fn, unsigned(nm) );
+    Rprintf("[%s] dims(G)   = %ux%u\n", __fn, unsigned(Phi.dim), unsigned(Phi.dim));
+    UMatrices MuA(nm,Phi.dim,1);
+    UMatrices Mu1(nm,Phi.dim,Phi.neurones);
+    UMatrices Mu2(nm,Phi.dim,Phi.neurones);
+    UMatrices G(nm,Phi.dim,Phi.dim);
+    Rprintf("[%s] Computing Vectors...\n",__fn);
+    {
+        VectorBuilder vbuild(Mu1,Mu2,MuA,boxes,Phi,para);
+    }
+    Rprintf("[%s] Computing G...\n",__fn);
+    {
+        MatrixBuilder mbuild(G,boxes,Phi,para);
+    }
     
-
-
-    auto_ptr<threading::crew> team;
-    if(NumThreads>0) team.reset( new threading::crew(NumThreads,0,false) );
-
-    threading::crew *para = team.is_valid() ? & *team : NULL;
-
-
     return R_NilValue;
 }
 YOCTO_R_RETURN()
