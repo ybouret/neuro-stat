@@ -19,6 +19,7 @@ public:
 
 
 private:
+	YOCTO_DISABLE_COPY_AND_ASSIGN(MatrixBuilder);
     typedef addr_list<const Box> BoxList;
     typedef addr_node<const Box> BoxNode;
     

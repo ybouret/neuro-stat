@@ -6,6 +6,7 @@ VectorBuilder:: ~VectorBuilder() throw()
 
 
 #include "locate.hpp"
+#include <cstdlib>
 
 VectorBuilder:: VectorBuilder(matrices_of<Unit> &usrMu1,
                               matrices_of<Unit> &usrMu2,

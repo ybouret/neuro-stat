@@ -1,4 +1,5 @@
 #include "matrix-builder.hpp"
+#include <cstdlib>
 
 MatrixBuilder:: ~MatrixBuilder() throw()
 {

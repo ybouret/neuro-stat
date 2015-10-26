@@ -68,8 +68,10 @@ neurones(cols),
 NK(neurones*K),
 dim(1+NK),
 maxCount(records.maxCount),
+kSeq(),
 delta(0),
-kBuild(this, &PHI::onBuild)
+kBuild(this, &PHI::onBuild),
+shifts()
 {
 }
 

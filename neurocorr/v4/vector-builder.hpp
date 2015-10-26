@@ -7,6 +7,7 @@
 
 YOCTO_TRIPLE_DECL(inside,size_t,count,size_t,start,const UArray *,train);
 inline inside() throw() : count(0), start(0), train(0) {}
+YOCTO_DISABLE_ASSIGN(inside);
 YOCTO_PAIR_END();
 
 class VectorBuilder
