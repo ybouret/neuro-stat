@@ -106,18 +106,18 @@ void VectorBuilder:: compute( threading::context &ctx )
     Moments          moments;
     const Unit       tauStart = box->tauStart;
     const Unit       tauFinal = box->tauFinal;
-    for(size_t idx=offset,counting=length,r=offset+2;counting>0;--counting,++idx,++r)
+    for(size_t r=offset+2;length>0;--length,++offset,++r)
     {
         //______________________________________________________________________
         //
         // get the l,k coordinates
         //______________________________________________________________________
-        ldiv_t       d = ldiv(idx,K);
+        ldiv_t       d = ldiv(offset,K);
         const size_t l = ++d.quot;
         const size_t k = ++d.rem;
         assert(l<=Phi.neurones);
         assert(k<=Phi.K);
-        assert((l-1)*K+(k-1) == idx);
+        assert((l-1)*K+(k-1) == offset);
 
 
         //______________________________________________________________________

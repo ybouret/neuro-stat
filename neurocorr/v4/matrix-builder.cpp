@@ -67,22 +67,21 @@ prod()
             G(1,1) += tauFinal-tauStart;
             //! store the address of the box in the manager corresponding pos;
             mgr[j].append(box);
-
             kExec(kSide);
 
         }
     }
     
 
+
     {
         //______________________________________________________________________
         //
-        // Loop of trials
+        // Loop over trials
         //______________________________________________________________________
         threading::kernel kCore(this, &MatrixBuilder::computeCore);
         for(JJ=trials;JJ>0;--JJ)
         {
-
             const BoxList &boxlist = mgr[JJ];
             if(boxlist.size>0)
             {
@@ -110,18 +109,20 @@ void MatrixBuilder:: computeSide( threading::context &ctx )
     const Unit       tauStart = box->tauStart;
     const Unit       tauFinal = box->tauFinal;
 
-    for(size_t idx=offset,r=2;length>0;++idx,++r,--length)
+
+    for(size_t r=2+offset;length>0;++offset,++r,--length)
     {
         //______________________________________________________________________
         //
         // get the i,k coordinates corresponding => row/line
         //______________________________________________________________________
-        ldiv_t       d = ldiv(idx,K);
+        ldiv_t       d = ldiv(offset,K);
         const size_t i = ++d.quot;
         const size_t k = ++d.rem;
         assert(i<=Phi.neurones);
         assert(k<=Phi.K);
-        assert((i-1)*K+(k-1) == idx);
+        assert((i-1)*K+(k-1) == offset);
+
         const CPW &phi  = Phi_j[i][k];
         const Unit intg = phi.integrate_(tauStart,tauFinal);
         G(r,1) = ( G(1,r) += intg );

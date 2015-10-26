@@ -11,7 +11,7 @@ YOCTO_UNIT_TEST_IMPL(builders)
 
     size_t neurones   = 4;
     size_t trials     = 5;
-    size_t max_spikes = 100;
+    size_t max_spikes = 1000;
     size_t pace       = 5;
     size_t extra      = 2;
 
@@ -41,11 +41,12 @@ YOCTO_UNIT_TEST_IMPL(builders)
 
         // create somes random boxes with alternate kinds
         matrix<Real> rboxes(4,num_boxes);
+        const Unit   bw = max_of<Unit>(1,width/Unit(num_boxes));
         for(size_t i=1;i<=num_boxes;++i)
         {
             rboxes[1][i] = 1+alea_lt(trials);
-            rboxes[2][i] = tauMin + Unit(alea_leq(width))/4;
-            rboxes[3][i] = rboxes[2][i] + 1+Unit(alea_leq(width))/2;
+            rboxes[2][i] = tauMin + Unit(i-1)*bw;
+            rboxes[3][i] = rboxes[2][i] + bw;
             rboxes[4][i] = 1+(i%num_kinds);
         }
         std::cerr << "BoxEst=" << rboxes << std::endl;
@@ -131,6 +132,18 @@ YOCTO_UNIT_TEST_IMPL(builders)
             if(!areEqualMatrices(seq_muA,par_muA))
             {
                 throw exception("mismatch muA");
+            }
+
+            if(!areEqualMatrices(seq_G,par_G))
+            {
+                std::cerr << "#### Error!" << std::endl;
+                for(size_t m=1;m<=nm;++m)
+                {
+                    std::cerr << "seq_G_"   << m << "=" << seq_G[m]   << std::endl;
+                    std::cerr << "par_G_"   << m << "=" << par_G[m]   << std::endl;
+
+                }
+                throw exception("mismatch G");
             }
 
 
