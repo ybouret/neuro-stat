@@ -19,20 +19,24 @@ mgr(Phi.trials)
     const size_t trials = Phi.trials;
     const size_t nb     = boxes.size();
 
-    //__________________________________________________________________________
-    //
-    // first term and prepare lists...
-    //__________________________________________________________________________
+
     threading::kernel_executor &kExec = team ? *static_cast<threading::kernel_executor*>(team) : Phi.kSeq;
     {
+        //______________________________________________________________________
+        //
+        // Loop on boxes to compute sides terms.
+        // Register boxes in manager.
+        //______________________________________________________________________
         threading::kernel kSide(this,& MatrixBuilder::computeSide);
         for(size_t b=nb;b>0;--b)
         {
             box            = &boxes[b];
             const size_t j = box->trial;
             const size_t m = box->indx;
+
             if(j<=0||j>trials) throw exception("MatrixBuilder: invalid box #%u trial=%u!", unsigned(b), unsigned(j) );
             if(m<=0||m>count)  throw exception("MatrixBuilder: invalid box #%u index=%u!", unsigned(b), unsigned(m) );
+
             matrix_of<Unit> &G = MG[m];
             const Unit tauStart = box->tauStart;
             const Unit tauFinal = box->tauFinal;
@@ -40,7 +44,13 @@ mgr(Phi.trials)
                 throw exception("MatrixBuilder: invalid box #%u times!",unsigned(b));
             G(1,1) += tauFinal-tauStart;
             kExec(kSide);
+            mgr[j].append(box);
         }
+    }
+
+
+    {
+
     }
 
 }

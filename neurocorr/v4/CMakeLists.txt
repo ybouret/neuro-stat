@@ -21,6 +21,7 @@ boxes.hpp
 boxes.cpp
 vector-builder.hpp
 vector-builder.cpp
+symindex.hpp
 matrix-builder.hpp
 matrix-builder.cpp
 )

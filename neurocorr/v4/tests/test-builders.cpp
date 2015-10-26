@@ -76,6 +76,10 @@ YOCTO_UNIT_TEST_IMPL(builders)
 
             par_mu1.ldz();
             par_mu2.ldz();
+
+            seq_G.ldz();
+            par_G.ldz();
+
             Phi.build(delta,&team);
 
             {

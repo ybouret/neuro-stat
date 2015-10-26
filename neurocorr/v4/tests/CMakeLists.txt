@@ -9,6 +9,7 @@ test-moments.cpp
 test-abs.cpp
 test-builders.cpp
 test-intg.cpp
+test-indx.cpp
 )
 
 TARGET_LINK_LIBRARIES(test-ncv4 ncv4)
