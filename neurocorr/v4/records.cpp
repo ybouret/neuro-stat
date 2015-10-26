@@ -88,13 +88,19 @@ void Records:: display() const
     const _Records &self = *this;
     for(size_t i=1;i<=neurones;++i)
     {
-        std::cerr << "neurone " << i << "/" << neurones  << "#trials=" << trials;
+        std::cerr << "neurone " << i << "/" << neurones  << ", #trials=" << trials;
         for(size_t j=1;j<=trials;++j)
         {
-            std::cerr << ':' << self[j][i].size();
+            const UArray &tr = self[j][i];
+            std::cerr << '#' << tr.size();
+            if(tr.size())
+            {
+                std::cerr << '[' << tr[1] << ':' << tr[tr.size()] << ']';
+            }
         }
         std::cerr << std::endl;
     }
+    std::cerr << "global tau in [" << minTau << ";" << maxTau << "]" << std::endl;
 
 }
 

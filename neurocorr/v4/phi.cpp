@@ -100,7 +100,7 @@ void PHI:: build(const Unit deltaUnits, threading::crew *team)
 
 void PHI:: onBuild(threading::context &ctx)
 {
-    _PHI &self = *this;
+    _PHI  &self   = *this;
     size_t offset = 0;
     size_t length = items;
     ctx.split(offset,length);

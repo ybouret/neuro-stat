@@ -30,7 +30,7 @@ YOCTO_UNIT_TEST_IMPL(builders)
     wtime    chrono;
     chrono.start();
 
-    for(size_t iter=0;iter<8;++iter)
+    for(size_t iter=0;iter<4;++iter)
     {
         auto_ptr<Records> pRec( Records::GenerateRandom(neurones, trials, max_spikes, pace));
         const Records    &records = *pRec;
@@ -38,6 +38,8 @@ YOCTO_UNIT_TEST_IMPL(builders)
         const Unit        tauMax  = records.maxTau+10*pace;
         const Unit        width   = tauMax-tauMin;
         PHI Phi(records,extra);
+
+        records.display();
 
         // create somes random boxes with alternate kinds
         matrix<Real> rboxes(4,num_boxes);
@@ -47,13 +49,13 @@ YOCTO_UNIT_TEST_IMPL(builders)
             rboxes[1][i] = 1+alea_lt(trials);
             rboxes[2][i] = tauMin + Unit(i-1)*bw;
             rboxes[3][i] = rboxes[2][i] + bw;
-            rboxes[4][i] = 1+(i%num_kinds);
+            rboxes[4][i] = 1+((i-1)%num_kinds);
         }
         std::cerr << "BoxEst=" << rboxes << std::endl;
         Boxes boxes(1.0,rboxes);
         std::cerr << "Boxes=" << boxes << std::endl;
 
-        const size_t          nm = boxes.assignIndices(GroupByKind);
+        const size_t          nm = boxes.assignIndices(GroupByBox);
         std::cerr << "#matrices=" << nm << std::endl;
         UMatrices             seq_muA(nm,Phi.dim,1);
         UMatrices             par_muA(nm,Phi.dim,1);
@@ -68,9 +70,9 @@ YOCTO_UNIT_TEST_IMPL(builders)
         UMatrices             par_G(nm,Phi.dim,Phi.dim);
 
 
-        const Unit deltaMax = 10*pace;
+        const Unit deltaMax = 30*pace;
 
-        for(Unit delta=1;delta<=deltaMax;++delta)
+        for(Unit delta=pace;delta<=deltaMax;delta+=pace)
         {
             seq_mu1.ldz();
             seq_mu2.ldz();
@@ -136,13 +138,6 @@ YOCTO_UNIT_TEST_IMPL(builders)
 
             if(!areEqualMatrices(seq_G,par_G))
             {
-                std::cerr << "#### Error!" << std::endl;
-                for(size_t m=1;m<=nm;++m)
-                {
-                    std::cerr << "seq_G_"   << m << "=" << seq_G[m]   << std::endl;
-                    std::cerr << "par_G_"   << m << "=" << par_G[m]   << std::endl;
-
-                }
                 throw exception("mismatch G");
             }
 

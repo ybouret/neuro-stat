@@ -160,7 +160,7 @@ void MatrixBuilder:: computeCore( threading::context &ctx )
         assert(I==(ri-1)*K+(rk-1));
 
         // find corresponding COLUMN neurone and k
-        ldiv_t cd = ldiv(J,K);
+        ldiv_t       cd = ldiv(J,K);
         const size_t ci = ++cd.quot;
         const size_t ck = ++cd.rem;
         assert(J==(ci-1)*K+(ck-1));
