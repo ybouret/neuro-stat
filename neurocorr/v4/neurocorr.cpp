@@ -35,14 +35,15 @@ YOCTO_R_FUNCTION(NeuroCorr_SetParallel,(SEXP numProcsR))
 YOCTO_R_RETURN()
 
 
-YOCTO_R_FUNCTION(NeuroCorr_CheckData,(SEXP dataNeurR, SEXP numNeuronesR, SEXP scaleR) )
+YOCTO_R_FUNCTION(NeuroCorr_CheckData,
+                 (SEXP dataNeurR, SEXP numNeuronesR, SEXP scaleR))
 {
     RMatrix<Real> dataNeur(dataNeurR);
     const int     numNeurones = R2Scalar<int>(numNeuronesR);
     const Real    scale       = R2Scalar<double>(scaleR);
 
-    std::cerr << "#neurones=" << numNeurones << std::endl;
-    std::cerr << "Scale    =" << scale       << std::endl;
+    //std::cerr << "#neurones=" << numNeurones << std::endl;
+    //std::cerr << "Scale    =" << scale       << std::endl;
 
     const Records records(scale,dataNeur,numNeurones);
     records.display();
@@ -52,31 +53,31 @@ YOCTO_R_FUNCTION(NeuroCorr_CheckData,(SEXP dataNeurR, SEXP numNeuronesR, SEXP sc
 YOCTO_R_RETURN()
 
 
-    YOCTO_R_STATIC
-    Grouping ParseGroupingFrom( SEXP &groupingR )
-    {
-        const char *grp = R2String(groupingR);
-        if(!grp) throw exception("bad grouping string!!!");
+YOCTO_R_STATIC
+Grouping ParseGroupingFrom( SEXP &groupingR )
+{
+    const char *grp = R2String(groupingR);
+    if(!grp) throw exception("bad grouping string!!!");
 
-        if(0==strcmp(grp,"byKind"))
-            return GroupByKind;
+    if(0==strcmp(grp,"byKind"))
+        return GroupByKind;
 
-        if(0==strcmp(grp,"byBox"))
-            return GroupByBox;
+    if(0==strcmp(grp,"byBox"))
+        return GroupByBox;
 
-        throw exception("invalid grouping '%s'", grp);
-    }
+    throw exception("invalid grouping '%s'", grp);
+}
 
 
 YOCTO_R_FUNCTION(NeuroCorr_Compute,
-                   (SEXP dataNeurR,
-                    SEXP numNeuronesR,
-                    SEXP scaleR,
-                    SEXP deltaR,
-                    SEXP KR,
-                    SEXP BoxesR,
-                    SEXP groupingR)
-                   )
+                 (SEXP dataNeurR,
+                  SEXP numNeuronesR,
+                  SEXP scaleR,
+                  SEXP deltaR,
+                  SEXP KR,
+                  SEXP BoxesR,
+                  SEXP groupingR)
+                 )
 {
     //__________________________________________________________________________
     //
@@ -131,8 +132,8 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
         Rprintf("[%s]           |_kind=%3d, %ld -> %ld\n", __fn, int(boxes[i].kind), long(boxes[i].tauStart), long(boxes[i].tauFinal) );
     }
 
-    
-    
+
+
     //__________________________________________________________________________
     //
     // Build Phi
@@ -140,13 +141,20 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
     auto_ptr<threading::crew> team;
     if(NumThreads>0) team.reset( new threading::crew(NumThreads,0,false) );
     threading::crew *para = team.__get();
-    
-    Rprintf("[%s] #Threads  = %u\n", __fn, unsigned(NumThreads) );
+
+    if(NumThreads)
+    {
+        Rprintf("[%s] #THREADS  = %u\n", __fn, unsigned(NumThreads) );
+    }
+    else
+    {
+        Rprintf("[%s] SEQUENTIAL\n", __fn);
+    }
     Rprintf("[%s] Allocating Phi with %d segments\n",     __fn, K);
     PHI Phi(records,K-1);
     Rprintf("[%s] Computing Phi...\n", __fn);
     Phi.build(delta,para);
-    
+
     //__________________________________________________________________________
     //
     // Prepare Matrices
