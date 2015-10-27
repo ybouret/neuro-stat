@@ -83,6 +83,8 @@ public:
     //! integrate, naive function
     Unit integrate_(const Unit tauStart, const Unit tauFinal) const throw();
 
+    //! integrate, optimized function
+    Unit integrate( Unit tauStart,  Unit tauFinal) const throw();
 
 private:
     YOCTO_DISABLE_ASSIGN(CPW);

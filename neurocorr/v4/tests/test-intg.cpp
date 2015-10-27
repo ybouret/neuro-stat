@@ -5,6 +5,7 @@
 static inline
 void do_intg( const CPW &F )
 {
+    std::cerr << "F.size=" << F.size() << std::endl;
     Unit tauMin = 0;
     Unit tauMax = 0;
     if(F.size()<=0)
@@ -26,7 +27,14 @@ void do_intg( const CPW &F )
         fp("%ld",long(tau));
         for(Unit w=1;w<=5;++w)
         {
-            fp(" %ld", long(F.integrate_(tau, tau+w)) );
+            const Unit ans = F.integrate_(tau, tau+w);
+            const Unit res = F.integrate(tau,tau+w);
+            fp(" %ld", long(ans) );
+            if(ans!=res)
+            {
+                std::cerr << "!";
+                //throw exception("integrate mismatch, F.size=%u", unsigned(F.size()));
+            }
         }
         fp("\n");
     }
@@ -43,6 +51,9 @@ YOCTO_UNIT_TEST_IMPL(intg)
     do_intg(F);
     
     F.add(0,2);
+    do_intg(F);
+
+    F.add(2,3);
     do_intg(F);
 
 }
