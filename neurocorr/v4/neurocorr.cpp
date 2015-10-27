@@ -138,8 +138,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
     //
     // Build Phi
     //__________________________________________________________________________
-    auto_ptr<threading::crew> team;
-    if(NumThreads>0) team.reset( new threading::crew(NumThreads,0,false) );
+    auto_ptr<threading::crew> team( NumThreads>0 ? new threading::crew(NumThreads,0,false) : NULL );
     threading::crew *para = team.__get();
 
     if(NumThreads)
