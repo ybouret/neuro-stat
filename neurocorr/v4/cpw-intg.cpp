@@ -81,13 +81,15 @@ Unit CPW:: integrate(Unit tauStart, Unit tauFinal) const throw()
         if(tauFinal<=cmin.tau)
         {
             //every body is at left
-            return (tauFinal-tauStart) * cmin.value;
+            //std::cerr << "-" << std::endl;
+            return (tauFinal-tauStart) * foot;
         }
         else
         {
             const coord cmax = back();
             if(tauStart>=cmax.tau)
             {
+                //std::cerr << "+" << std::endl;
                 return (tauFinal-tauStart) * cmax.value;
             }
             else
@@ -101,9 +103,9 @@ Unit CPW:: integrate(Unit tauStart, Unit tauFinal) const throw()
                 // most generic case
                 //______________________________________________________________
 
-                //---------------------
+                //--------------------------------------------------------------
                 // study the left side
-                //---------------------
+                //--------------------------------------------------------------
                 size_t jmin_lo = 1;
                 size_t jmin_up = n;
                 if(tauStart<cmin.tau)
@@ -137,9 +139,9 @@ Unit CPW:: integrate(Unit tauStart, Unit tauFinal) const throw()
                     assert(tauStart<self[jmin_up].tau);
                 }
 
-                //---------------------
+                //--------------------------------------------------------------
                 // study the right side
-                //---------------------
+                //--------------------------------------------------------------
                 size_t jmax_lo = jmin_lo; assert(tauFinal>=self[jmax_lo].tau);
                 size_t jmax_up = n;
                 if(tauFinal>=cmax.tau)
@@ -180,13 +182,17 @@ Unit CPW:: integrate(Unit tauStart, Unit tauFinal) const throw()
                 assert(jmax_lo>=jmin_lo);
                 if(jmax_lo<=jmin_lo)
                 {
+                    //----------------------------------------------------------
                     // in the same interval
+                    //----------------------------------------------------------
                     std::cerr << "e";
                     ans += (tauFinal-tauStart) * self[jmin_lo].value;
                 }
                 else
                 {
+                    //----------------------------------------------------------
                     // different interval
+                    //----------------------------------------------------------
                     std::cerr << "f";
                 }
 
