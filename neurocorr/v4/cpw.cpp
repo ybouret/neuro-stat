@@ -58,6 +58,13 @@ void CPW:: add(const Unit tau,const Unit value)
     
 }
 
+void CPW:: __add(const Unit tau, const Unit value)
+{
+    assert(!(size()>0&&tau<=back().tau));
+    append<Unit,Unit>(tau,value);
+}
+
+
 Unit CPW:: operator()(const Unit tau) const throw()
 {
     const size_t n = size();

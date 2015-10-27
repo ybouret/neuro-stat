@@ -26,7 +26,7 @@ void CPW::product(const CPW &lhs, const CPW &rhs)
         if(tauL<tauR)
         {
             L = lC.value;
-            add(tauL,L*R);
+            __add(tauL,L*R);
             ++iL;
         }
         else
@@ -34,7 +34,7 @@ void CPW::product(const CPW &lhs, const CPW &rhs)
             if(tauR<tauL)
             {
                 R = rC.value;
-                add(tauR,L*R);
+                __add(tauR,L*R);
                 ++iR;
             }
             else
@@ -42,7 +42,7 @@ void CPW::product(const CPW &lhs, const CPW &rhs)
                 // equality
                 L = lC.value;
                 R = rC.value;
-                add(tauR,L*R);
+                __add(tauR,L*R);
                 ++iL;
                 ++iR;
             }
@@ -53,13 +53,13 @@ void CPW::product(const CPW &lhs, const CPW &rhs)
     while(iL<=nL)
     {
         const coord &C = lhs[iL++];
-        add(C.tau,C.value*R);
+        __add(C.tau,C.value*R);
     }
 
     while(iR<=nR)
     {
         const coord &C = rhs[iR++];
-        add(C.tau,C.value*L);
+        __add(C.tau,C.value*L);
     }
     
 
