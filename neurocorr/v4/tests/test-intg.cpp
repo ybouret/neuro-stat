@@ -56,6 +56,12 @@ YOCTO_UNIT_TEST_IMPL(intg)
     F.add(2,3);
     do_intg(F);
 
+    F.add(6,4);
+    do_intg(F);
+
+    F.add(8,5);
+    do_intg(F);
+
 }
 YOCTO_UNIT_TEST_DONE()
 

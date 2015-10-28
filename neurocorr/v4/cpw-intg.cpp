@@ -106,94 +106,113 @@ Unit CPW:: integrate(Unit tauStart, Unit tauFinal) const throw()
                 //--------------------------------------------------------------
                 // study the left side
                 //--------------------------------------------------------------
-                size_t jmin_lo = 1;
-                size_t jmin_up = n;
+                size_t jstart_lo = 1;
+                size_t jstart_up = n;
                 if(tauStart<cmin.tau)
                 {
-                    std::cerr << "a";
                     ans     += (cmin.tau-tauStart) * foot;
                     tauStart = cmin.tau;
-                    jmin_up  = 2;
-                    assert(self[jmin_lo].tau<=tauStart);
-                    assert(tauStart<self[jmin_up].tau);
+                    jstart_up  = 2;
+                    assert(self[jstart_lo].tau<=tauStart);
+                    assert(tauStart<self[jstart_up].tau);
                 }
                 else
                 {
-                    std::cerr << "b";
-                    //locate self[jmin_lo].tau <= tauStart < self[jmin_up].tau
+                    //----------------------------------------------------------
+                    // self[jstart_lo].tau <= tauStart < self[jstart_up].tau
+                    //----------------------------------------------------------
                     assert(tauStart<cmax.tau);
-                    while(jmin_up-jmin_lo>1)
+                    while(jstart_up-jstart_lo>1)
                     {
-                        const size_t jmid = (jmin_lo+jmin_up)>>1;
+                        const size_t jmid = (jstart_lo+jstart_up)>>1;
                         const Unit   tmid = self[jmid].tau;
                         if(tmid<=tauStart)
                         {
-                            jmin_lo = jmid;
+                            jstart_lo = jmid;
                         }
                         else
                         {
-                            jmin_up = jmid;
+                            jstart_up = jmid;
                         }
                     }
-                    assert(self[jmin_lo].tau<=tauStart);
-                    assert(tauStart<self[jmin_up].tau);
+                    assert(self[jstart_lo].tau<=tauStart);
+                    assert(tauStart<self[jstart_up].tau);
                 }
 
                 //--------------------------------------------------------------
                 // study the right side
                 //--------------------------------------------------------------
-                size_t jmax_lo = jmin_lo; assert(tauFinal>=self[jmax_lo].tau);
-                size_t jmax_up = n;
+                size_t jfinal_lo = jstart_lo; assert(tauFinal>=self[jfinal_lo].tau);
+                size_t jfinal_up = n;
                 if(tauFinal>=cmax.tau)
                 {
-                    std::cerr << "c";
                     ans      += (tauFinal-cmax.tau) * cmax.value;
-                    jmax_lo   = n-1;
+                    jfinal_lo   = n-1;
                     tauFinal  = cmax.tau;
-                    assert(self[jmax_lo].tau<=tauFinal);
-                    assert(tauFinal<=self[jmax_up].tau);
+                    assert(self[jfinal_lo].tau<=tauFinal);
+                    assert(tauFinal<=self[jfinal_up].tau);
                 }
                 else
                 {
-                    std::cerr << "d";
                     assert(tauFinal<cmax.tau);
-                    //locate self[jmax_lo].tau <= tauFinal < self[jmax_up].tau
-                    while(jmax_up-jmax_lo>1)
+                    //----------------------------------------------------------
+                    // self[jfinal_lo].tau <= tauFinal < self[jfinal_up].tau
+                    //----------------------------------------------------------
+                    while(jfinal_up-jfinal_lo>1)
                     {
-                        const size_t jmid = (jmax_lo+jmax_up)>>1;
+                        const size_t jmid = (jfinal_lo+jfinal_up)>>1;
                         const Unit   tmid = self[jmid].tau;
-                        if(tmid<=tauStart)
+                        if(tmid<=tauFinal)
                         {
-                            jmax_lo = jmid;
+                            jfinal_lo = jmid;
                         }
                         else
                         {
-                            jmax_up = jmid;
+                            jfinal_up = jmid;
                         }
                     }
-                    assert(self[jmax_lo].tau<=tauFinal);
-                    assert(tauFinal<self[jmax_up].tau);
+                    assert(self[jfinal_lo].tau<=tauFinal);
+                    assert(tauFinal<self[jfinal_up].tau);
                 }
 
                 //______________________________________________________________
                 //
                 // Ok, now times are set and bracketed
                 //______________________________________________________________
-                assert(jmax_lo>=jmin_lo);
-                if(jmax_lo<=jmin_lo)
+                assert(jfinal_lo>=jstart_lo);
+                if(jfinal_lo<=jstart_lo)
                 {
                     //----------------------------------------------------------
                     // in the same interval
                     //----------------------------------------------------------
-                    std::cerr << "e";
-                    ans += (tauFinal-tauStart) * self[jmin_lo].value;
+                    ans += (tauFinal-tauStart) * self[jstart_lo].value;
                 }
                 else
                 {
                     //----------------------------------------------------------
-                    // different interval
+                    // different intervals
                     //----------------------------------------------------------
-                    std::cerr << "f";
+
+                    //----------------------------------------------------------
+                    // value from interval containing tauStart
+                    //----------------------------------------------------------
+                    ans += (self[jstart_up].tau - tauStart) * self[jstart_lo].value;
+
+
+                    //----------------------------------------------------------
+                    // values in the middle
+                    //----------------------------------------------------------
+                    for(size_t j=jstart_up,jp=j+1;j<jfinal_lo;++j,++jp)
+                    {
+                        const coord c( self[j] );
+                        ans += (self[jp].tau - c.tau) * c.value;
+                    }
+
+                    //----------------------------------------------------------
+                    // value from interfval containing tauFinal
+                    //----------------------------------------------------------
+                    ans += (tauFinal - self[jfinal_lo].tau) * self[jfinal_lo].value;
+
                 }
 
                 return ans;
