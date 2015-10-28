@@ -32,7 +32,7 @@ YOCTO_UNIT_TEST_IMPL(indx)
         std::cerr << "NK=" << NK << "=>" <<  nmax << std::endl;
         for(size_t I=0;I<NK;++I)
         {
-            if(S(I,I)!=S(I)) throw exception("Mismatch S(%u) and S(%u,%u)", unsigned(I), unsigned(I), unsigned(I) );
+            if(S(I,I)!=S(I)) throw exception("Mismatch S(%u)=%u and S(%u,%u)=%u", unsigned(I), unsigned(S(I)), unsigned(I), unsigned(I), unsigned(S(I,I)) );
         }
         size_t q = 0;
         for(size_t I=0;I<NK;++I)

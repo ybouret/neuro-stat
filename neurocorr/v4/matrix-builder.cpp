@@ -124,7 +124,7 @@ void MatrixBuilder:: computeSide( threading::context &ctx )
         assert((i-1)*K+(k-1) == offset);
 
         const CPW &phi  = Phi_j[i][k];
-        const Unit intg = phi.integrate_(tauStart,tauFinal);
+        const Unit intg = phi.integrate(tauStart,tauFinal);
         G(r,1) = ( G(1,r) += intg );
     }
 
@@ -174,7 +174,7 @@ void MatrixBuilder:: computeCore( threading::context &ctx )
         {
             const Box *sub = node->addr;
             assert(sub->trial==JJ);
-            const Unit       intg = P.integrate_(sub->tauStart,sub->tauFinal);
+            const Unit       intg = P.integrate(sub->tauStart,sub->tauFinal);
             matrix_of<Unit> &G    = MG[sub->indx];
             G(I,J) = ( G(J,I) += intg );
         }

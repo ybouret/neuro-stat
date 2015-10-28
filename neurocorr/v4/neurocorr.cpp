@@ -1,3 +1,4 @@
+#include "yocto/string.hpp"
 #include "yocto/R++/com.hpp"
 #include "vector-builder.hpp"
 #include "matrix-builder.hpp"
@@ -66,6 +67,28 @@ Grouping ParseGroupingFrom( SEXP &groupingR )
         return GroupByBox;
 
     throw exception("invalid grouping '%s'", grp);
+}
+
+
+YOCTO_R_STATIC
+void BuildListOfMoments(RList                 &L,
+                        const  UMatrices      &mu,
+                        const  Real            scale=1.0)
+{
+    for(size_t m=1;m<=mu.count;++m)
+    {
+        const matrix_of<Unit> &src = mu[m];
+        RMatrix<Real>          tgt(src.rows,src.cols);
+        for(size_t c=1;c<=tgt.cols;++c)
+        {
+            for(size_t r=1;r<=tgt.rows;++r)
+            {
+                tgt[c][r] = src(r,c)/scale;
+            }
+        }
+        L.set(m-1,tgt);
+    }
+
 }
 
 
@@ -165,6 +188,11 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
     UMatrices Mu1(nm,Phi.dim,Phi.neurones);
     UMatrices Mu2(nm,Phi.dim,Phi.neurones);
     UMatrices G(nm,Phi.dim,Phi.dim);
+
+    //__________________________________________________________________________
+    //
+    // compute matrices
+    //__________________________________________________________________________
     Rprintf("[%s] Computing Vectors...\n",__fn);
     {
         VectorBuilder vbuild(Mu1,Mu2,MuA,boxes,Phi,para);
@@ -173,7 +201,62 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
     {
         MatrixBuilder mbuild(G,boxes,Phi,para);
     }
-    
-    return R_NilValue;
+
+
+    //__________________________________________________________________________
+    //
+    // Formating Labels
+    //__________________________________________________________________________
+    static const char *ansNames[] = { "mu1" , "mu2", "muA", "G" };
+    RList              ans( ansNames, sizeof(ansNames)/sizeof(ansNames[0]) );
+
+    vector<string>     subNames(nm,as_capacity);
+    {
+        for(size_t sub=1;sub<=nm;++sub)
+        {
+            const string subName = vformat("%u",unsigned(sub));
+            subNames.push_back(subName);
+        }
+    }
+
+    vector<const char*> labels(nm);
+    for(size_t i=1;i<=nm;++i)
+    {
+        labels[i] = (char *)&(subNames[i][0]);
+    }
+
+
+    //__________________________________________________________________________
+    //
+    // Transfer lists
+    //__________________________________________________________________________
+    {
+
+        RList mu1_list(labels);
+        BuildListOfMoments(mu1_list,Mu1);
+        ans.set(0,mu1_list);
+    }
+
+    {
+        RList mu2_list(labels);
+        BuildListOfMoments(mu2_list,Mu2);
+        ans.set(1,mu2_list);
+    }
+
+    {
+        RList muA_list(labels);
+        BuildListOfMoments(muA_list,MuA);
+        ans.set(2,muA_list);
+    }
+
+    {
+        RList G_list(labels);
+        BuildListOfMoments(G_list,G,records.scale);
+        ans.set(3,G_list);
+    }
+
+
+
+    return *ans;
 }
 YOCTO_R_RETURN()

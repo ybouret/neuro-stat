@@ -117,14 +117,26 @@ Records *Records:: GenerateRandom(const size_t num_neurones,
     const size_t num_trains = num_trials*num_neurones;
     matrix<Real> nd(num_trains,1+max_spikes);
 
+    vector<size_t> np(num_trains);
+    size_t maxnp = 0;
     for(size_t i=1;i<=num_trains;++i)
     {
-        const size_t ns = alea_leq(max_spikes);
+        const size_t tmp = alea_leq(max_spikes);
+        np[i] = tmp;
+        if(tmp>maxnp) maxnp = tmp;
+    }
+
+    const size_t maxLen = maxnp * pace;
+
+    for(size_t i=1;i<=num_trains;++i)
+    {
+        const size_t ns = np[i];
         nd[i][1]  = ns;
+        const size_t shift = maxLen/max_of<size_t>(1,ns);
         Unit curr = 0;
         for(size_t j=1;j<=ns;++j)
         {
-            curr += 1 + Unit(alea_lt(pace));
+            curr += 1 + Unit(alea_lt(shift));
             nd[i][j+1] = curr;
         }
     }

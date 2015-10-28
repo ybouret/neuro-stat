@@ -132,7 +132,7 @@ void Records:: display() const
 
 
 #include "yocto/code/rand.hpp"
-
+#include "yocto/sequence/vector.hpp"
 Records * Records:: CreateRandom(const size_t numTrials,
                                  const size_t numNeurones,
                                  const size_t maxSpikes,
@@ -142,7 +142,9 @@ Records * Records:: CreateRandom(const size_t numTrials,
     assert(numTrials>0);
     assert(numNeurones>0);
 
-    const size_t  numTrains = numTrials*numNeurones;
+    const size_t   numTrains = numTrials*numNeurones;
+
+
     CMatrix<Real> data(numTrains,1+maxSpikes);
     for(size_t i=0;i<numTrains;++i)
     {

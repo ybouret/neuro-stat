@@ -11,6 +11,6 @@ scale=1e6;
 delta=0.005;
 K=2;
 
-NeuroCorr_SetParallel(4);
-
-NeuroCorr_Compute(DataNeur,Nneur,scale,delta,K,BoxEst,"byKind");
+NeuroCorr_SetParallel(0);
+ans=NeuroCorr_Compute(DataNeur,Nneur,scale,delta,K,BoxEst,"byKind");
+print(ans);
