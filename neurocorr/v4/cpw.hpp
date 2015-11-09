@@ -14,7 +14,6 @@ friend inline bool operator!=(const coord &lhs, const coord &rhs) throw()
 {
     return (lhs.tau != rhs.tau) || (lhs.value!=rhs.value);
 }
-
 YOCTO_PAIR_END();
 YOCTO_SUPPORT_C_STYLE_OPS(coord);
 
@@ -33,9 +32,10 @@ inline friend bool operator!=(const Moments &lhs, const Moments &rhs) throw()
 YOCTO_PAIR_END();
 
 
-//! base class
+//! base class for CPW
 typedef vector<coord> _CPW;
 
+//! a vector of ordered coordinates
 class CPW : public _CPW
 {
 public:

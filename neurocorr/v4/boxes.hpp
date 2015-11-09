@@ -9,12 +9,21 @@ enum Grouping
     GroupByBox
 };
 
+//! base class for Boxes
 typedef vector<Box> _Boxes;
 
+//! an vector of boxes
 class Boxes : public Converter, public _Boxes
 {
 public:
+    //! destructor
     virtual ~Boxes() throw();
+
+    //! prepare some boxes from a matrix of Real boxes
+    /**
+     \param usrScale the time scaling for Converter
+     \param boxes a matrix with #colums=#boxes and at least 4 rows
+     */
     explicit Boxes(const Real             usrScale ,
                    const matrix_of<Real> &boxes);
 
