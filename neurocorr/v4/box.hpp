@@ -6,12 +6,12 @@
 class Box
 {
 public:
-    typedef int              Kind;
+    typedef int              Kind; //!< kind of behavior
 
     const   size_t   trial;     //!< associated trial
     const   Unit     tauStart;  //!< tau start
     const   Unit     tauFinal;  //!< tau final
-    const   Kind     kind;      //!< label
+    const   Kind     kind;      //!< behavior label
     mutable size_t   indx;      //!< index for collecting data
 
     explicit Box(const size_t iTrial,

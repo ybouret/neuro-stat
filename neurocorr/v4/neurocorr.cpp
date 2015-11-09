@@ -219,7 +219,8 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
         }
     }
 
-    vector<const char*> labels(nm);
+    typedef const char *label_t;
+    vector<label_t> labels(nm);
     for(size_t i=1;i<=nm;++i)
     {
         labels[i] = (char *)&(subNames[i][0]);
