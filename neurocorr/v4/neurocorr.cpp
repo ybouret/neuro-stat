@@ -210,22 +210,14 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
     static const char *ansNames[] = { "mu1" , "mu2", "muA", "G" };
     RList              ans( ansNames, sizeof(ansNames)/sizeof(ansNames[0]) );
 
-    vector<string>     subNames(nm,as_capacity);
+    vector<string>     labels(nm,as_capacity);
     {
         for(size_t sub=1;sub<=nm;++sub)
         {
-            const string subName = vformat("%u",unsigned(sub));
-            subNames.push_back(subName);
+            const string label = vformat("%u",unsigned(sub));
+            labels.push_back(label);
         }
     }
-
-    typedef const char *label_t;
-    vector<label_t> labels(nm);
-    for(size_t i=1;i<=nm;++i)
-    {
-        labels[i] = (char *)&(subNames[i][0]);
-    }
-
 
     //__________________________________________________________________________
     //
