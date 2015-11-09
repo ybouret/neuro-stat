@@ -23,11 +23,25 @@ public:
     /**
      \param usrScale the time scaling for Converter
      \param boxes a matrix with #colums=#boxes and at least 4 rows
+     boxes[1][col] = trial
+     boxes[2][col] = real_ini_time
+     boxes[3][col] = real_end_time
+     boxes[4][col] = kind
      */
     explicit Boxes(const Real             usrScale ,
                    const matrix_of<Real> &boxes);
 
     //! which matrix to write, return the number or matrices to allocate
+    /**
+     \param mode how to group the boxes.
+     
+     - if mode == GroupByKind, all the possible kinds
+     are detected and ordered. Then the index of each box is
+     set to the number of its kind, ordered...
+     
+     - if mode == GroupByBox, the index of the box is its index,
+     so there will be one matrix per box
+     */
     size_t assignIndices(const Grouping mode) const;
 
 

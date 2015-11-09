@@ -4,6 +4,7 @@
 
 #include "yocto/os.hpp"
 
+//! finding I,J in the upper triangle
 class SymIndex
 {
 public:

@@ -4,8 +4,10 @@
 #include "train.hpp"
 #include "yocto/container/matrix.hpp"
 
+//! base class for records
 typedef matrix<Train> _Records;
 
+//! class to map neuro-data
 class Records : public Converter, public _Records
 {
 public:

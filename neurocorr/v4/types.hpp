@@ -12,7 +12,7 @@ typedef double  Real;
 
 inline Unit UnitAbs(const Unit x)  throw()
 {
-    return (x < 0) ? -x : x;
+    return (x<0) ? -x : x;
 }
 
 //! convertion Real<->Unit

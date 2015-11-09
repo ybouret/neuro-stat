@@ -4,13 +4,18 @@
 #include "cpw.hpp"
 #include "yocto/ptr/shared.hpp"
 
+//! base class for PHI_functipns
 typedef vector<CPW> CPW_Functions;
 
+//! all the functions for one computation
 class PHI_Functions : public CPW_Functions
 {
 public:
-    const array<Unit> *train;
-    explicit PHI_Functions(const array<Unit> &spikes, const size_t extra);
+    const array<Unit> *train; //!< reference spikes
+
+    //! prepare memory for the functions, based on spikes, with #extra terms
+    explicit PHI_Functions(const array<Unit> &spikes,
+                           const size_t       extra);
     explicit PHI_Functions() throw();
     virtual ~PHI_Functions() throw();
 
@@ -25,8 +30,6 @@ private:
 
 #include "records.hpp"
 typedef matrix<PHI_Functions> _PHI;
-
-
 
 class PHI : public _PHI
 {
@@ -52,7 +55,7 @@ private:
     typedef shared_ptr<UVector> UVecPtr;
     Unit              delta;   //!< shared delta for threads
     threading::kernel kBuild;  //!< the kernel
-    vector<UVecPtr>   shifts;  //!< local spaces
+    vector<UVecPtr>   shifts;  //!< local memory
     void onBuild( threading::context &ctx );
     
 };

@@ -48,9 +48,16 @@ public:
     void   add(const Unit tau,const Unit value); //!< append and check
     void __add(const Unit tau,const Unit value); //!< append, no check
 
+    //! save the contour
     void save(const char *filename) const;
+
+    //! save the evaluated points by the access operator
     void save_sample(const char *filename) const;
+
+    //! test functions equality, for testing
     friend bool operator==(const CPW &lhs, const CPW &rhs) throw();
+
+    //! test functions difference, for testing
     friend bool operator!=(const CPW &lhs, const CPW &rhs) throw();
 
     //! thread safe if memory preallocated

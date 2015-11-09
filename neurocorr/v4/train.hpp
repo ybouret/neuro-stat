@@ -4,6 +4,7 @@
 #include "types.hpp"
 #include "yocto/sequence/vector.hpp"
 
+//! base class for spikes train
 typedef UVector _Train;
 
 //! a vector of 1..size() units
