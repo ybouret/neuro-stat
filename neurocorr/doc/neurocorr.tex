@@ -24,10 +24,10 @@ of shifts $k$ ($0\leq k < K$):
 $$
 	\Phi_{z,k,\delta}(t) = 
 	\sum_{u\in\tau_{z}}
-	 \mathds{1}_{(t-u)\in\mathbb{I}_k,\mathbb{I}_k=\lbrack k\delta,(k+1)\delta\lbrack}
+	 \mathds{1}_{(t-u)\in\mathbb{I}_k,\mathbb{I}_k=\rbrack k\delta,(k+1)\delta\rbrack}
 $$
-This expression is the number of points in $\rbrack t-(k+1)\delta,t-k\delta\rbrack$, and all the $\Phi$ functions
-are hence right-continuous, constant piecewise functions.
+This expression is the number of points in $\lbrack t-(k+1)\delta,t-k\delta\lbrack$, and all the $\Phi$ functions
+are hence left-continuous, constant piecewise functions.
 In particular,
 $$
 	\Phi_{z,k,\delta}(t) = \Phi_{z,0,\delta}(t-k\delta).
