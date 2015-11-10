@@ -8,10 +8,31 @@
 
 #include "yocto/sequence/addr-list.hpp"
 
+//! build the 'G' matrices
 class MatrixBuilder
 {
 public:
     virtual ~MatrixBuilder() throw();
+
+    //! construct the G matrices
+    /**
+     The number of matrices must match the Boxes::assignIndices count.
+     \param usrMG  the G matrices, (1+N*K)*(1+N*K)
+     \param boxes  the boxes where to compute the terms
+     \param usrPhi the pre-computed phi matrices
+     \param team   for parallel code
+     
+     a first loop compute the (N*K) side in parallel,
+     and register the boxes per trial.
+     The parallelism occurs on the (N*K) terms
+
+     a second loop is performed over the existing trials,
+     so that each of the product is computed only once.
+     
+     The parallelism occurs on the (N*K)(1+N*K)/2 terms,
+     using a SymIndex class to compute the row/col term to compute.
+
+     */
     explicit MatrixBuilder(matrices_of<Unit> &usrMG,
                            const Boxes       &boxes,
                            const PHI         &usrPhi,

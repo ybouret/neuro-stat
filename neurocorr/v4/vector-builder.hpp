@@ -17,6 +17,17 @@ public:
 
     //! add content to matrices
     /**
+     The number of matrices must match the Boxes::assignIndices count.
+
+     \param usrMu1 (1+N*K) x N matrices of first moments
+     \param usrMu2 (1+N*K) x N matrices of first monments
+     \param usrMuA (1+N*K) x 1 matrices of max absolute values
+     \param boxes  the boxes where to compute
+     \param usrPhi the precomputed K Phi functions
+     \param team   for parallel computation
+     
+     for each box, a parallel loop will process a portion
+     of the N*K terms.
 
      */
     explicit VectorBuilder(matrices_of<Unit> &usrMu1,
