@@ -17,6 +17,9 @@ public:
     array<Real>        &b;
     array<Real>        &v;
     array<Real>        &d;
+    array<Real>        &aorg;
+    array<Real>        &atry;
+    array<Real>        &beta;
     const Real          lnp;
     Real                gam;
 
@@ -29,6 +32,12 @@ public:
               const array<Real> &usr_v,
               const array<Real> &usr_a);
 
+    Real H(const array<Real> &a) const throw();
+    void Beta(const array<Real> &a) const throw();
+
+    static int  SignOf(const Real x) throw();
+
+    Real Eval(const Real x)  throw();
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimiser);

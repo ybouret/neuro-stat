@@ -1,4 +1,6 @@
 #include "minimiser.hpp"
+#include "yocto/math/opt/bracket.hpp"
+#include "yocto/math/opt/minimize.hpp"
 
 Minimiser:: ~Minimiser() throw()
 {
@@ -19,10 +21,13 @@ static inline size_t check_dims(const matrix<Real> &G)
 Minimiser:: Minimiser(const matrix<Real> &usrG) :
 G(usrG),
 n( check_dims(G) ),
-arrays(4),
-b( arrays.next_array() ),
-v( arrays.next_array() ),
-d( arrays.next_array() ),
+arrays(8),
+b(    arrays.next_array() ),
+v(    arrays.next_array() ),
+d(    arrays.next_array() ),
+aorg( arrays.next_array() ),
+atry( arrays.next_array() ),
+beta( arrays.next_array() ),
 lnp( log(Real(n)) ),
 gam(0)
 {
@@ -65,6 +70,77 @@ void Minimiser:: find(const Real         usr_gam,
     std::cerr << "v=" << v << std::endl;
     std::cerr << "d=" << d << std::endl;
 
+    tao::ld(aorg, 0);
+
+    for(size_t iter=0;iter<20;++iter)
+    {
+        std::cerr << "aorg=" << aorg << std::endl;
+        Beta(aorg);
+        //std::cerr << "beta=" << beta << std::endl;
+        std::cerr << "H="    << H(aorg) << std::endl;
+        numeric<Real>::function F(this, & Minimiser::Eval );
+        triplet<Real> xx = { 0, 1, 0 };
+        triplet<Real> ff = { F(0), F(1), 0 };
+        //std::cerr << "start xx=" << xx << ", ff=" << ff << std::endl;
+        bracket<Real>::expand(F, xx, ff);
+        //std::cerr << "final xx=" << xx << ", ff=" << ff << std::endl;
+        minimize(F, xx, ff, 0.0);
+        const Real lam = xx.b;
+        for(size_t i=n;i>0;--i)
+        {
+            aorg[i] = aorg[i] - lam * beta[i];
+        }
+    }
+
+}
+
+int  Minimiser:: SignOf(const Real x) throw()
+{
+    if(x<0)
+    {
+        return -1;
+    }
+    else
+    {
+        if(x>0)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+}
+
+Real Minimiser::H(const array<Real> &a) const throw()
+{
+    assert(a.size()>=n);
+    Real ab=0;
+    Real ad=0;
+    for(size_t i=n;i>0;--i)
+    {
+        const Real ai = a[i];
+        ab += b[i] * ai;
+        ad += d[i] * ai * SignOf(ai);
+    }
+    const Real del = ad-ab;
+    return (del+del)+tao::quadratic(G,a);
+}
+
+Real Minimiser:: Eval(const Real x)  throw()
+{
+    tao::setprobe(atry, aorg, -x, beta);
+    return H(atry);
 }
 
 
+void Minimiser:: Beta(const array<Real> &a) const throw()
+{
+    tao::mul(beta, G, a);
+    for(size_t i=n;i>0;--i)
+    {
+        const Real ai = a[i];
+        beta[i] += (SignOf(ai)*d[i]-b[i]);
+    }
+}
