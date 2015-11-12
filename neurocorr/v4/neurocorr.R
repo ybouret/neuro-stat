@@ -35,12 +35,31 @@ NeuroCorr_SetParallel <- function( numThreads )
     .Call("NeuroCorr_SetParallel", numThreads);
 }
 
+################################################################################
+##
+## Check we got some proper data
+##
+################################################################################
 NeuroCorr_CheckData <- function(dataNeur,numNeurones,scale)
 {
     if( !is.matrix(dataNeur) )    stop("[CheckData] : dataNeur must be a matrix");
     if( !is.double(numNeurones) ) stop("[CheckData] : numNeurones must be a number");
     if( !is.double(scale)       ) stop("[CheckData] : scale must be a number");
     .Call("NeuroCorr_CheckData",dataNeur,numNeurones,scale);
+}
+
+
+################################################################################
+##
+## Return the graph of Phi0
+##
+################################################################################
+NeuroCorr_Phi0 <- function(train,scale,delta)
+{
+    if( !is.vector(train) ) stop("[Phi0] : train must be a vector");
+    if( !is.double(scale) ) stop("[Phi0] : scale must be a number");
+    if( !is.double(delta) ) stop("[Phi0] : delta must be a number");
+    .Call("NeuroCorr_Phi0",train,scale,delta);
 }
 
 

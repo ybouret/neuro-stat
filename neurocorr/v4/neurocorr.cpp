@@ -5,6 +5,11 @@
 
 using namespace yocto;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Function to detect loading
+//
+////////////////////////////////////////////////////////////////////////////////
 YOCTO_R_FUNCTION(NeuroCorr_Version,())
 {
     Rprintf("%s: compiled on %s\n", __fn, __DATE__ );
@@ -13,6 +18,11 @@ YOCTO_R_FUNCTION(NeuroCorr_Version,())
 YOCTO_R_RETURN()
 
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Multithreading settings
+//
+////////////////////////////////////////////////////////////////////////////////
 static size_t NumThreads = 0;
 
 #include "yocto/sys/hw.hpp"
@@ -36,6 +46,11 @@ YOCTO_R_FUNCTION(NeuroCorr_SetParallel,(SEXP numProcsR))
 YOCTO_R_RETURN()
 
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Check format of data
+//
+////////////////////////////////////////////////////////////////////////////////
 YOCTO_R_FUNCTION(NeuroCorr_CheckData,
                  (SEXP dataNeurR, SEXP numNeuronesR, SEXP scaleR))
 {
@@ -43,8 +58,6 @@ YOCTO_R_FUNCTION(NeuroCorr_CheckData,
     const int     numNeurones = R2Scalar<int>(numNeuronesR);
     const Real    scale       = R2Scalar<double>(scaleR);
 
-    //std::cerr << "#neurones=" << numNeurones << std::endl;
-    //std::cerr << "Scale    =" << scale       << std::endl;
 
     const Records records(scale,dataNeur,numNeurones);
     records.display();
@@ -53,7 +66,42 @@ YOCTO_R_FUNCTION(NeuroCorr_CheckData,
 }
 YOCTO_R_RETURN()
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Compute Phi from a vector of data
+//
+////////////////////////////////////////////////////////////////////////////////
+YOCTO_R_FUNCTION(NeuroCorr_Phi0,
+                 (SEXP trainR,SEXP scaleR,SEXP deltaR))
+{
 
+    RVector<Real>       train(trainR);
+    const Real          scale       = R2Scalar<double>(scaleR);
+    if(scale<1)   throw exception("[%s] invalid scale=%g!", __fn, scale);
+    Converter           conv(scale);
+    const Unit          delta       = conv.toUnit(R2Scalar<double>(deltaR));
+    if(delta<=0) throw exception("[%s] invalid delta: check scale or delta value!",__fn);
+
+    
+
+
+
+    return R_NilValue;
+}
+YOCTO_R_RETURN();
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Compute Matrices
+//
+////////////////////////////////////////////////////////////////////////////////
+
+//==============================================================================
+//
+// convert string to grouping policy
+//
+//==============================================================================
 YOCTO_R_STATIC
 Grouping ParseGroupingFrom( SEXP &groupingR )
 {
@@ -69,7 +117,11 @@ Grouping ParseGroupingFrom( SEXP &groupingR )
     throw exception("invalid grouping '%s'", grp);
 }
 
-
+//==============================================================================
+//
+// tranfer matrices to R
+//
+//==============================================================================
 YOCTO_R_STATIC
 void BuildListOfMoments(RList                 &L,
                         const  UMatrices      &mu,
@@ -91,7 +143,11 @@ void BuildListOfMoments(RList                 &L,
 
 }
 
-
+//==============================================================================
+//
+// building matrices
+//
+//==============================================================================
 YOCTO_R_FUNCTION(NeuroCorr_Compute,
                  (SEXP dataNeurR,
                   SEXP numNeuronesR,
@@ -109,7 +165,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
     const RMatrix<Real> dataNeur( dataNeurR );
     const int           numNeurones = R2Scalar<int>(numNeuronesR);
     const Real          scale       = R2Scalar<double>(scaleR);
-    if(scale<=0) throw exception("invalid scale=%g!", scale);
+    if(scale<1)   throw exception("[%s] invalid scale=%g!", __fn, scale);
     const Records       records(scale,dataNeur,numNeurones);
 
     //__________________________________________________________________________
@@ -117,7 +173,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
     // check delta
     //__________________________________________________________________________
     const Unit          delta       = records.toUnit(R2Scalar<double>(deltaR));
-    if(delta<=0) throw exception("invalid delta: check scale or delta value!");
+    if(delta<=0) throw exception("[%s] invalid delta: check scale or delta value!",__fn);
 
     //__________________________________________________________________________
     //
@@ -172,7 +228,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
     {
         Rprintf("[%s] SEQUENTIAL\n", __fn);
     }
-    Rprintf("[%s] Allocating Phi with %d segments\n",     __fn, K);
+    Rprintf("[%s] Allocating Phi with %d segments\n", __fn, K);
     PHI Phi(records,K-1);
     Rprintf("[%s] Computing Phi...\n", __fn);
     Phi.build(delta,para);
@@ -247,8 +303,6 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
         BuildListOfMoments(G_list,G,records.scale);
         ans.set(3,G_list);
     }
-
-
 
     return *ans;
 }

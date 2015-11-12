@@ -5,10 +5,10 @@ Converter:: ~Converter() throw()
 {
 }
 
-Converter:: Converter(const Real usr_scale) throw() :
+Converter:: Converter(const Real usr_scale) :
 scale(usr_scale)
 {
-    assert(scale>0);
+    if(scale<1) throw exception("Converter scale is meaningless");
 }
 
 Unit Converter::toUnit(const Real x) const throw()

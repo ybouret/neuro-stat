@@ -19,7 +19,8 @@ inline Unit UnitAbs(const Unit x)  throw()
 class Converter
 {
 public:
-    explicit Converter(const Real usr_scale) throw();
+    //! usr_scale>=1
+    explicit Converter(const Real usr_scale);
     virtual ~Converter() throw();
 
     const Real scale;
