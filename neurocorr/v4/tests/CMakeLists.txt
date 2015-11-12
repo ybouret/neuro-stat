@@ -10,6 +10,7 @@ test-abs.cpp
 test-builders.cpp
 test-intg.cpp
 test-indx.cpp
+test-min.cpp
 )
 
 TARGET_LINK_LIBRARIES(test-ncv4 ncv4)
@@ -25,6 +26,7 @@ ADD_TEST(Moments  test-ncv4 moments)
 ADD_TEST(ABS      test-ncv4 abs)
 ADD_TEST(INTG     test-ncv4 intg)
 ADD_TEST(Builders test-ncv4 builders)
+ADD_TEST(Minimise test-ncv4 min)
 
 
 

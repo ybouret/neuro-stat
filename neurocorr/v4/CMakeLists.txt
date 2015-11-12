@@ -25,6 +25,8 @@ vector-builder.cpp
 symindex.hpp
 matrix-builder.hpp
 matrix-builder.cpp
+minimiser.hpp
+minimiser.cpp
 )
 
 ADD_SUBDIRECTORY(tests)
