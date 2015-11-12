@@ -5,7 +5,12 @@
 \usepackage{epstopdf}
 \usepackage{bm}
 \usepackage{dsfont}
+\usepackage{color}
+
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\trn}[1]{{#1}^{\,\mathsf{T}}}
 
 \begin{document}
 \title{NeuroCorr}
@@ -108,7 +113,7 @@ The $\mathcal{G}$ matrix has $1+NK$ lines and columns.
 		$$
 			\mathcal{G}_{1,I_{i,k}} = \mathcal{G}_{I_{i,k},1} = \int_{\tau_s}^{\tau_f} \Phi_{j,i,k}(\tau) \, \mathrm{d}\tau
 		$$
-		\item for each neuron $l\geq i$, then for each index $m$, compute the core term
+		\item for each neurone $l\geq i$, then for each index $m$, compute the core term
 		$$
 			\mathcal{G}_{I_{l,m},I_{i,k}} = \mathcal{G}_{I_{i,k},I_{l,m}}  =
 			\int_{\tau_s}^{\tau_f}  \Phi_{j,i,k}(\tau) \Phi_{j,l,m}(\tau) \, \mathrm{d}\tau
@@ -127,6 +132,42 @@ every box using it perform its own evaluation.
 on the computation of the different products.
 \end{itemize}
 
-
+\section{Finding coefficients}
+For each columns $\vec{b}$ and $\vec{v}$ of $\mu_1$ and $\mu_2$ respectively, and we search the $p=1+NK$ parameters $\vec{a}$ which minimizes
+\begin{equation}
+	\mathcal{H}\left(\vec{a}\right) = -2\trn{\vec{b}}\vec{a} + \trn{\vec{a}} \mathcal{G} \vec{a} +2 \trn{\vec{d}} \abs{\vec{a}}
+\end{equation}
+with, using $\vec{A}$ as the one column of $\mu_A$, 
+\begin{equation}
+	\vec{d} = \sqrt{2\gamma \ln p \cdot \vec{v}} + \dfrac{\gamma\ln p}{3} \vec{A}. 
+\end{equation}
+Let us use the diagonal matrix 
+$\bm{\sigma}\left(\vec{a}\right)$ defined by
+\begin{equation}
+	\sigma_{i}\left({\vec{a}}\right) = \left\lbrace
+	\begin{array}{rl}
+	-1 & \text{if $a_i<0$}\\
+	0  & \text{if $a_i=0$}\\
+	1  & \text{if $a_i>0$}\\
+	\end{array}
+	\right.
+	.
+\end{equation}
+We may write
+\begin{equation}
+	\mathcal{H}\left(\vec{a}\right) = -2\trn{\vec{b}}\vec{a} + \trn{\vec{a}} \mathcal{G} \vec{a} + 2 \trn{\vec{d}} \bm{\sigma}\left(\vec{a}\right) \vec{a}
+\end{equation}
+or
+\begin{equation}
+	\mathcal{H}\left(\vec{a}\right) = 2\trn{\vec{a}}\left(\bm{\sigma}\left({\vec{a}}\right)\vec{d}-\vec{b}\right) +  \trn{\vec{a}} \mathcal{G} \vec{a}.
+\end{equation}
+The gradient of
+  $\mathcal{H}$  is proportional to
+\begin{equation}
+	\vec{q} = \bm{\sigma}\left({\vec{a}}\right) \vec{d} -\vec{b} + \mathcal{G} \vec{a}.
+\end{equation}
+During the process, we are not allowed to "cross" $0$ for any $\vec{a}$ coordinate, since it will change $\bm{\sigma}$ \textcolor{red}{(is that true?)}.\\
+Starting from $\vec{a}=\vec{0}$, one will stay there if $\vec{b}=\vec{0}$ !!
+ 
 
 \end{document}
