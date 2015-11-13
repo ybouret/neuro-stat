@@ -169,5 +169,13 @@ The gradient of
 During the process, we are not allowed to "cross" $0$ for any $\vec{a}$ coordinate, since it will change $\bm{\sigma}$ \textcolor{red}{(is that true?)}.\\
 Starting from $\vec{a}=\vec{0}$, one will stay there if $\vec{b}=\vec{0}$ !!
  
+The full Newton Step is defined by
+\begin{equation}
+	\mathcal{G}\left(\vec{a}+\vec{\beta}\right)   = \vec{b} - \bm{\sigma}\left({\vec{a}}\right) \vec{d}
+\end{equation}
+so that
+\begin{equation}
+	\vec{\beta} = \mathcal{G}^{-1} \left( \vec{b} - \bm{\sigma}\left({\vec{a}}\right) \vec{d} \right) - \vec{a}
+\end{equation}
 
 \end{document}
