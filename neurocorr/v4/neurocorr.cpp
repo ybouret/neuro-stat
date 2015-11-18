@@ -82,7 +82,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Phi0,
     const Unit          delta       = conv.toUnit(R2Scalar<double>(deltaR));
     if(delta<=0) throw exception("[%s] invalid delta: check scale or delta value!",__fn);
 
-    
+
 
 
 
