@@ -66,6 +66,8 @@ YOCTO_R_FUNCTION(NeuroCorr_CheckData,
 }
 YOCTO_R_RETURN()
 
+#include "yocto/sequence/vector.hpp"
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Compute Phi from a vector of data
@@ -75,18 +77,108 @@ YOCTO_R_FUNCTION(NeuroCorr_Phi0,
                  (SEXP trainR,SEXP scaleR,SEXP deltaR))
 {
 
-    RVector<Real>       train(trainR);
+    //__________________________________________________________________________
+    //
+    // get data
+    //__________________________________________________________________________
+    RVector<Real>       spikes(trainR);
     const Real          scale       = R2Scalar<double>(scaleR);
-    if(scale<1)   throw exception("[%s] invalid scale=%g!", __fn, scale);
+    if(scale<1)
+    {
+        throw exception("[%s] invalid scale=%g!", __fn, scale);
+    }
+
+
     Converter           conv(scale);
     const Unit          delta       = conv.toUnit(R2Scalar<double>(deltaR));
-    if(delta<=0) throw exception("[%s] invalid delta: check scale or delta value!",__fn);
+    if(delta<=0)
+    {
+        throw exception("[%s] invalid delta: check scale or delta value!",__fn);
+    }
+
+    //__________________________________________________________________________
+    //
+    // convert all
+    //__________________________________________________________________________
+    const size_t ns = spikes.size();
+    vector<Unit> train(ns);
+    vector<Unit> shift(ns);
+    for(size_t i=ns;i>0;--i)
+    {
+        train[i] = conv.toUnit(spikes[i]);
+    }
+
+    //__________________________________________________________________________
+    //
+    // compute
+    //__________________________________________________________________________
+    CPW phi;
+    phi.buildFrom(train,delta,shift);
+
+
+    //__________________________________________________________________________
+    //
+    // save
+    //__________________________________________________________________________
+    const size_t n = phi.size();
+
+    switch(n)
+    {
+        case 0:
+        {
+            RMatrix<Real> M(2,2);
+            M[1][1] = conv.toReal(-1); M[1][2] = phi.foot;
+            M[2][1] = conv.toReal( 1); M[2][2] = phi.foot;
+            return *M;
+        }
 
 
 
+        case 1:
+        {
+            RMatrix<Real> M(2,2);
+            const coord  &C = phi.front();
+            const Real    t = conv.toReal(C.tau);
+            M[1][1] = t; M[1][2] = phi.foot;
+            M[1][2] = t; M[2][2] = C.value;
+            return *M;
+        }
+
+        default:
+            break;
+    }
+
+    RMatrix<Real> M(2*n,2);
+    size_t r = 0;
+
+    //__________________________________________________________________________
+    //
+    // first point
+    //__________________________________________________________________________
+    ++r;
+    M[r][1] = conv.toReal(phi[1].tau); M[r][2] = phi[1].value;
+
+    //__________________________________________________________________________
+    //
+    // core
+    //__________________________________________________________________________
+    for(size_t i=1;i<n;++i)
+    {
+        ++r;
+        M[r][1] = conv.toReal(phi[i].tau);  M[r][2] = phi[i].value;
+        ++r;
+        M[r][1] = conv.toReal(phi[i+1].tau); M[r][2] = phi[i].value;
+    }
 
 
-    return R_NilValue;
+    //__________________________________________________________________________
+    //
+    // last point
+    //__________________________________________________________________________
+    ++r;
+    M[r][1] = conv.toReal(phi[n].tau); M[r][2] = phi[n].value;
+
+    return *M;
 }
 YOCTO_R_RETURN();
 

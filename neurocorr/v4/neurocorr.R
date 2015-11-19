@@ -51,7 +51,22 @@ NeuroCorr_CheckData <- function(dataNeur,numNeurones,scale)
 
 ################################################################################
 ##
-## Return the graph of Phi0
+## Return the graph of Phi0, mostly for testing
+##______________________________________________________________________________
+##
+## INPUT
+##______________________________________________________________________________
+##
+## train : a vector of spike times
+## scale : the desired scaling (scale>=1)
+## delta : the delta value, in units of times
+##
+##______________________________________________________________________________
+##
+## OUTPUT
+##______________________________________________________________________________
+##
+## a matrix with 2 columns: partition and values of the partition
 ##
 ################################################################################
 NeuroCorr_Phi0 <- function(train,scale,delta)
