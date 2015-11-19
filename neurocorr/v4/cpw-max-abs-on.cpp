@@ -1,4 +1,5 @@
 #include "cpw.hpp"
+#include "yocto/code/utils.hpp"
 
 Unit CPW:: maxAbsOn_(const Unit tauStart, const Unit tauFinal) const throw()
 {

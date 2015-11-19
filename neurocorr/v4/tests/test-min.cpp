@@ -4,6 +4,7 @@
 #include "yocto/utest/run.hpp"
 #include "yocto/code/rand.hpp"
 #include "yocto/sys/wtime.hpp"
+#include "yocto/code/utils.hpp"
 
 YOCTO_UNIT_TEST_IMPL(min)
 {
