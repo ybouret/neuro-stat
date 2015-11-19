@@ -77,6 +77,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Phi0,
                  (SEXP trainR,SEXP scaleR,SEXP deltaR))
 {
 
+
     //__________________________________________________________________________
     //
     // get data
@@ -115,12 +116,11 @@ YOCTO_R_FUNCTION(NeuroCorr_Phi0,
     CPW phi;
     phi.buildFrom(train,delta,shift);
 
-
+    const size_t n = phi.size();
     //__________________________________________________________________________
     //
     // save
     //__________________________________________________________________________
-    const size_t n = phi.size();
 
     switch(n)
     {
@@ -149,6 +149,9 @@ YOCTO_R_FUNCTION(NeuroCorr_Phi0,
     }
 
     RMatrix<Real> M(2*n,2);
+    RMatrix<Real>::Column &X = M[1];
+    RMatrix<Real>::Column &Y = M[2];
+    M.ld(-1);
     size_t r = 0;
 
     //__________________________________________________________________________
@@ -156,7 +159,8 @@ YOCTO_R_FUNCTION(NeuroCorr_Phi0,
     // first point
     //__________________________________________________________________________
     ++r;
-    M[r][1] = conv.toReal(phi[1].tau); M[r][2] = phi[1].value;
+    X[r] = conv.toReal(phi[1].tau); Y[r] = phi.foot;
+
 
     //__________________________________________________________________________
     //
@@ -165,9 +169,9 @@ YOCTO_R_FUNCTION(NeuroCorr_Phi0,
     for(size_t i=1;i<n;++i)
     {
         ++r;
-        M[r][1] = conv.toReal(phi[i].tau);  M[r][2] = phi[i].value;
+        X[r] = conv.toReal(phi[i].tau);   Y[r] = phi[i].value;
         ++r;
-        M[r][1] = conv.toReal(phi[i+1].tau); M[r][2] = phi[i].value;
+        X[r] = conv.toReal(phi[i+1].tau); Y[r] = phi[i].value;
     }
 
 
@@ -176,7 +180,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Phi0,
     // last point
     //__________________________________________________________________________
     ++r;
-    M[r][1] = conv.toReal(phi[n].tau); M[r][2] = phi[n].value;
+    X[r] = conv.toReal(phi[n].tau); Y[r] = phi[n].value;
 
     return *M;
 }
@@ -389,13 +393,13 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
         BuildListOfMoments(muA_list,MuA);
         ans.set(2,muA_list);
     }
-
+    
     {
         RList G_list(labels);
         BuildListOfMoments(G_list,G,records.scale);
         ans.set(3,G_list);
     }
-
+    
     return *ans;
 }
 YOCTO_R_RETURN()
