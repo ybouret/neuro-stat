@@ -22,9 +22,11 @@ clean:
 	@$(MAKE) -s -C doc    clean
 	@$(MAKE) -s -C v3 clean
 	@$(MAKE) -s -C v4 clean
+	@echo "-- removing local install" && rm -rf bin
 
 veryclean: clean
 	@echo "-- removing out of sources builds" && cd forge && touch targets && ( cat targets | xargs rm -rf ) && rm -f targets
+
 
 xcode:
 	@bash $(CREATE) . xcode ${BUILD_TYPE}

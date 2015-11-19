@@ -164,18 +164,16 @@ or
 The gradient of
   $\mathcal{H}$  is proportional to
 \begin{equation}
-	\vec{q} = \bm{\sigma}\left({\vec{a}}\right) \vec{d} -\vec{b} + \mathcal{G} \vec{a}.
+	\vec{q}\left(\vec{a}\right) = \bm{\sigma}\left({\vec{a}}\right) \vec{d} -\vec{b} + \mathcal{G} \vec{a}.
 \end{equation}
-During the process, we are not allowed to "cross" $0$ for any $\vec{a}$ coordinate, since it will change $\bm{\sigma}$ \textcolor{red}{(is that true?)}.\\
-Starting from $\vec{a}=\vec{0}$, one will stay there if $\vec{b}=\vec{0}$ !!
- 
-The full Newton Step is defined by
+We start from $\vec{a}_0=\vec{0}$ so that
 \begin{equation}
-	\mathcal{G}\left(\vec{a}+\vec{\beta}\right)   = \vec{b} - \bm{\sigma}\left({\vec{a}}\right) \vec{d}
+	\vec{q}\left(\vec{0}\right)=-\vec{b}
 \end{equation}
-so that
-\begin{equation}
-	\vec{\beta} = \mathcal{G}^{-1} \left( \vec{b} - \bm{\sigma}\left({\vec{a}}\right) \vec{d} \right) - \vec{a}
-\end{equation}
+The first trivial case: if $\vec{b}\equiv\vec{0}$ then $\vec{0}$ is a critical point of $\mathcal{H}$...
 
+
+
+	
+	
 \end{document}
