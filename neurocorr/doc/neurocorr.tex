@@ -133,9 +133,10 @@ on the computation of the different products.
 \end{itemize}
 
 \section{Finding coefficients}
+\subsection{Objective function}
 For each columns $\vec{b}$ and $\vec{v}$ of $\mu_1$ and $\mu_2$ respectively, and we search the $p=1+NK$ parameters $\vec{a}$ which minimizes
 \begin{equation}
-	\mathcal{H}\left(\vec{a}\right) = -2\trn{\vec{b}}\vec{a} + \trn{\vec{a}} \mathcal{G} \vec{a} +2 \trn{\vec{d}} \abs{\vec{a}}
+	\mathcal{H}\left(\vec{a}\right) = -2\trn{\vec{b}}\vec{a} + \trn{\vec{a}} G \vec{a} +2 \trn{\vec{d}} \abs{\vec{a}}
 \end{equation}
 with, using $\vec{A}$ as the one column of $\mu_A$, 
 \begin{equation}
@@ -155,25 +156,56 @@ $\bm{\sigma}\left(\vec{a}\right)$ defined by
 \end{equation}
 We may write
 \begin{equation}
-	\mathcal{H}\left(\vec{a}\right) = -2\trn{\vec{b}}\vec{a} + \trn{\vec{a}} \mathcal{G} \vec{a} + 2 \trn{\vec{d}} \bm{\sigma}\left(\vec{a}\right) \vec{a}
+	\mathcal{H}\left(\vec{a}\right) = -2\trn{\vec{b}}\vec{a} + \trn{\vec{a}} G \vec{a} + 2 \trn{\vec{d}} \bm{\sigma}\left(\vec{a}\right) \vec{a}
 \end{equation}
 or
 \begin{equation}
-	\mathcal{H}\left(\vec{a}\right) = 2\trn{\vec{a}}\left(\bm{\sigma}\left({\vec{a}}\right)\vec{d}-\vec{b}\right) +  \trn{\vec{a}} \mathcal{G} \vec{a}.
+	\mathcal{H}\left(\vec{a}\right) = 2\trn{\vec{a}}\left(\bm{\sigma}\left({\vec{a}}\right)\vec{d}-\vec{b}\right) +  \trn{\vec{a}} G \vec{a}.
 \end{equation}
+\subsection{Existence of critical points}
+\subsubsection{Gradient expression}
 The gradient of
   $\mathcal{H}$  is proportional to
 \begin{equation}
-	\vec{q}\left(\vec{a}\right) = \bm{\sigma}\left({\vec{a}}\right) \vec{d} -\vec{b} + \mathcal{G} \vec{a}.
+	\vec{q}\left(\vec{a}\right) = \bm{\sigma}\left({\vec{a}}\right) \vec{d} -\vec{b} + G \vec{a}.
 \end{equation}
+\subsubsection{Special case $\vec{a}=\vec{0}$}
 We start from $\vec{a}_0=\vec{0}$ so that
 \begin{equation}
 	\vec{q}\left(\vec{0}\right)=-\vec{b}
 \end{equation}
 The first trivial case: if $\vec{b}\equiv\vec{0}$ then $\vec{0}$ is a critical point of $\mathcal{H}$...
+\subsubsection{Spectral Decomposition}
+Let ${J}$ be a matrix of orthonormal vectors of $\mathrm{Im}\,G$ and ${K}$ a matrix of orthonormal vectors of $\mathrm{Ker}\,G$.
+We write
+\begin{equation}
+	\vec{a} =  {J} \vec{\lambda} +  {K} \vec{\mu}.
+\end{equation}
+So
+\begin{equation}
+	\vec{q}\left(\vec{a}\right) = \bm{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \vec{d} -\vec{b} + G J \vec{\lambda}.
+\end{equation}
+Accordingly,
+\begin{equation}
+\partial_{\vec{a}}\mathcal{H} = \vec{0} \Leftrightarrow
+\left\lbrace
+	\begin{array}{rcl}
+	\vec{0} & = & \trn{J} \bm{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \vec{d} - \trn{J}\vec{b} + \Delta \vec{\lambda}\\
+	\vec{0} & = & \trn{K} \bm{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \vec{d} - \trn{K}\vec{b} \\
+	\end{array}
+	\right.
+\end{equation}
+with
+\begin{equation}
+	\Delta = \trn{J} G J
+\end{equation}
+is a diagonal matrix with all the non-zero eigenvalues of $G$.\\
 
+In our case, all the coordinates of $\vec{b}$ and $\vec{d}$ are positive. 
+To solve the 'kernel' equation:
+\begin{enumerate}
+\item all the coordinates of $\vec{a}$ must be positive, which is possible
+\item the vector $\trn{K}\vec{d}$ must be equal to $\trn{K}\vec{b}$, which is unlikely...
+\end{enumerate}
 
-
-	
-	
 \end{document}
