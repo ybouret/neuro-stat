@@ -10,7 +10,7 @@
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
 \newcommand{\abs}[1]{\left|#1\right|}
-\newcommand{\trn}[1]{{#1}^{\,\mathsf{T}}}
+\newcommand{\trn}[1]{{#1}^{\mathsf{T}}}
 
 \begin{document}
 \title{NeuroCorr}
@@ -195,7 +195,7 @@ Accordingly,
 	\end{array}
 	\right.
 \end{equation}
-with
+where
 \begin{equation}
 	\Delta = \trn{J} G J
 \end{equation}
