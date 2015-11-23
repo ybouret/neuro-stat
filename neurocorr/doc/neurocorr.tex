@@ -99,23 +99,23 @@ $$
 \item During \emph{aggregation}, by kind or by box, we add values or take the maximum value of the target matrix...
 \end{itemize}
 
-\subsection{Left-hand Symmetric Matrix $\mathcal{G}$}
+\subsection{Left-hand Symmetric Matrix ${G}$}
 \subsubsection{Definition}
 The $\mathcal{G}$ matrix has $1+NK$ lines and columns.
 \begin{itemize}
 	\item 
 		$$ 
-		\mathcal{G}_{1,1} = \tau_f-\tau_s
+		{G}_{1,1} = \tau_f-\tau_s
 		$$
 	\item for each neurone $i$, then for each index $k$, using $I_{i,k}=1+K\times i + k$,
 		\begin{itemize}
 		\item compute the side terms
 		$$
-			\mathcal{G}_{1,I_{i,k}} = \mathcal{G}_{I_{i,k},1} = \int_{\tau_s}^{\tau_f} \Phi_{j,i,k}(\tau) \, \mathrm{d}\tau
+			{G}_{1,I_{i,k}} = {G}_{I_{i,k},1} = \int_{\tau_s}^{\tau_f} \Phi_{j,i,k}(\tau) \, \mathrm{d}\tau
 		$$
 		\item for each neurone $l\geq i$, then for each index $m$, compute the core term
 		$$
-			\mathcal{G}_{I_{l,m},I_{i,k}} = \mathcal{G}_{I_{i,k},I_{l,m}}  =
+			{G}_{I_{l,m},I_{i,k}} = {G}_{I_{i,k},I_{l,m}}  =
 			\int_{\tau_s}^{\tau_f}  \Phi_{j,i,k}(\tau) \Phi_{j,l,m}(\tau) \, \mathrm{d}\tau
 		$$
 		\end{itemize}
@@ -142,8 +142,8 @@ with, using $\vec{A}$ as the one column of $\mu_A$,
 \begin{equation}
 	\vec{d} = \sqrt{2\gamma \ln p \cdot \vec{v}} + \dfrac{\gamma\ln p}{3} \vec{A}. 
 \end{equation}
-Let us use the diagonal matrix 
-$\bm{\sigma}\left(\vec{a}\right)$ defined by
+Let us use the vector of signs
+$\vec{\sigma}\left(\vec{a}\right)$ defined by
 \begin{equation}
 	\sigma_{i}\left({\vec{a}}\right) = \left\lbrace
 	\begin{array}{rl}
@@ -156,18 +156,18 @@ $\bm{\sigma}\left(\vec{a}\right)$ defined by
 \end{equation}
 We may write
 \begin{equation}
-	\mathcal{H}\left(\vec{a}\right) = -2\trn{\vec{b}}\vec{a} + \trn{\vec{a}} G \vec{a} + 2 \trn{\vec{d}} \bm{\sigma}\left(\vec{a}\right) \vec{a}
+	\mathcal{H}\left(\vec{a}\right) = -2\trn{\vec{b}}\vec{a} + \trn{\vec{a}} G \vec{a} + 2 \trn{\vec{d}} \left( \vec{\sigma}\left(\vec{a}\right)\otimes\vec{a} \right)
 \end{equation}
 or
 \begin{equation}
-	\mathcal{H}\left(\vec{a}\right) = 2\trn{\vec{a}}\left(\bm{\sigma}\left({\vec{a}}\right)\vec{d}-\vec{b}\right) +  \trn{\vec{a}} G \vec{a}.
+	\mathcal{H}\left(\vec{a}\right) = 2\trn{\vec{a}}\left(\vec{\sigma}\left({\vec{a}}\right)\otimes\vec{d}-\vec{b}\right) +  \trn{\vec{a}} G \vec{a}.
 \end{equation}
 \subsection{Existence of critical points}
 \subsubsection{Gradient expression}
 The gradient of
   $\mathcal{H}$  is proportional to
 \begin{equation}
-	\vec{q}\left(\vec{a}\right) = \bm{\sigma}\left({\vec{a}}\right) \vec{d} -\vec{b} + G \vec{a}.
+	\vec{q}\left(\vec{a}\right) = \vec{\sigma}\left({\vec{a}}\right) \otimes \vec{d} -\vec{b} + G \vec{a}.
 \end{equation}
 \subsubsection{Special case $\vec{a}=\vec{0}$}
 We start from $\vec{a}_0=\vec{0}$ so that
@@ -183,15 +183,15 @@ We write
 \end{equation}
 So
 \begin{equation}
-	\vec{q}\left(\vec{a}\right) = \bm{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \vec{d} -\vec{b} + G J \vec{\lambda}.
+	\vec{q}\left(\vec{a}\right) = \vec{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \otimes \vec{d} -\vec{b} + G J \vec{\lambda}.
 \end{equation}
 Accordingly,
 \begin{equation}
 \partial_{\vec{a}}\mathcal{H} = \vec{0} \Leftrightarrow
 \left\lbrace
 	\begin{array}{rcl}
-	\vec{0} & = & \trn{J} \bm{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \vec{d} - \trn{J}\vec{b} + \Delta \vec{\lambda}\\
-	\vec{0} & = & \trn{K} \bm{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \vec{d} - \trn{K}\vec{b} \\
+	\vec{0} & = & \trn{J} \vec{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \otimes \vec{d} - \trn{J}\vec{b} + \Delta \vec{\lambda}\\
+	\vec{0} & = & \trn{K} \vec{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \otimes \vec{d} - \trn{K}\vec{b} \\
 	\end{array}
 	\right.
 \end{equation}
@@ -208,4 +208,11 @@ To solve the 'kernel' equation:
 \item the vector $\trn{K}\vec{d}$ must be equal to $\trn{K}\vec{b}$, which is unlikely...
 \end{enumerate}
 
+\subsection{Algorithm}
+For any one of the $3^p$ possible $\vec{\sigma}_{n}$, the corresponding ${\vec{a}_n}$ is
+\begin{equation}
+	{\vec{a}_n} = \mathcal{G} \left(\vec{\sigma}_n\otimes\vec{d}-\vec{b}\right), \;\;\mathcal{G} = J\Delta^{-1}\trn{J}
+\end{equation}
+If $\vec{a}_n$ is \textbf{compatible} with $\vec{\sigma}_n$, then we stop...\\
+Otherwise, we must compute $\vec{\sigma}_{n+1}$ by changing $\vec{\sigma}_n$ values only by $\pm1$.
 \end{document}

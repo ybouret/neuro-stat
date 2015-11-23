@@ -5,6 +5,47 @@
 #include "yocto/code/rand.hpp"
 #include "yocto/sys/wtime.hpp"
 #include "yocto/code/utils.hpp"
+#include "yocto/math/core/symdiag.hpp"
+#include "yocto/math/core/tao.hpp"
+
+using namespace math;
+
+bool check_params( array<Real> &a, array<int> &sig )
+{
+    bool ans = true;
+    
+    for(size_t i=a.size();i>0;--i)
+    {
+        if(a[i]<0)
+        {
+            if(sig[i]!=-1)
+            {
+                ans = false;
+                --sig[i];
+            }
+        }
+        else
+        {
+            if(a[i]>0)
+            {
+                if(sig[i]!=1)
+                {
+                    ++sig[i];
+                }
+            }
+            else
+            {
+                if(sig[i]!=0)
+                {
+                    ans = false;
+                    sig[i] = 0;
+                }
+            }
+        }
+    }
+    return ans;
+}
+
 
 YOCTO_UNIT_TEST_IMPL(min)
 {
@@ -15,7 +56,7 @@ YOCTO_UNIT_TEST_IMPL(min)
     size_t trials     = 1;
     size_t max_spikes = 1000;
     size_t pace       = 5;
-    size_t extra      = 2;
+    size_t extra      = 1;
 
 
     const size_t num_boxes=1;
@@ -70,9 +111,88 @@ YOCTO_UNIT_TEST_IMPL(min)
 
         std::cerr << "Would Minimize..." << std::endl;
         const size_t n = Phi.dim;
-        matrix<Real> usrG(n,n);
+        matrix<Real> GG(n);
+        matrix<Real> P(n,n),Q(n,n);
+        
+        vector<Real> b(n),v(n),A(n),d(n),dg(n),sdmb(n),a(n);
+        vector<int>  sig(n);
+        Real       gam=1.1;
+        const Real lnp= log(Real(Phi.dim));
+        const Real vfac = 2*gam*lnp;
+        const Real afac = gam*lnp/3;
+        for(size_t m=1;m<=nm;++m)
+        {
+            const matrix_of<Unit> &UG = G[m];
+            for(size_t i=1;i<=n;++i)
+            {
+                for(size_t j=1;j<=n;++j)
+                {
+                   GG[i][j] = UG(i,j)/records.scale;
+                }
+                A[i] = muA[m](i,1);
+            }
+            std::cerr << "G=" << GG << ";" << std::endl;
+            if( !math::symdiag<Real>::build(GG,dg,P) )
+            {
+                throw exception("Cannot decompose matrix...");
+            }
+            math::symdiag<Real>::eigsrtA(dg, P);
+            std::cerr << "dg=" << dg << ";" << std::endl;
+            std::cerr << "P="  << P  << ";" << std::endl;
+            for(size_t i=1;i<=n;++i)
+            {
+                dg[i] = 1.0 / dg[i];
+            }
+            for(size_t i=1;i<=n;++i)
+            {
+                for(size_t j=1;j<=n;++j)
+                {
+                    Real sum = 0;
+                    for(size_t k=1;k<=n;++k)
+                    {
+                        sum += P[i][k] * dg[k] * P[j][k];
+                    }
+                    Q[i][j] = sum;
+                }
+            }
+            std::cerr << "Q=" << Q << std::endl;
+            
+            for(size_t i=1;i<=Phi.neurones;++i)
+            {
+                std::cerr << "Neurone #" << i << std::endl;
+                for(size_t j=1;j<=n;++j)
+                {
+                    b[j] = mu1[m](j,i);
+                    v[j] = mu2[m](j,i);
+                    d[j] = sqrt(vfac*v[j])+afac*A[i];
+                }
+            }
+            std::cerr << "b=" << b << std::endl;
+            std::cerr << "v=" << v << std::endl;
+            std::cerr << "d=" << d << std::endl;
+            
+            for(int iter=1;iter<=10;++iter)
+            {
+                for(size_t i=n;i>0;--i)
+                {
+                    sdmb[i] = sig[i] * d[i] - b[i];
+                }
+                std::cerr << "sig=" << sig << std::endl;
+                std::cerr << "sdmb=" << sdmb << std::endl;
+                tao::mul(a, Q, sdmb);
+                std::cerr << "a=" << a << std::endl;
+                if(check_params(a, sig))
+                {
+                    std::cerr << "sucess !" << std::endl;
+                    break;
+                }
+                
+            }
+            
 
-        vector<Real> usrB(n),usrV(n),usrA(n);
+        }
+        
+#if 0
         Minimiser    opt(usrG);
         for(size_t m=1;m<=nm;++m)
         {
@@ -98,7 +218,9 @@ YOCTO_UNIT_TEST_IMPL(min)
 
             }
         }
-
+#endif
+        
+        
 
     }
 
