@@ -20,7 +20,6 @@ update:
 clean:
 	@echo "-- removing temporary files" && rm -f *.dat
 	@$(MAKE) -s -C doc    clean
-	@$(MAKE) -s -C v3 clean
 	@$(MAKE) -s -C v4 clean
 	@echo "-- removing local install" && rm -rf bin
 
