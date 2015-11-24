@@ -11,6 +11,7 @@
 
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\trn}[1]{{#1}^{\mathsf{T}}}
+\newcommand{\diagOf}[1]{\left\lbrace#1\right\rbrace}
 
 \begin{document}
 \title{NeuroCorr}
@@ -142,77 +143,54 @@ with, using $\vec{A}$ as the one column of $\mu_A$,
 \begin{equation}
 	\vec{d} = \sqrt{2\gamma \ln p \cdot \vec{v}} + \dfrac{\gamma\ln p}{3} \vec{A}. 
 \end{equation}
-Let us use the vector of signs
-$\vec{\sigma}\left(\vec{a}\right)$ defined by
+In the following, $G$ is positive, not necessarily definite.
+
+
+\subsection{Gradient}
+We want to find the zeros of
+\begin{equation}
+	\vec{q}\left(\vec{a}\right) = \dfrac{1}{2} \partial_{\vec{a}} \mathcal{H} = G\vec{a} - \vec{b} + \diagOf{\vec{\sigma}\left(\vec{a}\right)}\vec{d}
+\end{equation}
+with
 \begin{equation}
 	\sigma_{i}\left({\vec{a}}\right) = \left\lbrace
 	\begin{array}{rl}
 	-1 & \text{if $a_i<0$}\\
-	0  & \text{if $a_i=0$}\\
+	\in[-1:1]  & \text{if $a_i=0$}\\
 	1  & \text{if $a_i>0$}\\
 	\end{array}
 	\right.
 	.
 \end{equation}
-We may write
+and $\diagOf{\vec{\sigma}\left(\vec{a}\right)}$ is the associated diagonal matrix.
+We note that
+$$
+		\diagOf{\vec{\sigma}\left(\vec{a}\right)}\vec{d} = \diagOf{\vec{d}}\vec{\sigma}\left(\vec{a}\right)
+$$
+
+Moreover,
+if $\vec{b}\equiv\vec{0}$, then $\vec{a}=\vec{0}$ is the global minimiser.
+
+\subsection{Decompostion}
+Let us start from $\vec{a}$.
+We want to compute $\delta\vec{a}$ such that
 \begin{equation}
-	\mathcal{H}\left(\vec{a}\right) = -2\trn{\vec{b}}\vec{a} + \trn{\vec{a}} G \vec{a} + 2 \trn{\vec{d}} \left( \vec{\sigma}\left(\vec{a}\right)\otimes\vec{a} \right)
+	\vec{0} = G\vec{a} + G\delta\vec{a} - \vec{b} + \diagOf{\vec{d}}\vec{\sigma}\left(\vec{a}+\delta\vec{a}\right)
+\end{equation} 
+Let the matrices of orthonormal vectors $J\in \mathrm{Im}\,G$ and $K\in\mathrm{Ker}\,G$, and assume that
+\begin{equation}
+	\delta\vec{a} = J \vec{\lambda} + K \vec{\mu}.
 \end{equation}
-or
+Let $r=\mathrm{rank}\,G$ and $\kappa=\dim \mathrm{Ker}\,G$.
+We got the set of equations
 \begin{equation}
-	\mathcal{H}\left(\vec{a}\right) = 2\trn{\vec{a}}\left(\vec{\sigma}\left({\vec{a}}\right)\otimes\vec{d}-\vec{b}\right) +  \trn{\vec{a}} G \vec{a}.
-\end{equation}
-\subsection{Existence of critical points}
-\subsubsection{Gradient expression}
-The gradient of
-  $\mathcal{H}$  is proportional to
-\begin{equation}
-	\vec{q}\left(\vec{a}\right) = \vec{\sigma}\left({\vec{a}}\right) \otimes \vec{d} -\vec{b} + G \vec{a}.
-\end{equation}
-\subsubsection{Special case $\vec{a}=\vec{0}$}
-We start from $\vec{a}_0=\vec{0}$ so that
-\begin{equation}
-	\vec{q}\left(\vec{0}\right)=-\vec{b}
-\end{equation}
-The first trivial case: if $\vec{b}\equiv\vec{0}$ then $\vec{0}$ is a critical point of $\mathcal{H}$...
-\subsubsection{Spectral Decomposition}
-Let ${J}$ be a matrix of orthonormal vectors of $\mathrm{Im}\,G$ and ${K}$ a matrix of orthonormal vectors of $\mathrm{Ker}\,G$.
-We write
-\begin{equation}
-	\vec{a} =  {J} \vec{\lambda} +  {K} \vec{\mu}.
-\end{equation}
-So
-\begin{equation}
-	\vec{q}\left(\vec{a}\right) = \vec{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \otimes \vec{d} -\vec{b} + G J \vec{\lambda}.
-\end{equation}
-Accordingly,
-\begin{equation}
-\partial_{\vec{a}}\mathcal{H} = \vec{0} \Leftrightarrow
-\left\lbrace
+	\left\lbrace
 	\begin{array}{rcl}
-	\vec{0} & = & \trn{J} \vec{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \otimes \vec{d} - \trn{J}\vec{b} + \Delta \vec{\lambda}\\
-	\vec{0} & = & \trn{K} \vec{\sigma}\left({J} \vec{\lambda} +  {K} \vec{\mu}\right) \otimes \vec{d} - \trn{K}\vec{b} \\
+	\vec{0} & = & \trn{J}GJ \vec{\lambda} + \trn{J}\left(G\vec{a}-\vec{b}\right)+\trn{J}\diagOf{\vec{d}} \vec{\sigma}\left(\vec{a}+\delta\vec{a}\right)\\
+	\vec{0} & = & -\trn{K}\vec{b} + \trn{K}\diagOf{\vec{d}}\vec{\sigma}\left(\vec{a}+\delta\vec{a}\right) \\
 	\end{array}
 	\right.
 \end{equation}
-where
-\begin{equation}
-	\Delta = \trn{J} G J
-\end{equation}
-is a diagonal matrix with all the non-zero eigenvalues of $G$.\\
 
-In our case, all the coordinates of $\vec{b}$ and $\vec{d}$ are positive. 
-To solve the 'kernel' equation:
-\begin{enumerate}
-\item all the coordinates of $\vec{a}$ must be positive, which is possible
-\item the vector $\trn{K}\vec{d}$ must be equal to $\trn{K}\vec{b}$, which is unlikely...
-\end{enumerate}
-
-\subsection{Algorithm}
-For any one of the $3^p$ possible $\vec{\sigma}_{n}$, the corresponding ${\vec{a}_n}$ is
-\begin{equation}
-	{\vec{a}_n} = \mathcal{G} \left(\vec{\sigma}_n\otimes\vec{d}-\vec{b}\right), \;\;\mathcal{G} = J\Delta^{-1}\trn{J}
-\end{equation}
-If $\vec{a}_n$ is \textbf{compatible} with $\vec{\sigma}_n$, then we stop...\\
-Otherwise, we must compute $\vec{\sigma}_{n+1}$ by changing $\vec{\sigma}_n$ values only by $\pm1$.
 \end{document}
+
