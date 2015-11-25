@@ -149,125 +149,26 @@ In the following, $G$ is positive, not necessarily definite.
 
 We want to find the zeros of
 \begin{equation}
-	\vec{q}\left(\vec{a}\right) = \dfrac{1}{2} \partial_{\vec{a}} \mathcal{H} = G\vec{a} - \vec{b} + \vec{\sigma}\left(\vec{a}\right)\otimes\vec{d}
+	\vec{q}\left(\vec{a}\right) = \dfrac{1}{2} \partial_{\vec{a}} \mathcal{H} = G\vec{a} - \vec{b} + \trn{\vec{d}}\partial_{\vec{a}}\abs{\vec{a}}
 \end{equation}
-with
+Let us start from a given $\vec{a}$ and find a new value $\tilde{\vec{a}}$.
+We got the vector
 \begin{equation}
-	\sigma_{i}\left({\vec{a}}\right) = \left\lbrace
-	\begin{array}{rl}
-	-1 & \text{if $a_i<0$}\\
-	\in[-1:1]  & \text{if $a_i=0$}\\
-	1  & \text{if $a_i>0$}\\
-	\end{array}
-	\right.
-	.
+	\vec{S} = \vec{b} - G\vec{a}
 \end{equation}
 
-The minimum is reached when
+In such a case, we should get
 \begin{equation}
-	\forall i, \; \sigma_i d_i - b _i + \sum_{j}G_{ij} a_j = 0.
+	\forall i, \; d_i \partial\abs{{a}_i} = S_i.
 \end{equation}
-To avoid the special cases where $G_{ii}=0$, one may use $\vec{\alpha}$ such that
-\begin{equation}
-	\forall i, \; \vert G_{ii}+\alpha_i \vert > 0.
-\end{equation}
-Here, this will be just an "all zero" count...\\
-We rewrite
-\begin{equation}
-	\forall i, \; \sigma_i d_i - b _i + \left(G_{ii}+\alpha_i\right)a_i - \alpha_i a_i + \sum_{j\not=i}G_{ij} a_j = 0.
-\end{equation}
-Hence, the predicted new value for the coefficients is
-\begin{equation}
-	\forall i,\; \tilde{a}_i = \dfrac{1}{G_{ii}+\alpha_i}
-	 \left\lbrack
-	 	\alpha_i a_i + b_i - \sigma_i d_i - \sum_{j\not=i}G_{ij} a_j 
-	 \right\rbrack
-\end{equation}
-and the predicted step is
-\begin{equation}
-	\forall i, \; \delta a_i =  \dfrac{1}{G_{ii}+\alpha_i}
-	 \left\lbrack
-	 b_i - \sigma_i d_i - \sum_{j}G_{ij} a_j 
-	\right\rbrack
-\end{equation}
-
-\subsection{Iteration}
-We start from $\vec{a}=\vec{0}$...
-We compute $S_i=\alpha_i + b_i -\sum_{j\not=i}G_{ij} a_j$.
 \begin{itemize}
-\item if $a_i>0$, 
+	\item if $d_i>\abs{S_i}$ then $\tilde{a}_i=0$.
+	\item otherwise we get
 	\begin{equation}
-		\tilde{a}_i = \dfrac{1}{G_{ii}+\alpha_i}
-	 	\left\lbrack
-	 		S_i - d_i 
-	 	\right\rbrack
+			toto
 	\end{equation}
-\item if $a_i<0$,
-	\begin{equation}
-		\tilde{a}_i = \dfrac{1}{G_{ii}+\alpha_i}
-	 	\left\lbrack
-	 	S_i + d_i
-	 	\right\rbrack
-	\end{equation}
-\item if $a_i=0$, 
-	\begin{equation}
-		\tilde{a}_i = \dfrac{1}{G_{ii}+\alpha_i}
-	 	\left\lbrack
-	 	S_i - d_i \sigma_i 
-	 	\right\rbrack
-	\end{equation}
-	\begin{itemize}
-	\item if $\abs{d_i}\geq\abs{S_i}$ then
-	\end{itemize}
 \end{itemize}
 
-\end{document}
-
-\subsection{Gradient}
-We want to find the zeros of
-\begin{equation}
-	\vec{q}\left(\vec{a}\right) = \dfrac{1}{2} \partial_{\vec{a}} \mathcal{H} = G\vec{a} - \vec{b} + \diagOf{\vec{\sigma}\left(\vec{a}\right)}\vec{d}
-\end{equation}
-with
-\begin{equation}
-	\sigma_{i}\left({\vec{a}}\right) = \left\lbrace
-	\begin{array}{rl}
-	-1 & \text{if $a_i<0$}\\
-	\in[-1:1]  & \text{if $a_i=0$}\\
-	1  & \text{if $a_i>0$}\\
-	\end{array}
-	\right.
-	.
-\end{equation}
-and $\diagOf{\vec{\sigma}\left(\vec{a}\right)}$ is the associated diagonal matrix.
-We note that
-$$
-		\diagOf{\vec{\sigma}\left(\vec{a}\right)}\vec{d} = \diagOf{\vec{d}}\vec{\sigma}\left(\vec{a}\right)
-$$
-
-Moreover,
-if $\vec{b}\equiv\vec{0}$, then $\vec{a}=\vec{0}$ is the global minimiser.
-
-\subsection{Decompostion}
-Let us start from $\vec{a}$.
-We want to compute $\delta\vec{a}$ such that
-\begin{equation}
-	\vec{0} = G\vec{a} + G\delta\vec{a} - \vec{b} + \diagOf{\vec{d}}\vec{\sigma}\left(\vec{a}+\delta\vec{a}\right)
-\end{equation} 
-Let the matrices of orthonormal vectors $J\in \mathrm{Im}\,G$ and $K\in\mathrm{Ker}\,G$, and assume that
-\begin{equation}
-	\delta\vec{a} = J \vec{\lambda} + K \vec{\mu}.
-\end{equation}
-Let $r=\mathrm{rank}\,G$ and $\kappa=\dim \mathrm{Ker}\,G$.
-We got the set of equations
-\begin{equation}
-	\left\lbrace
-	\begin{array}{rcl}
-	\vec{0} & = & \trn{J}GJ \vec{\lambda} + \trn{J}\left(G\vec{a}-\vec{b}\right)+\trn{J}\diagOf{\vec{d}} \vec{\sigma}\left(\vec{a}+\delta\vec{a}\right)\\
-	\vec{0} & = & -\trn{K}\vec{b} + \trn{K}\diagOf{\vec{d}}\vec{\sigma}\left(\vec{a}+\delta\vec{a}\right) \\
-	\end{array}
-	\right.
-\end{equation}
 
 \end{document}
 
