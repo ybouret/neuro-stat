@@ -15,30 +15,26 @@ public:
     const size_t        n; //!< the dimension
     ManyArrays          arrays;
     array<Real>        &b;
-    array<Real>        &v;
     array<Real>        &d;
-    array<Real>        &aorg;
-    array<Real>        &atry;
-    array<Real>        &beta;
+    array<Real>        &a;
+    array<Real>        &y;
+    array<Real>        &D;
     const Real          lnp;
     Real                gam;
 
     //! allocate memory
     explicit Minimiser(const matrix<Real> &usrG);
+
     virtual ~Minimiser() throw();
 
-    void find(const Real         usr_gam,
-              const array<Real> &usr_b,
-              const array<Real> &usr_v,
-              const array<Real> &usr_a);
+    void prepare(const matrix<Unit> &mu1,
+                 const matrix<Unit> &mu2,
+                 const matrix<Unit> &muA,
+                 const size_t        i);
 
-    Real H(const array<Real> &a) const throw();
-    void Beta(const array<Real> &a) const throw();
 
-    static int  SignOf(const Real x) throw();
-
-    Real Eval(const Real x)  throw();
-
+    void update();
+    
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimiser);
 

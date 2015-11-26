@@ -145,29 +145,77 @@ with, using $\vec{A}$ as the one column of $\mu_A$,
 \end{equation}
 In the following, $G$ is positive, not necessarily definite.
 
-\subsection{Recursive Algorithm}
+\subsection{Critical Points}
 
 We want to find the zeros of
 \begin{equation}
-	\vec{q}\left(\vec{a}\right) = \dfrac{1}{2} \partial_{\vec{a}} \mathcal{H} = G\vec{a} - \vec{b} + \trn{\vec{d}}\partial_{\vec{a}}\abs{\vec{a}}
+	\vec{q}\left(\vec{a}\right) = \dfrac{1}{2} \partial_{\vec{a}} \mathcal{H} = G\vec{a} - \vec{b} + \trn{\vec{d}}\vec{\sigma}\left(\vec{a}\right)
 \end{equation}
 Let us start from a given $\vec{a}$ and find a new value $\tilde{\vec{a}}$.
-We got the vector
+We write
 \begin{equation}
-	\vec{S} = \vec{b} - G\vec{a}
+	\forall i, \; d_i \sigma\left(a_i\right) =  b_i  - G_{ii}a_i - \sum_{j\not=i} G_{ij} a_j = D_i - G_{ii}a_i
 \end{equation}
 
-In such a case, we should get
-\begin{equation}
-	\forall i, \; d_i \partial\abs{{a}_i} = S_i.
-\end{equation}
 \begin{itemize}
-	\item if $d_i>\abs{S_i}$ then $\tilde{a}_i=0$.
-	\item otherwise we get
+	\item If $\sigma\left(a_i\right)=1$, then we should have
+		\begin{equation}
+			G_{ii} a_i = D_i - d_i
+		\end{equation}
+		which is compatible only if $D_i>d_i$.
+	\item If $\sigma\left(a_i\right)=1$, then we should have
 	\begin{equation}
-			toto
+		G_{ii} a_i = D_i + d_i
 	\end{equation}
+	which is compatible only if $D_i<-d_i$.
+	\item Otherwise, if $\abs{D_i}\leq d_i$, we must have a compatible $a_i=0$.
 \end{itemize}
+
+\subsection{Algorithm}
+So we estimate the new values by the next compatible values.
+
+\begin{itemize}
+	\item We start from ${\vec{a}}^{(n)}$.
+	\item We compute
+		\begin{equation}
+			D_i = b_i - \sum_{j\not=i} G_{ij}a_j^{(n)}
+		\end{equation}
+	\begin{itemize}
+		\item if $D_i>d_i$, 
+			\begin{equation}
+				a_i^{(n+1)} = \dfrac{D_i-d_i}{G_{ii}} > 0
+			\end{equation}
+			and we define $\kappa_i^{(n)}=1$.
+		\item if $D_i<-d_i$,
+			\begin{equation}
+				a_i^{(n+1)} = \dfrac{D_i+d_i}{G_{ii}} < 0
+			\end{equation}
+			and we define $\kappa_i^{(n)}=-1$.
+		\item otherwise, if $\abs{D_i}\leq d_i$, 
+			\begin{equation}
+				a_i^{(n+1)} = 0
+			\end{equation}
+		and we define $\kappa_i^{(n)}=0$.
+	\end{itemize}
+\end{itemize}
+
+Let $\bm{\kappa}^{(n)}$ be the diagonal matrix of $\vec{\kappa}^{(n)}$ components,
+and let $W$ the diagonal matrix of $1/G_{ii}$.
+The corresponding step is
+\begin{equation}
+	\delta \vec{a}^{(n+1)} = \vec{a}^{(n+1)} - \vec{a}^{(n)} = \abs{\bm{\kappa}^{(n)}} W \left(\vec{b} -  G \vec{a}^{(n)} +  \bm{\kappa}^{(n)} \vec{d} \right)
+	+ \left(\abs{\bm{\kappa}^{(n)}} - \bm{I}\right) \vec{a}^{(n)}
+%	= 
+%	\begin{pmatrix}
+%	\frac{\abs{\kappa_1^{(n)}}}{G_{11}} & 0 & \ldots & 0 \\
+%	                              & \ddots &    &   \\
+%	  &        & \ddots & \\
+%	0 & \ldots & 0 & \frac{\abs{\kappa_p^{(n)}}}{G_{pp}}
+%	\end{pmatrix}
+%	\left( \vec{b} - G \vec{a}^{(n)}+ \vec{d}\otimes\vec{\kappa}^{(n)} \right)
+\end{equation}
+
+
 
 
 \end{document}
