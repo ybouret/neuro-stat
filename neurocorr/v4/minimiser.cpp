@@ -82,8 +82,17 @@ void Minimiser:: update()
             }
         }
         Di = b[i] - Di;
+#if defined(FULL) && FULL==1
+    }
 
+    std::cerr << "D=" << D << std::endl;
+
+    for(size_t i=n;i>0;--i)
+    {
+        const Real Di = D[i];
+#endif
         const Real di = d[i];
+        
         if(Di>di)
         {
             const Real tmp = a[i];
