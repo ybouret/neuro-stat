@@ -15,7 +15,7 @@ YOCTO_UNIT_TEST_IMPL(min)
 
     threading::crew team(true);
 
-    size_t neurones   = 2;
+    size_t neurones   = 4;
     size_t trials     = 1;
     size_t max_spikes = 1000;
     size_t pace       = 5;
@@ -114,12 +114,27 @@ YOCTO_UNIT_TEST_IMPL(min)
                 tao::mul(Opt.a,Q,Opt.y);
                 std::cerr << "a=" << Opt.a << std::endl;
 
-                for(size_t iter=1;iter<=50;++iter)
+                size_t iter=1;
+                for(;;++iter)
                 {
                     Opt.update();
-                    std::cerr << "a=" << Opt.a << std::endl;
-                    //std::cerr << "da=" << Opt.y << std::endl;
+                    //std::cerr << "a=" << Opt.a << std::endl;
+                    //std::cerr << "y=" << Opt.y << std::endl;
+                    bool converged = true;
+                    for(size_t i=1;i<=n;++i)
+                    {
+                        if( Fabs(Opt.y[i])>Fabs(1e-4*Opt.a[i]))
+                        {
+                            converged = false;
+                            break;
+                        }
+                    }
+
+                    if(converged)
+                        break;
                 }
+                std::cerr << "iter=" << iter << std::endl;
+                std::cerr << "a=" << Opt.a << std::endl;
                 std::cerr << std::endl;
             }
             
