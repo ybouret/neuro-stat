@@ -15,11 +15,11 @@ YOCTO_UNIT_TEST_IMPL(min)
 
     threading::crew team(true);
 
-    size_t neurones   = 2;
+    size_t neurones   = 4;
     size_t trials     = 1;
     size_t max_spikes = 1000;
     size_t pace       = 5;
-    size_t extra      = 1;
+    size_t extra      = 4;
 
 
     const size_t num_boxes=1;
@@ -118,12 +118,12 @@ YOCTO_UNIT_TEST_IMPL(min)
                 for(;;++iter)
                 {
                     Opt.update();
-                    //std::cerr << "a=" << Opt.a << std::endl;
+                    std::cerr << "a=" << Opt.a << std::endl;
                     //std::cerr << "y=" << Opt.y << std::endl;
                     bool converged = true;
                     for(size_t i=1;i<=n;++i)
                     {
-                        if( Fabs(Opt.y[i])>Fabs(1e-4*Opt.a[i]))
+                        if( Fabs(Opt.y[i])>Fabs(1e-5*Opt.a[i]))
                         {
                             converged = false;
                             break;
@@ -133,7 +133,7 @@ YOCTO_UNIT_TEST_IMPL(min)
                     if(converged)
                         break;
 
-                    //if(iter>10) break;
+                    //if(iter>20) break;
                 }
                 std::cerr << "iter=" << iter << std::endl;
                 std::cerr << "a=" << Opt.a << std::endl;

@@ -92,7 +92,7 @@ void Minimiser:: update()
         const Real Di = D[i];
 #endif
         const Real di = d[i];
-        
+
         if(Di>di)
         {
             const Real tmp = a[i];
@@ -105,6 +105,70 @@ void Minimiser:: update()
         {
             const Real tmp = a[i];
             a[i] = (Di+di)/G[i][i];
+            y[i] = a[i] - tmp;
+            continue;
+        }
+
+        y[i] = -a[i];
+        a[i] = 0;
+    }
+
+
+}
+
+
+void Minimiser:: update_v2()
+{
+    for(size_t i=n;i>0;--i)
+    {
+        //______________________________________________________________________
+        //
+        // Compute D
+        //______________________________________________________________________
+        Real tmp = 0;
+        for(size_t j=n;j>0;--j)
+        {
+            if(i!=j)
+            {
+                tmp += G[i][j] * a[j];
+            }
+        }
+        D[i] = b[i] - tmp;
+    }
+
+    std::cerr << "D=" << D << std::endl;
+    
+    for(size_t i=n;i>0;--i)
+    {
+        const Real Di = D[i];
+        const Real di = d[i];
+
+        if(Di>di)
+        {
+            const Real tmp = a[i];
+            if(tmp>=0)
+            {
+                a[i] = (Di-di)/G[i][i];
+            }
+            else
+            {
+                a[i] = 0;
+            }
+            y[i] = a[i] -tmp;
+            continue;
+        }
+
+        if(Di<-di)
+        {
+            const Real tmp = a[i];
+            if(tmp<=0)
+            {
+                a[i] = (Di+di)/G[i][i];
+            }
+            else
+            {
+                a[i] = 0;
+            }
             y[i] = a[i] - tmp;
             continue;
         }

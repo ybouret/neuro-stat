@@ -34,7 +34,8 @@ public:
 
 
     void update();
-    
+    void update_v2();
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimiser);
 
