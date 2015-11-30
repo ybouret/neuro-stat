@@ -28,10 +28,6 @@ b(  arrays.next_array() ),
 d(  arrays.next_array() ),
 a(  arrays.next_array() ),
 y(  arrays.next_array() ),
-D(  arrays.next_array() ),
-q(  arrays.next_array() ),
-atry( arrays.next_array() ),
-s(  n ),
 lnp( log(Real(n)) ),
 eps( Fabs(ftol) )
 {
@@ -117,42 +113,6 @@ bool Minimiser:: converged() const throw()
 }
 
 
-void Minimiser:: sink()
-{
-    size_t nsink = 0;
-SINK_LOOP:
-    for(size_t i=n;i>0;--i)
-    {
-        Real Di = 0;
-        for(size_t j=n;j>0;--j)
-        {
-            if(i!=j)
-            {
-                Di += G[i][j] * a[j];
-            }
-        }
-        Di = b[i] - Di;
-
-        if(Fabs(Di)<=d[i])
-        {
-            if(s[i]!=0)
-            {
-                a[i] = 0;
-                s[i] = 0;
-                ++nsink;
-            }
-        }
-    }
-
-    std::cerr << "nsink=" << nsink << std::endl;
-    if(nsink>0)
-    {
-        nsink=0;
-        goto SINK_LOOP;
-    }
-}
-
-
 
 
 #include "yocto/sort/quick.hpp"
@@ -167,121 +127,4 @@ Real Minimiser:: compute_error() const throw()
     return Sqrt(ans);
 }
 
-void Minimiser:: update_v2()
-{
-    // estimator to see who might be zero
-    for(size_t i=n;i>0;--i)
-    {
-        Real tmp = 0;
-        for(size_t j=n;j>0;--j)
-        {
-            if(i!=j)
-            {
-                tmp += G[i][j] * a[j];
-            }
-        }
-        D[i] = b[i] - tmp;
-    }
-
-    std::cerr << "D=" << D << std::endl;
-
-    // predicted
-    for(size_t i=n;i>0;--i)
-    {
-        const Real Di = D[i];
-        const Real di = d[i];
-
-        if(Di>di)
-        {
-            a[i] = (Di-di)/G[i][i];
-            s[i] = 1;
-            continue;
-        }
-
-        if(Di<-di)
-        {
-            a[i] = (Di+di)/G[i][i];
-            s[i] = -1;
-            continue;
-        }
-        
-        s[i] = 0;
-        a[i] = 0;
-    }
-    
-    
-}
-
-void Minimiser:: compute_q()
-{
-    // q0 = b - Ga
-    tao::mul(q,G,a);
-    tao::subp(q,b);
-    std::cerr << "qraw=" << q << std::endl;
-    for(size_t i=n;i>0;--i)
-    {
-        switch(s[i])
-        {
-            case 1:
-                q[i] -= d[i];
-                break;
-
-            case -1:
-                q[i] += d[i];
-                break;
-
-            case 0:
-
-                //break;
-
-            default:
-                throw exception("invalid sign[%u]=%d", unsigned(i), s[i]);
-        }
-    }
-    std::cerr << "q=" << q << std::endl;
-    const Real qq = tao::norm(q);
-    const Real aa = tao::norm(a);
-    std::cerr << "aa=" << aa << std::endl;
-    std::cerr << "qq=" << qq << std::endl;
-    tao::mulby(aa/qq,q);
-}
-
-
-void Minimiser::forward()
-{
-    numeric<Real>::function F( this, & Minimiser::H );
-
-    triplet<Real> ZZ = { 0, 1, 1 };
-    std::cerr << "ZZ=" << ZZ << std::endl;
-    triplet<Real> FF = { F(0), F(1), 0 };
-    FF.c = FF.b;
-    std::cerr << "FF=" << FF << std::endl;
-    bracket<Real>::expand(F, ZZ, FF);
-    std::cerr << "ZZ=" << ZZ << std::endl;
-    std::cerr << "FF=" << FF << std::endl;
-    minimize(F, ZZ, FF, eps);
-    const Real zmin = ZZ.b;
-    const Real Hmin = F(zmin);
-    std::cerr << "atry=" << atry << std::endl;
-    std::cerr << "Hmin=" << Hmin << std::endl;
-    tao::set(y,a);
-    tao::set(a,atry);
-    update_v2();
-    std::cerr << "afin=" << a << std::endl;
-    std::cerr << "sfin=" << s << std::endl;
-
-}
-
-Real Minimiser:: H(Real z) const
-{
-    tao::setprobe(atry,a, z, q);
-    Real value = 0;
-    for(size_t i=n;i>0;--i)
-    {
-        value += d[i] * Fabs(atry[i]) - b[i] * atry[i];
-    }
-    value += value;
-    value += tao::quadratic(G,atry);
-    return value;
-}
 

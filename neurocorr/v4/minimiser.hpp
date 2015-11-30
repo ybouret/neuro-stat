@@ -18,10 +18,6 @@ public:
     array<Real>        &d;
     array<Real>        &a;
     array<Real>        &y;
-    array<Real>        &D;
-    array<Real>        &q;
-    array<Real>        &atry;
-    vector<int>         s;
     const Real          lnp;
     const Real          eps;
     
@@ -41,15 +37,6 @@ public:
     bool converged() const throw();
     Real compute_error() const throw();
 
-    void sink();
-    void compute_q();
-    void forward();
-
-
-    Real H(Real z) const;
-    
-
-    void update_v2();
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimiser);
