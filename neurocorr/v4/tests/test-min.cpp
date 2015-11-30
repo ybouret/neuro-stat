@@ -7,6 +7,7 @@
 #include "yocto/code/utils.hpp"
 #include "yocto/math/core/symdiag.hpp"
 #include "yocto/math/core/tao.hpp"
+#include "yocto/ios/ocstream.hpp"
 
 using namespace math;
 
@@ -19,7 +20,7 @@ YOCTO_UNIT_TEST_IMPL(min)
     size_t trials     = 1;
     size_t max_spikes = 1000;
     size_t pace       = 5;
-    size_t extra      = 4;
+    size_t extra      = 3;
 
 
     const size_t num_boxes=1;
@@ -77,10 +78,10 @@ YOCTO_UNIT_TEST_IMPL(min)
         matrix<Real> GG(n);
         matrix<Real> Q(n,n);
         vector<Real> ev(n);
+        vector<Real> a1(n);
 
 
-        Minimiser Opt(GG);
-        Opt.gam = 1.1;
+        Minimiser Opt(GG,1e-6);
         for(size_t m=1;m<=nm;++m)
         {
             const matrix_of<Unit> &UG = G[m];
@@ -99,13 +100,15 @@ YOCTO_UNIT_TEST_IMPL(min)
             }
             symdiag<Real>::eigsrtA(ev,Q);
 
-            std::cerr << "G=" << GG << ";" << std::endl;
-            std::cerr << "Q=" << Q   << ";" << std::endl;
+            //std::cerr << "G=" << GG << ";" << std::endl;
+            //std::cerr << "Q=" << Q   << ";" << std::endl;
             std::cerr << "ev=diag(" << ev << ");" << std::endl;
 
             for(size_t neurone=1;neurone<=neurones;++neurone)
             {
-                Opt.prepare(mu1(m), mu2(m), muA(m), neurone);
+                Opt.prepare(mu1(m), mu2(m), muA(m), neurone, 1.1);
+
+#if 0
                 tao::mul_trn(Opt.y,Q,Opt.b);
                 for(size_t i=1;i<=n;++i)
                 {
@@ -113,34 +116,49 @@ YOCTO_UNIT_TEST_IMPL(min)
                 }
                 tao::mul(Opt.a,Q,Opt.y);
                 std::cerr << "a0=" << Opt.a << std::endl;
+                for(size_t nsink=0;nsink<2;++nsink)
+                {
+                    std::cerr << "// sink" << std::endl;
+                    Opt.sink();
+
+                    std::cerr << "a=" << Opt.a << std::endl;
+                }
+
+
+                continue;
 
                 size_t iter=1;
                 for(;;++iter)
                 {
                     Opt.update();
-                    std::cerr << "a=" << Opt.a << std::endl;
-                    //std::cerr << "y=" << Opt.y << std::endl;
-                    bool converged = true;
-                    for(size_t i=1;i<=n;++i)
-                    {
-                        if( Fabs(Opt.y[i])>Fabs(1e-5*Opt.a[i]))
-                        {
-                            converged = false;
-                            break;
-                        }
-                    }
-
-                    if(converged)
+                    //std::cerr << "a=" << Opt.a << std::endl;
+                    if(Opt.converged())
                         break;
-
-                    //if(iter>20) break;
                 }
                 std::cerr << "iter=" << iter << std::endl;
-                std::cerr << "a=" << Opt.a << std::endl;
+                std::cerr << "a1=" << Opt.a << std::endl;
+                tao::set(a1,Opt.a);
+#endif
+
+
+                size_t count = 1;
+                tao::ld(Opt.a,0);
+                tao::ld(Opt.s,0);
+                std::cerr << "a0=" << Opt.a << std::endl;
+                std::cerr << "s0=" << Opt.s << std::endl;
+                {
+                    Opt.update_v2();
+                    std::cerr << "a1=" << Opt.a << std::endl;
+                    std::cerr << "s1=" << Opt.s << std::endl;
+                    Opt.compute_q();
+                    Opt.forward();
+                }
+                std::cerr << "count=" << count << std::endl;
+
                 std::cerr << std::endl;
             }
             
-
+            
             
             
         }

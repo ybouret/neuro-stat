@@ -19,21 +19,36 @@ public:
     array<Real>        &a;
     array<Real>        &y;
     array<Real>        &D;
+    array<Real>        &q;
+    array<Real>        &atry;
+    vector<int>         s;
     const Real          lnp;
-    Real                gam;
-
+    const Real          eps;
+    
     //! allocate memory
-    explicit Minimiser(const matrix<Real> &usrG);
+    explicit Minimiser(const matrix<Real> &usrG, const Real ftol);
 
     virtual ~Minimiser() throw();
 
     void prepare(const matrix<Unit> &mu1,
                  const matrix<Unit> &mu2,
                  const matrix<Unit> &muA,
-                 const size_t        i);
+                 const size_t        i,
+                 const Real          gam);
 
 
     void update();
+    bool converged() const throw();
+    Real compute_error() const throw();
+
+    void sink();
+    void compute_q();
+    void forward();
+
+
+    Real H(Real z) const;
+    
+
     void update_v2();
 
 private:
