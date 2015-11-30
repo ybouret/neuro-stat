@@ -36,10 +36,9 @@ maxTau(0)
     Unit     &tmin  = (Unit &)minTau;
     Unit     &tmax  = (Unit &)maxTau;
     bool      init  = true;
-
-    for(size_t j=1;j<=numTrials;++j)
+    for(size_t i=1;i<=numNeurones;++i)
     {
-        for(size_t i=1;i<=numNeurones;++i)
+        for(size_t j=1;j<=numTrials;++j)
         {
             ++tr;
             const size_t ns = data(tr,1);
