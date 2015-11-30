@@ -30,8 +30,8 @@ maxTau(0)
     assert(neurones==numNeurones);
 
     const size_t max_spikes = data.cols-1;
-    _Records &self = *this;
-    size_t    tr   = 0;
+    _Records &self  = *this;
+    size_t    tr    = 0;
     size_t   &count = (size_t &)maxCount;
     Unit     &tmin  = (Unit &)minTau;
     Unit     &tmax  = (Unit &)maxTau;
@@ -52,7 +52,7 @@ maxTau(0)
                 if(init)
                 {
                     tmin = tmax = tau;
-                    init=false;
+                    init = false;
                 }
                 else
                 {
