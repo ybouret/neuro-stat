@@ -16,11 +16,11 @@ YOCTO_UNIT_TEST_IMPL(min)
 
     threading::crew team(true);
 
-    size_t neurones   = 8;
+    size_t neurones   = 4;
     size_t trials     = 1;
     size_t max_spikes = 1000;
     size_t pace       = 5;
-    size_t extra      = 19;
+    size_t extra      = 4;
 
 
     const size_t num_boxes=1;
@@ -125,11 +125,12 @@ YOCTO_UNIT_TEST_IMPL(min)
                 ios::wcstream fp("err.dat");
                 size_t count = 1;
                 tao::ld(Opt.a,0);
+                fp("0 %g 0\n", Opt.compute_H() );
                 for(;;++count)
                 {
                     Opt.update();
                     const Real err = Opt.compute_error();
-                    fp("%u %g\n", unsigned(count), err );
+                    fp("%u %g %g\n", unsigned(count), Opt.compute_H(), err );
                     if(Opt.converged())
                         break;
                 }

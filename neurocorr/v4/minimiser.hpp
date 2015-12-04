@@ -36,7 +36,9 @@ public:
     void update();
     bool converged() const throw();
     Real compute_error() const throw();
+    Real compute_H() const throw();
 
+    void run();
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimiser);

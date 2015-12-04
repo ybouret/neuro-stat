@@ -112,10 +112,22 @@ bool Minimiser:: converged() const throw()
     return true;
 }
 
+Real Minimiser:: compute_H() const throw()
+{
+    Real H = 0;
+
+    for(size_t i=n;i>0;--i)
+    {
+        const Real ai = a[i];
+        H += d[i] * Fabs( ai ) - b[i] * ai;
+    }
+    H += tao::quadratic(G,a);
+    return H;
+}
 
 
 
-#include "yocto/sort/quick.hpp"
+
 Real Minimiser:: compute_error() const throw()
 {
     Real ans = 0.0;
@@ -125,6 +137,17 @@ Real Minimiser:: compute_error() const throw()
         ans += tmp*tmp;
     }
     return Sqrt(ans);
+}
+
+
+void Minimiser:: run()
+{
+    tao::ld(a,0);
+    while(true)
+    {
+        update();
+        
+    }
 }
 
 
