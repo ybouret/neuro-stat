@@ -19,6 +19,7 @@ public:
     array<Real>        &d;
     array<Real>        &a;
     array<Real>        &y;
+    array<Real>        &q; //!< descent direction
     const Real          lnp;
     const Real          eps;
     
@@ -40,6 +41,7 @@ public:
     bool converged() const throw();
     Real compute_error() const throw();
     Real compute_H() const throw();
+    void compute_q() const throw();
 
     void run();
     void run2();

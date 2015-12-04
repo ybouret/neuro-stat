@@ -29,6 +29,7 @@ b(  arrays.next_array() ),
 d(  arrays.next_array() ),
 a(  arrays.next_array() ),
 y(  arrays.next_array() ),
+q(  arrays.next_array() ),
 lnp( log(Real(n)) ),
 eps( Fabs(ftol) )
 {
@@ -237,6 +238,36 @@ Real Minimiser:: compute_error() const throw()
     return Sqrt(ans);
 }
 
+void Minimiser::compute_q() const throw()
+{
+    tao::mul(q,G,a);
+    tao::subp(q,b);
+    for(size_t i=n;i>0;--i)
+    {
+        if(s[i]!=0)
+        {
+            q[i] -= s[i] * d[i];
+        }
+        else
+        {
+            if(q[i]>d[i])
+            {
+                q[i] -= d[i];
+            }
+            else
+            {
+                if(q[i]<-d[i])
+                {
+                    q[i] += d[i];
+                }
+                else
+                {
+                    q[i] = 0;
+                }
+            }
+        }
+    }
+}
 
 #include "yocto/ios/ocstream.hpp"
 
@@ -271,6 +302,20 @@ void Minimiser:: run2()
     {
         ++count;
         const size_t nch = update();
+        compute_q();
+        std::cerr << "a=" << a << std::endl;
+        std::cerr << "s=" << s << std::endl;
+        std::cerr << "y=" << y << std::endl;
+        std::cerr << "q=" << q << std::endl;
+
+        const Real qsq = tao::norm_sq(q);
+        if(qsq>0)
+        {
+            const Real asq = tao::norm_sq(a);
+            tao::mulby(Sqrt(asq/qsq),q);
+            std::cerr << "beta=" << q << std::endl;
+        }
+
         std::cerr << "nch=" << nch << std::endl;
         fp("%u %g %d\n", unsigned(count), compute_H(), int(nch) );
         if(count>=50)
