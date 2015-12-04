@@ -23,6 +23,7 @@ static inline size_t check_dims(const matrix<Real> &G)
 Minimiser:: Minimiser(const matrix<Real> &usrG, const Real ftol) :
 G(usrG),
 n( check_dims(G) ),
+s( n ),
 arrays(8),
 b(  arrays.next_array() ),
 d(  arrays.next_array() ),
@@ -65,10 +66,12 @@ void Minimiser:: prepare(const matrix<Unit> &mu1,
 
 #include "yocto/math/core/tao.hpp"
 
-void Minimiser:: update()
+size_t Minimiser:: update()
 {
+    size_t nch = 0;
     for(size_t i=n;i>0;--i)
     {
+        // local constant
         Real Di = 0;
         for(size_t j=n;j>0;--j)
         {
@@ -84,6 +87,11 @@ void Minimiser:: update()
         {
             const Real tmp = a[i];
             a[i] = (Di-di)/G[i][i];
+            if(s[i]!=1)
+            {
+                s[i] = 1;
+                ++nch;
+            }
             y[i] = a[i] -tmp;
             continue;
         }
@@ -92,15 +100,105 @@ void Minimiser:: update()
         {
             const Real tmp = a[i];
             a[i] = (Di+di)/G[i][i];
+            if(s[i]!=-1)
+            {
+                s[i]=-1;
+                ++nch;
+            }
             y[i] = a[i] - tmp;
             continue;
         }
 
+        if(s[i]!=0)
+        {
+            s[i] = 0;
+            ++nch;
+        }
         y[i] = -a[i];
         a[i] = 0;
     }
+    return nch;
 
 }
+
+size_t Minimiser:: update_v2()
+{
+    size_t nch = 0;
+    for(size_t i=n;i>0;--i)
+    {
+        // local constant
+        Real Di = 0;
+        for(size_t j=n;j>0;--j)
+        {
+            if(i!=j)
+            {
+                Di += G[i][j] * a[j];
+            }
+        }
+        Di = b[i] - Di;
+        const Real di = d[i];
+
+        if(Di>di)
+        {
+            const Real tmp = a[i];
+            a[i] = (Di-di)/G[i][i];
+            switch(s[i])
+            {
+                case -1:
+                    ++nch;
+                    s[i] = 0;
+                    a[i] = 0;
+                    break;
+
+                case 0:
+                    ++nch;
+                    s[i] = 1;
+                    break;
+
+                default: assert(1==s[i]);
+                    break;
+            }
+            y[i] = a[i] -tmp;
+            continue;
+        }
+
+        if(Di<-di)
+        {
+            const Real tmp = a[i];
+            a[i] = (Di+di)/G[i][i];
+            switch(s[i])
+            {
+                case 1:
+                    ++nch;
+                    s[i] = 0;
+                    a[i] = 0;
+                    break;
+
+                case 0:
+                    ++nch;
+                    s[i] = -1;
+                    break;
+
+                default:
+                    assert(-1==s[i]);
+                    break;
+            }
+            y[i] = a[i] - tmp;
+            continue;
+        }
+
+        if(s[i]!=0)
+        {
+            s[i] = 0;
+            ++nch;
+        }
+        y[i] = -a[i];
+        a[i] = 0;
+    }
+    return nch;
+    
+}
+
 
 bool Minimiser:: converged() const throw()
 {
@@ -140,14 +238,46 @@ Real Minimiser:: compute_error() const throw()
 }
 
 
+#include "yocto/ios/ocstream.hpp"
+
 void Minimiser:: run()
 {
+
+    ios::wcstream fp("err.dat");
     tao::ld(a,0);
+    tao::ld(s,0);
+    size_t count = 0;
+    fp("0 %g 0\n", compute_H() );
     while(true)
     {
-        update();
-        
+        ++count;
+        const size_t nch = update();
+        std::cerr << "nch=" << nch << std::endl;
+        fp("%u %g %d\n", unsigned(count), compute_H(), int(nch) );
+        if(count>=50)
+            break;
     }
 }
+
+void Minimiser:: run2()
+{
+
+    ios::wcstream fp("err2.dat");
+    tao::ld(a,0);
+    tao::ld(s,0);
+    size_t count = 0;
+    fp("0 %g 0\n", compute_H() );
+    while(true)
+    {
+        ++count;
+        const size_t nch = update();
+        std::cerr << "nch=" << nch << std::endl;
+        fp("%u %g %d\n", unsigned(count), compute_H(), int(nch) );
+        if(count>=50)
+            break;
+    }
+}
+
+
 
 

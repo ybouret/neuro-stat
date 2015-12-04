@@ -13,6 +13,7 @@ class Minimiser
 public:
     const matrix<Real> &G;
     const size_t        n; //!< the dimension
+    vector<int>         s; //!< signs
     ManyArrays          arrays;
     array<Real>        &b;
     array<Real>        &d;
@@ -33,12 +34,15 @@ public:
                  const Real          gam);
 
 
-    void update();
+    size_t update();
+    size_t update_v2();
+    
     bool converged() const throw();
     Real compute_error() const throw();
     Real compute_H() const throw();
 
     void run();
+    void run2();
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimiser);

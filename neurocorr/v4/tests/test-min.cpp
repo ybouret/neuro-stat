@@ -122,21 +122,9 @@ YOCTO_UNIT_TEST_IMPL(min)
 #endif
 
 
-                ios::wcstream fp("err.dat");
-                size_t count = 1;
-                tao::ld(Opt.a,0);
-                fp("0 %g 0\n", Opt.compute_H() );
-                for(;;++count)
-                {
-                    Opt.update();
-                    const Real err = Opt.compute_error();
-                    fp("%u %g %g\n", unsigned(count), Opt.compute_H(), err );
-                    if(Opt.converged())
-                        break;
-                }
-                std::cerr << "count=" << count << std::endl;
-                std::cerr << "a=" << Opt.a << std::endl;
-                std::cerr << "y=" << Opt.y << std::endl;
+                Opt.run();
+                Opt.run2();
+
 
 
                 std::cerr << std::endl;
