@@ -23,7 +23,6 @@ static inline size_t check_dims(const matrix<Real> &G)
 Minimiser:: Minimiser(const matrix<Real> &usrG, const Real ftol) :
 G(usrG),
 n( check_dims(G) ),
-s( n ),
 arrays(8),
 b(  arrays.next_array() ),
 d(  arrays.next_array() ),
@@ -67,9 +66,9 @@ void Minimiser:: prepare(const matrix<Unit> &mu1,
 
 #include "yocto/math/core/tao.hpp"
 
-size_t Minimiser:: update()
+void Minimiser:: update()
 {
-    size_t nch = 0;
+    //size_t nch = 0;
     for(size_t i=n;i>0;--i)
     {
         // local constant
@@ -88,11 +87,13 @@ size_t Minimiser:: update()
         {
             const Real tmp = a[i];
             a[i] = (Di-di)/G[i][i];
+#if 0
             if(s[i]!=1)
             {
                 s[i] = 1;
                 ++nch;
             }
+#endif
             y[i] = a[i] -tmp;
             continue;
         }
@@ -101,27 +102,32 @@ size_t Minimiser:: update()
         {
             const Real tmp = a[i];
             a[i] = (Di+di)/G[i][i];
+#if 0
             if(s[i]!=-1)
             {
                 s[i]=-1;
                 ++nch;
             }
+#endif
             y[i] = a[i] - tmp;
             continue;
         }
 
+#if 0
         if(s[i]!=0)
         {
             s[i] = 0;
             ++nch;
         }
+#endif
         y[i] = -a[i];
         a[i] = 0;
     }
-    return nch;
+    //return nch;
 
 }
 
+#if 0
 size_t Minimiser:: update_v2()
 {
     size_t nch = 0;
@@ -199,6 +205,7 @@ size_t Minimiser:: update_v2()
     return nch;
     
 }
+#endif
 
 
 bool Minimiser:: converged() const throw()
@@ -220,6 +227,7 @@ Real Minimiser:: compute_H() const throw()
         const Real ai = a[i];
         H += d[i] * Fabs( ai ) - b[i] * ai;
     }
+    H += H;
     H += tao::quadratic(G,a);
     return H;
 }
@@ -238,89 +246,32 @@ Real Minimiser:: compute_error() const throw()
     return Sqrt(ans);
 }
 
-void Minimiser::compute_q() const throw()
-{
-    tao::mul(q,G,a);
-    tao::subp(q,b);
-    for(size_t i=n;i>0;--i)
-    {
-        if(s[i]!=0)
-        {
-            q[i] -= s[i] * d[i];
-        }
-        else
-        {
-            if(q[i]>d[i])
-            {
-                q[i] -= d[i];
-            }
-            else
-            {
-                if(q[i]<-d[i])
-                {
-                    q[i] += d[i];
-                }
-                else
-                {
-                    q[i] = 0;
-                }
-            }
-        }
-    }
-}
 
 #include "yocto/ios/ocstream.hpp"
 
 void Minimiser:: run()
 {
 
+    tao::ld(a,0);
+    //tao::ld(s,0);
+    size_t count = 0;
+    Real   H_old = compute_H();
+
     ios::wcstream fp("err.dat");
-    tao::ld(a,0);
-    tao::ld(s,0);
-    size_t count = 0;
-    fp("0 %g 0\n", compute_H() );
+    fp("0 %g\n", H_old );
     while(true)
     {
         ++count;
-        const size_t nch = update();
-        std::cerr << "nch=" << nch << std::endl;
-        fp("%u %g %d\n", unsigned(count), compute_H(), int(nch) );
-        if(count>=50)
+        update();
+        const Real H_new = compute_H();
+        fp("%u %g\n", unsigned(count), H_new );
+        const Real dH = H_old - H_new;
+        //std::cerr << "H=" << H_new << ", dH=" << dH << std::endl;
+        if(dH<=0)
             break;
+        H_old = H_new;
     }
-}
-
-void Minimiser:: run2()
-{
-
-    ios::wcstream fp("err2.dat");
-    tao::ld(a,0);
-    tao::ld(s,0);
-    size_t count = 0;
-    fp("0 %g 0\n", compute_H() );
-    while(true)
-    {
-        ++count;
-        const size_t nch = update();
-        compute_q();
-        std::cerr << "a=" << a << std::endl;
-        std::cerr << "s=" << s << std::endl;
-        std::cerr << "y=" << y << std::endl;
-        std::cerr << "q=" << q << std::endl;
-
-        const Real qsq = tao::norm_sq(q);
-        if(qsq>0)
-        {
-            const Real asq = tao::norm_sq(a);
-            tao::mulby(Sqrt(asq/qsq),q);
-            std::cerr << "beta=" << q << std::endl;
-        }
-
-        std::cerr << "nch=" << nch << std::endl;
-        fp("%u %g %d\n", unsigned(count), compute_H(), int(nch) );
-        if(count>=50)
-            break;
-    }
+    
 }
 
 

@@ -123,8 +123,7 @@ YOCTO_UNIT_TEST_IMPL(min)
 
 
                 Opt.run();
-                Opt.run2();
-
+                std::cerr << "a=" << Opt.a << std::endl;
 
 
                 std::cerr << std::endl;
