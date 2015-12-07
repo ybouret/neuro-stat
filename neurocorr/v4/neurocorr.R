@@ -10,10 +10,10 @@ print(paste("NeuroCorr: Loading NeuroCorr from ",NeuroCorr) )
 ## load the dll only once
 if( !is.loaded("NeuroCorr_Version") )
 {
-	if( .Platform$OS.type != "windows" )
-	{
-		dyn.unload(NeuroCorr);
-	}
+    #if( .Platform$OS.type != "windows" )
+    #{
+    #	dyn.unload(NeuroCorr);
+    #}
 	dyn.load(NeuroCorr);
 	if( !is.loaded("NeuroCorr_Version") ) stop("NeuroCorr: Unable to find NeuroCorr_Version!");
 }

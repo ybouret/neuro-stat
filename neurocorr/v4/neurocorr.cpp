@@ -13,6 +13,15 @@ using namespace yocto;
 YOCTO_R_FUNCTION(NeuroCorr_Version,())
 {
     Rprintf("%s: compiled on %s\n", __fn, __DATE__ );
+    try
+    {
+        throw exception("Testing exception...");
+    }
+    catch(const exception &e)
+    {
+        Rprintf("caught '%s'\n", e.what() );
+        Rprintf("reason '%s'\n", e.when() );
+    }
     return R_NilValue;
 }
 YOCTO_R_RETURN()
