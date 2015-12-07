@@ -5,7 +5,11 @@ else
 endif
 
 C_SRCS  := *.cpp 
-LDFLAGS := -L../yocto/sdk/lib/ -ly-mk -lyocto -static-libstdc++
+ifdef WINDIR
+EXTRA_LDFLAGS := -static-libstdc++
+endif
+
+LDFLAGS := -L../yocto/sdk/lib/ -ly-mk -lyocto $(EXTRA_LDFLAGS) 
 
 all:
 	@MAKEFLAGS='CXXFLAGS=-O2\ -Wall\ -DNDEBUG=1\ -pipe' R CMD SHLIB -c --preclean -o neurocorr$(DYN_EXT) $(C_SRCS) $(LDFLAGS)
