@@ -1,4 +1,4 @@
-# Building the current NeuroCorr R extension for Unix-like systems
+# Building the current NeuroCorr R extension for Unix-like systems (Linux/MacOsX/BSD...)
 - go to 'neurocorr'
 - execute "make update" to fetch and build the extra code
 - got to 'neurocorr/v4'
