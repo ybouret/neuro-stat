@@ -1,4 +1,4 @@
-#Fetching with SVN
+#Fetching with SVN (for those who want to build the code)
 In a build directory 'BUILDIR'
 - to get the main code for the first time, execute
 "svn co https://github.com/ybouret/neuro-stat/trunk neuro-stat"
@@ -12,8 +12,7 @@ In a build directory 'BUILDIR'
 - execute "make" : copy the 'neurocorr.so' and 'neurocorr.R' into your working directory.
 
 # Getting the code for Windows and the 32 bits version of R
-- got to 'neurocorr'
-- copy 'i386/neurocorr.dll' and 'v4/neurocorr.R' into your working directory
+- download 'neurocorr/i386/neurocorr.dll' and 'neurocorr/v4/neurocorr.R' into your working directory
 
 #Running the code from the R command line
 - 'neurocorr.R' and ('neurocorr.so' or 'neurocorr.dll') MUST be in the working directory. In R,execute source("neurocorr.R") to use the functions.
