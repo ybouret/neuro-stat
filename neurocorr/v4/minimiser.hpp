@@ -11,22 +11,21 @@ typedef many_arrays<Real, memory::global> ManyArrays;
 class Minimiser
 {
 public:
-    const matrix<Real> &G;
+    const matrix_of<Real> &G;
     const size_t        n; //!< the dimension
     ManyArrays          arrays;
     array<Real>        &b;
     array<Real>        &d;
     array<Real>        &a;
-    array<Real>        &y;
-    array<Real>        &q; //!< descent direction
+    array<Real>        &g;
     const Real          lnp;
-    const Real          eps;
     
     //! allocate memory
-    explicit Minimiser(const matrix<Real> &usrG, const Real ftol);
+    explicit Minimiser(const matrix_of<Real> &usrG);
 
     virtual ~Minimiser() throw();
 
+    //! prepare b,d, and g
     void prepare(const matrix<Unit> &mu1,
                  const matrix<Unit> &mu2,
                  const matrix<Unit> &muA,
@@ -36,8 +35,6 @@ public:
 
     void update();
 
-    bool converged() const throw();
-    Real compute_error() const throw();
     Real compute_H() const throw();
 
     void run();

@@ -9,7 +9,7 @@ Minimiser:: ~Minimiser() throw()
 
 }
 
-static inline size_t check_dims(const matrix<Real> &G)
+static inline size_t check_dims(const matrix_of<Real> &G)
 {
     if(G.cols!=G.rows)
         throw exception("Minimiser: expecting square matrix");
@@ -20,17 +20,15 @@ static inline size_t check_dims(const matrix<Real> &G)
     return G.rows;
 }
 
-Minimiser:: Minimiser(const matrix<Real> &usrG, const Real ftol) :
+Minimiser:: Minimiser(const matrix_of<Real> &usrG) :
 G(usrG),
 n( check_dims(G) ),
-arrays(8),
+arrays(4),
 b(  arrays.next_array() ),
 d(  arrays.next_array() ),
 a(  arrays.next_array() ),
-y(  arrays.next_array() ),
-q(  arrays.next_array() ),
-lnp( log(Real(n)) ),
-eps( Fabs(ftol) )
+g(  arrays.next_array() ),
+lnp( log(Real(n)) )
 {
     arrays.allocate(n);
 }
@@ -58,26 +56,24 @@ void Minimiser:: prepare(const matrix<Unit> &mu1,
         const Real v = mu2[r][i];
         const Real A = muA[r][1];
         d[r] = Sqrt(vfac*v)+afac*A;
+        g[r] = G(r,r);
+        if(g[r]<=0) g[r] = 1;
     }
     std::cerr << "b=" << b << std::endl;
     std::cerr << "d=" << d << std::endl;
 
 }
 
-#include "yocto/math/core/tao.hpp"
-
 void Minimiser:: update()
 {
-    //size_t nch = 0;
     for(size_t i=n;i>0;--i)
     {
-        // local constant
         Real Di = 0;
         for(size_t j=n;j>0;--j)
         {
             if(i!=j)
             {
-                Di += G[i][j] * a[j];
+                Di += G(i,j) * a[j];
             }
         }
         Di = b[i] - Di;
@@ -85,166 +81,44 @@ void Minimiser:: update()
 
         if(Di>di)
         {
-            const Real tmp = a[i];
-            a[i] = (Di-di)/G[i][i];
-#if 0
-            if(s[i]!=1)
-            {
-                s[i] = 1;
-                ++nch;
-            }
-#endif
-            y[i] = a[i] -tmp;
+            a[i] = (Di-di)/g[i];
             continue;
         }
 
         if(Di<-di)
         {
-            const Real tmp = a[i];
-            a[i] = (Di+di)/G[i][i];
-#if 0
-            if(s[i]!=-1)
-            {
-                s[i]=-1;
-                ++nch;
-            }
-#endif
-            y[i] = a[i] - tmp;
+            a[i] = (Di+di)/g[i];
             continue;
         }
 
-#if 0
-        if(s[i]!=0)
-        {
-            s[i] = 0;
-            ++nch;
-        }
-#endif
-        y[i] = -a[i];
         a[i] = 0;
     }
-    //return nch;
-
 }
 
-#if 0
-size_t Minimiser:: update_v2()
-{
-    size_t nch = 0;
-    for(size_t i=n;i>0;--i)
-    {
-        // local constant
-        Real Di = 0;
-        for(size_t j=n;j>0;--j)
-        {
-            if(i!=j)
-            {
-                Di += G[i][j] * a[j];
-            }
-        }
-        Di = b[i] - Di;
-        const Real di = d[i];
 
-        if(Di>di)
-        {
-            const Real tmp = a[i];
-            a[i] = (Di-di)/G[i][i];
-            switch(s[i])
-            {
-                case -1:
-                    ++nch;
-                    s[i] = 0;
-                    a[i] = 0;
-                    break;
-
-                case 0:
-                    ++nch;
-                    s[i] = 1;
-                    break;
-
-                default: assert(1==s[i]);
-                    break;
-            }
-            y[i] = a[i] -tmp;
-            continue;
-        }
-
-        if(Di<-di)
-        {
-            const Real tmp = a[i];
-            a[i] = (Di+di)/G[i][i];
-            switch(s[i])
-            {
-                case 1:
-                    ++nch;
-                    s[i] = 0;
-                    a[i] = 0;
-                    break;
-
-                case 0:
-                    ++nch;
-                    s[i] = -1;
-                    break;
-
-                default:
-                    assert(-1==s[i]);
-                    break;
-            }
-            y[i] = a[i] - tmp;
-            continue;
-        }
-
-        if(s[i]!=0)
-        {
-            s[i] = 0;
-            ++nch;
-        }
-        y[i] = -a[i];
-        a[i] = 0;
-    }
-    return nch;
-    
-}
-#endif
-
-
-bool Minimiser:: converged() const throw()
-{
-    for(size_t i=n;i>0;--i)
-    {
-        if( Fabs(y[i]) > Fabs(eps*a[i]) )
-            return false;
-    }
-    return true;
-}
 
 Real Minimiser:: compute_H() const throw()
 {
     Real H = 0;
-
+    Real q = 0;
+    Real p = 0;
     for(size_t i=n;i>0;--i)
     {
         const Real ai = a[i];
         H += d[i] * Fabs( ai ) - b[i] * ai;
+        q += G(i,i) * ai*ai;
+        for(size_t j=1;j<i;++j)
+        {
+            p += G(i,j) * a[j] * ai;
+        }
     }
+
     H += H;
-    H += tao::quadratic(G,a);
+    H += q+(p+p);
     return H;
 }
 
 
-
-
-Real Minimiser:: compute_error() const throw()
-{
-    Real ans = 0.0;
-    for(size_t i=1;i<=n;++i)
-    {
-        const Real tmp = y[i];
-        ans += tmp*tmp;
-    }
-    return Sqrt(ans);
-}
 
 
 #include "yocto/ios/ocstream.hpp"
@@ -252,8 +126,10 @@ Real Minimiser:: compute_error() const throw()
 void Minimiser:: run()
 {
 
-    tao::ld(a,0);
-    //tao::ld(s,0);
+    for(size_t i=n;i>0;--i)
+    {
+        a[i] = 0;
+    }
     size_t count = 0;
     Real   H_old = compute_H();
 

@@ -81,7 +81,7 @@ YOCTO_UNIT_TEST_IMPL(min)
         vector<Real> a1(n);
 
 
-        Minimiser Opt(GG,1e-6);
+        Minimiser Opt(GG);
         for(size_t m=1;m<=nm;++m)
         {
             const matrix_of<Unit> &UG = G[m];
