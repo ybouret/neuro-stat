@@ -10,7 +10,10 @@ In your work directory 'WORKDIR'
 - execute "make update" to fetch and build the extra code
 - got to 'neurocorr/v4'
 - execute "make" : copy the 'neurocorr.so' and 'neurocorr.R' into your working directory.
-- in R, execute source("neurocorr.R") to use the functions.
-- Have fun !
 
+#Running the code from the R command line
+- 'neurocorr.R' and ('neurocorr.so' or 'neurocorr.dll') MUST be in the working directory. In R,execute source("neurocorr.R") to use the functions.
+
+#Running the code from a R graphical interface
+- Using 'R-app' in MacOsX, you need to change the working directory before sourcing the code.
 
