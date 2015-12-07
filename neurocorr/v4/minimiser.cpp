@@ -107,10 +107,12 @@ Real Minimiser:: compute_H() const throw()
         const Real ai = a[i];
         H += d[i] * Fabs( ai ) - b[i] * ai;
         q += G(i,i) * ai*ai;
+        Real tmp = 0;
         for(size_t j=1;j<i;++j)
         {
-            p += G(i,j) * a[j] * ai;
+            tmp += G(i,j) * a[j];
         }
+        p += tmp * ai;
     }
 
     H += H;

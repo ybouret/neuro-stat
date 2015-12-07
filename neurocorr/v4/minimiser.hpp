@@ -12,13 +12,13 @@ class Minimiser
 {
 public:
     const matrix_of<Real> &G;
-    const size_t        n; //!< the dimension
-    ManyArrays          arrays;
-    array<Real>        &b;
-    array<Real>        &d;
-    array<Real>        &a;
-    array<Real>        &g;
-    const Real          lnp;
+    const size_t           n; //!< the dimension
+    ManyArrays             arrays;
+    array<Real>           &b;
+    array<Real>           &d;
+    array<Real>           &a;
+    array<Real>           &g;
+    const Real             lnp;
     
     //! allocate memory
     explicit Minimiser(const matrix_of<Real> &usrG);
