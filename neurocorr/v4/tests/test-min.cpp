@@ -16,11 +16,11 @@ YOCTO_UNIT_TEST_IMPL(min)
 
     threading::crew team(true);
 
-    size_t neurones   = 4;
+    size_t neurones   = 8;
     size_t trials     = 1;
     size_t max_spikes = 1000;
     size_t pace       = 5;
-    size_t extra      = 4;
+    size_t extra      = 9;
 
 
     const size_t num_boxes=1;

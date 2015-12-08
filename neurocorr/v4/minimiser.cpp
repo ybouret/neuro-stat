@@ -106,7 +106,7 @@ Real Minimiser:: compute_H() const throw()
     {
         const Real ai = a[i];
         H += d[i] * Fabs( ai ) - b[i] * ai;
-        q += G(i,i) * ai*ai;
+        q += g[i] * ai*ai;
         Real tmp = 0;
         for(size_t j=1;j<i;++j)
         {
@@ -149,6 +149,7 @@ void Minimiser:: run()
             break;
         H_old = H_new;
     }
+    std::cerr << "#count=" << count << std::endl;
     
 }
 
