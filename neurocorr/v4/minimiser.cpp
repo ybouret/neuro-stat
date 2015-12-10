@@ -130,14 +130,44 @@ Minimisers:: ~Minimisers() throw()
 {
 }
 
-Minimisers:: Minimisers(const matrix_of<Real> &usrG, threading::crew *team) :
+Minimisers:: Minimisers(const matrix_of<Real> &usrG,
+                        const matrix_of<Real> &usrMu1,
+                        const matrix_of<Real> &usrMu2,
+                        const matrix_of<Real> &usrMuA,
+                        const Real             usrGam,
+                        threading::crew       *team) :
 num( team ? team->size : 1),
-mpv(num,as_capacity)
+mpv(num,as_capacity),
+mu1(usrMu1),
+mu2(usrMu2),
+muA(usrMuA),
+gam(usrGam)
 {
+    assert(mu1.cols==mu2.cols);
+    assert(mu1.cols==usrG.cols);
+    assert(mu1.rows==mu2.rows);
+    assert(muA.rows==mu2.rows);
+    assert(muA.cols==1);
+
     for(size_t i=1;i<=num;++i)
     {
         const MinPtr p( new Minimiser(usrG) );
         mpv.push_back(p);
+    }
+}
+
+
+void Minimisers:: compute( const threading::context &ctx ) throw()
+{
+    Minimiser   &opt      = *mpv[ctx.indx];
+    const size_t neurones = mu1.cols;
+    size_t       i        = 0;
+    size_t       length   = neurones;
+    ctx.split(i, length);
+    for(;length>0;++i,--length)
+    {
+        opt.prepare(mu1, mu2, muA, i, gam);
+        opt.run();
     }
 }
 

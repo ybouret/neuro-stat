@@ -78,13 +78,25 @@ public:
 
     virtual  ~Minimisers() throw();
     explicit  Minimisers(const matrix_of<Real> &usrG,
+                         const matrix_of<Real> &usrMu1,
+                         const matrix_of<Real> &usrMu2,
+                         const matrix_of<Real> &usrMuA,
+                         const Real             usrGam,
                          threading::crew       *team);
 
     const size_t   num;
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimisers);
-    vector<MinPtr> mpv;
+    vector<MinPtr>         mpv;
+    const matrix_of<Real> &mu1;
+    const matrix_of<Real> &mu2;
+    const matrix_of<Real> &muA;
+    const Real             gam;
+
+    void compute( const threading::context &ctx ) throw();
+
+
 };
 
 #endif

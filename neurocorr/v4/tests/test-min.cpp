@@ -76,6 +76,9 @@ YOCTO_UNIT_TEST_IMPL(min)
         std::cerr << "Would Minimize..." << std::endl;
         const size_t n = Phi.dim;
         matrix<Real> GG(n);
+        matrix<Real> Mu1(n,Phi.neurones);
+        matrix<Real> Mu2(n,Phi.neurones);
+        matrix<Real> MuA(n,1);
         matrix<Real> Q(n,n);
         vector<Real> ev(n);
         vector<Real> a1(n);
@@ -92,8 +95,9 @@ YOCTO_UNIT_TEST_IMPL(min)
                 {
                     GG[i][j] = UG(i,j)/records.scale;
                 }
+                MuA[n][1] = muA(m)[n][1];
             }
-            std::cerr << "G0=" << GG << ";" << std::endl;
+            //std::cerr << "G0=" << GG << ";" << std::endl;
 
 #if 0
             if(!symdiag<Real>::build(GG, ev, Q) )
@@ -109,6 +113,11 @@ YOCTO_UNIT_TEST_IMPL(min)
 
             for(size_t neurone=1;neurone<=neurones;++neurone)
             {
+                for(size_t r=1;r<=n;++r)
+                {
+                    Mu1[r][neurone] = mu1(m)[r][neurone];
+                    Mu2[r][neurone] = mu2(m)[r][neurone];
+                }
                 Opt.prepare(mu1(m), mu2(m), muA(m), neurone, 1.1);
 
 #if 0
