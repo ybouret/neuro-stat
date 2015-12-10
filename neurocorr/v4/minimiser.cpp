@@ -130,18 +130,22 @@ Minimisers:: ~Minimisers() throw()
 {
 }
 
-Minimisers:: Minimisers(const size_t           dim,
-                        const size_t           neurones,
+Minimisers:: Minimisers(const matrix_of<Real> &usrG,
+                        const matrix_of<Real> &usrMu1,
+                        const matrix_of<Real> &usrMu2,
+                        const matrix_of<Real> &usrMuA,
+                        matrix_of<Real>       &usrA,
+                        array<Real>           &usrCnt,
                         const Real             usrGam,
                         threading::crew       *team) :
 num( team ? team->size : 1),
 mpv(num,as_capacity),
-G(dim,dim),
-a(dim,neurones),
-mu1(dim,neurones),
-mu2(dim,neurones),
-muA(dim,1),
-count(neurones),
+G(usrG),
+mu1(usrMu1),
+mu2(usrMu2),
+muA(usrMuA),
+a(usrA),
+count(usrCnt),
 gam(usrGam)
 {
 
@@ -166,7 +170,7 @@ void Minimisers:: compute( const threading::context &ctx ) throw()
         opt.run();
         for(size_t r=a.rows;r>0;--r)
         {
-            a[r][i] = opt.a[r];
+            a(r,i) = opt.a[r];
         }
         count[i] = opt.count;
     }

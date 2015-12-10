@@ -76,8 +76,12 @@ public:
     typedef arc_ptr<Minimiser> MinPtr;
 
     virtual  ~Minimisers() throw();
-    explicit  Minimisers(const size_t           dim,
-                         const size_t           neurones,
+    explicit  Minimisers(const matrix_of<Real> &usrG,
+                         const matrix_of<Real> &usrMu1,
+                         const matrix_of<Real> &usrMu2,
+                         const matrix_of<Real> &usrMuA,
+                         matrix_of<Real>       &usrA,
+                         array<Real>           &usrCnt,
                          const Real             usrGam,
                          threading::crew       *team);
 
@@ -93,12 +97,12 @@ private:
     vector<MinPtr>         mpv;
 
 public:
-    matrix<Real>           G;
-    matrix<Real>           a;
-    matrix<Real>           mu1;
-    matrix<Real>           mu2;
-    matrix<Real>           muA;
-    vector<Real>           count;
+    const matrix_of<Real> &G;
+    const matrix_of<Real> &mu1;
+    const matrix_of<Real> &mu2;
+    const matrix_of<Real> &muA;
+    matrix_of<Real>       &a;
+    array<Real>           &count;
     Real                   gam;
 
 private:

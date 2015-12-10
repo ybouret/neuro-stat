@@ -414,6 +414,8 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
 YOCTO_R_RETURN()
 
 
+#include "minimiser.hpp"
+
 //==============================================================================
 //
 // building matrices
@@ -475,10 +477,16 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
     //
     // compute...
     //__________________________________________________________________________
+    RMatrix<Real> a(dim,neurones);
+    RVector<Real> count(neurones);
 
+    auto_ptr<threading::crew> team( NumThreads>0 ? new threading::crew(NumThreads,0,false) : NULL );
+    threading::crew *para = team.__get();
 
+    Minimisers opt(G,Mu1,Mu2,MuA,a,count,gam,para);
+    opt.run(para);
 
-    return R_NilValue;
+    return *a;
 }
 YOCTO_R_RETURN()
 

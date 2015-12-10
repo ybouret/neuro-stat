@@ -77,8 +77,14 @@ YOCTO_UNIT_TEST_IMPL(min)
         const size_t n = Phi.dim;
 
 
+        matrix<Real> GG(n,n);
+        matrix<Real> Mu1(n,Phi.neurones);
+        matrix<Real> Mu2(n,Phi.neurones);
+        matrix<Real> MuA(n,1);
+        matrix<Real> a(n,Phi.neurones);
+        vector<Real> count(Phi.neurones);
 
-        Minimisers Opt(Phi.dim,Phi.neurones,1.1,&team);
+        Minimisers Opt(GG,Mu1,Mu2,MuA,a,count,1.1,&team);
 
         for(size_t m=1;m<=nm;++m)
         {
@@ -88,13 +94,13 @@ YOCTO_UNIT_TEST_IMPL(min)
             {
                 for(size_t j=1;j<=n;++j)
                 {
-                    Opt.G[i][j] = G(m)[i][j]/records.scale;
+                    GG[i][j] = G(m)[i][j]/records.scale;
                 }
-                Opt.muA[n][1] = muA(m)[n][1];
+                MuA[n][1] = muA(m)[n][1];
                 for(size_t neurone=1;neurone<=neurones;++neurone)
                 {
-                    Opt.mu1[i][neurone] = mu1(m)[i][neurone];
-                    Opt.mu2[i][neurone] = mu2(m)[i][neurone];
+                    Mu1[i][neurone] = mu1(m)[i][neurone];
+                    Mu2[i][neurone] = mu2(m)[i][neurone];
                 }
             }
 
