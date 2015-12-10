@@ -130,7 +130,20 @@ NeuroCorr_Compute <- function(dataNeur,numNeurones,scale,delta,K,boxes,grouping)
     if( !is.character(grouping) ) stop("[Compute] : grouping must be 'byKind' or 'byBox'");
     if( !is.matrix(boxes)       ) stop("[Compute] : boxes must be a matrix (4 lines, #boxes columns)");
 
-    .Call("NeuroCorr_Compute",dataNeur,numNeurones,scale,delta,K,boxes,grouping);
+.Call("NeuroCorr_Compute",dataNeur,numNeurones,scale,delta,K,boxes,grouping);
 
 }
 
+################################################################################
+## Compute Coefficients
+################################################################################
+NeuroCorr_Coeff <- function(G,mu1,mu2,muA,gam)
+{
+    if( !is.matrix(G)   ) stop( "[Coeff] : G   must be a matrix" );
+    if( !is.matrix(mu1) ) stop( "[Coeff] : mu1 must be a matrix" );
+    if( !is.matrix(mu2) ) stop( "[Coeff] : mu2 must be a matrix" );
+    if( !is.matrix(muA) ) stop( "[Coeff] : muA must be a matrix" );
+    if( !is.double(gam) ) stop( "[Coeff] : gam must be a number" );
+
+.Call("NeuroCorr_Coeff",G,mu1,mu2,muA,gam);
+}

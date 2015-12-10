@@ -412,3 +412,73 @@ YOCTO_R_FUNCTION(NeuroCorr_Compute,
     return *ans;
 }
 YOCTO_R_RETURN()
+
+
+//==============================================================================
+//
+// building matrices
+//
+//==============================================================================
+YOCTO_R_FUNCTION(NeuroCorr_Coeff,
+                 (SEXP RG,
+                  SEXP RMu1,
+                  SEXP RMu2,
+                  SEXP RMuA,
+                  SEXP Rgam)
+                 )
+{
+
+
+    //__________________________________________________________________________
+    //
+    // Get/Check args..
+    //__________________________________________________________________________
+    const RMatrix<Real> G( RG );
+    const RMatrix<Real> Mu1( RMu1 );
+    const RMatrix<Real> Mu2( RMu2 );
+    const RMatrix<Real> MuA( RMuA );
+    const Real          gam = R2Scalar<Real>( Rgam );
+
+    const size_t dim = G.rows;
+    if(G.cols!=dim)
+    {
+        throw exception("[%s] G is not square", __fn );
+    }
+
+    if(Mu1.rows!=dim)
+    {
+        throw exception("[%s] Mu1.rows mismatch", __fn );
+    }
+
+    if(Mu2.rows!=dim)
+    {
+        throw exception("[%s] Mu2.rows mismatch", __fn );
+    }
+
+    if(MuA.rows!=dim)
+    {
+        throw exception("[%s] MuA.rows mismatch", __fn );
+    }
+
+    const size_t neurones = Mu1.cols;
+    if(Mu2.cols != neurones)
+    {
+        throw exception("[%s] Mu2.cols mismatch", __fn );
+    }
+
+    if(MuA.cols != 1 )
+    {
+        throw exception("[%s] MuA.cols!=1", __fn);
+    }
+
+    //__________________________________________________________________________
+    //
+    // compute...
+    //__________________________________________________________________________
+
+
+
+    return R_NilValue;
+}
+YOCTO_R_RETURN()
+

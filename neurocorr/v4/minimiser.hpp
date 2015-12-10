@@ -54,8 +54,6 @@ public:
             g[r] = G(r,r);
             if(g[r]<=0) g[r] = 1;
         }
-        //std::cerr << "b=" << b << std::endl;
-        //std::cerr << "d=" << d << std::endl;
     }
 
 
