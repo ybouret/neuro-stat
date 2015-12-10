@@ -132,12 +132,12 @@ Minimisers:: ~Minimisers() throw()
 
 Minimisers:: Minimisers(const matrix_of<Real> &usrG, threading::crew *team) :
 num( team ? team->size : 1),
-mp(num,as_capacity)
+mpv(num,as_capacity)
 {
     for(size_t i=1;i<=num;++i)
     {
         const MinPtr p( new Minimiser(usrG) );
-        mp.push_back(p);
+        mpv.push_back(p);
     }
 }
 

@@ -77,11 +77,14 @@ public:
     typedef arc_ptr<Minimiser> MinPtr;
 
     virtual  ~Minimisers() throw();
-    explicit  Minimisers(const matrix_of<Real> &usrG, threading::crew *team);
-    const size_t num;
+    explicit  Minimisers(const matrix_of<Real> &usrG,
+                         threading::crew       *team);
+
+    const size_t   num;
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimisers);
-    vector<MinPtr> mp;
+    vector<MinPtr> mpv;
 };
 
 #endif
