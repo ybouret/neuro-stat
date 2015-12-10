@@ -75,20 +75,20 @@ YOCTO_UNIT_TEST_IMPL(min)
 
         std::cerr << "Would Minimize..." << std::endl;
         const size_t n = Phi.dim;
+
         matrix<Real> GG(n);
         matrix<Real> Mu1(n,Phi.neurones);
         matrix<Real> Mu2(n,Phi.neurones);
         matrix<Real> MuA(n,1);
-        matrix<Real> Q(n,n);
-        vector<Real> ev(n);
-        vector<Real> a1(n);
 
 
-        Minimiser Opt(GG);
+        Minimisers Opt(GG,Mu1,Mu2,MuA,1.1,&team);
+
         for(size_t m=1;m<=nm;++m)
         {
             const matrix_of<Unit> &UG = G[m];
 
+            // prepare matrices
             for(size_t i=1;i<=n;++i)
             {
                 for(size_t j=1;j<=n;++j)
@@ -96,48 +96,15 @@ YOCTO_UNIT_TEST_IMPL(min)
                     GG[i][j] = UG(i,j)/records.scale;
                 }
                 MuA[n][1] = muA(m)[n][1];
-            }
-            //std::cerr << "G0=" << GG << ";" << std::endl;
-
-#if 0
-            if(!symdiag<Real>::build(GG, ev, Q) )
-            {
-                throw exception("Cannot Symmetrize G");
-            }
-            symdiag<Real>::eigsrtA(ev,Q);
-
-            //std::cerr << "G=" << GG << ";" << std::endl;
-            //std::cerr << "Q=" << Q   << ";" << std::endl;
-            std::cerr << "ev=diag(" << ev << ");" << std::endl;
-#endif
-
-            for(size_t neurone=1;neurone<=neurones;++neurone)
-            {
-                for(size_t r=1;r<=n;++r)
+                for(size_t neurone=1;neurone<=neurones;++neurone)
                 {
-                    Mu1[r][neurone] = mu1(m)[r][neurone];
-                    Mu2[r][neurone] = mu2(m)[r][neurone];
+                    Mu1[i][neurone] = mu1(m)[i][neurone];
+                    Mu2[i][neurone] = mu2(m)[i][neurone];
                 }
-                Opt.prepare(mu1(m), mu2(m), muA(m), neurone, 1.1);
-
-#if 0
-                tao::mul_trn(Opt.y,Q,Opt.b);
-                for(size_t i=1;i<=n;++i)
-                {
-                    Opt.y[i] /= ev[i];
-                }
-                tao::mul(Opt.a,Q,Opt.y);
-                std::cerr << "a0=" << Opt.a << std::endl;
-#endif
-
-
-                Opt.run();
-                std::cerr << "a=" << Opt.a << std::endl;
-
-
-                std::cerr << std::endl;
             }
-            
+
+
+
             
             
             
