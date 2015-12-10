@@ -33,36 +33,7 @@ lnp( log(Real(n)) )
     arrays.allocate(n);
 }
 
-#include "yocto/code/utils.hpp"
 
-void Minimiser:: prepare(const matrix<Unit> &mu1,
-                         const matrix<Unit> &mu2,
-                         const matrix<Unit> &muA,
-                         const size_t        i,
-                         const Real          gam)
-{
-    assert(i>0);
-    assert(i<=mu2.cols);
-
-    assert(n==mu2.rows);
-    assert(n==muA.rows);
-
-    const Real glnp = gam*lnp;
-    const Real vfac = 2*glnp;
-    const Real afac = glnp/3.0;
-    for(size_t r=1;r<=n;++r)
-    {
-        b[r] = mu1[r][i];
-        const Real v = mu2[r][i];
-        const Real A = muA[r][1];
-        d[r] = Sqrt(vfac*v)+afac*A;
-        g[r] = G(r,r);
-        if(g[r]<=0) g[r] = 1;
-    }
-    std::cerr << "b=" << b << std::endl;
-    std::cerr << "d=" << d << std::endl;
-
-}
 
 void Minimiser:: update()
 {
@@ -154,5 +125,19 @@ void Minimiser:: run()
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+Minimisers:: ~Minimisers() throw()
+{
+}
 
+Minimisers:: Minimisers(const matrix_of<Real> &usrG, threading::crew *team) :
+num( team ? team->size : 1),
+mp(num,as_capacity)
+{
+    for(size_t i=1;i<=num;++i)
+    {
+        const MinPtr p( new Minimiser(usrG) );
+        mp.push_back(p);
+    }
+}
 
