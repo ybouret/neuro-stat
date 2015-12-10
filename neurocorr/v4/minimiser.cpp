@@ -28,7 +28,8 @@ b(  arrays.next_array() ),
 d(  arrays.next_array() ),
 a(  arrays.next_array() ),
 g(  arrays.next_array() ),
-lnp( log(Real(n)) )
+lnp( log(Real(n)) ),
+count(0)
 {
     arrays.allocate(n);
 }
@@ -103,25 +104,24 @@ void Minimiser:: run()
     {
         a[i] = 0;
     }
-    size_t count = 0;
+    count        = 0;
     Real   H_old = compute_H();
 
-    ios::wcstream fp("err.dat");
-    fp("0 %g\n", H_old );
+    //ios::wcstream fp("err.dat");
+    //fp("0 %g\n", H_old );
     while(true)
     {
         ++count;
         update();
         const Real H_new = compute_H();
-        fp("%u %g\n", unsigned(count), H_new );
+        //fp("%u %g\n", unsigned(count), H_new );
         const Real dH = H_old - H_new;
         //std::cerr << "H=" << H_new << ", dH=" << dH << std::endl;
         if(dH<=0)
             break;
         H_old = H_new;
     }
-    std::cerr << "#count=" << count << std::endl;
-    
+    //std::cerr << "#count=" << count << std::endl;
 }
 
 
@@ -130,28 +130,24 @@ Minimisers:: ~Minimisers() throw()
 {
 }
 
-Minimisers:: Minimisers(const matrix_of<Real> &usrG,
-                        const matrix_of<Real> &usrMu1,
-                        const matrix_of<Real> &usrMu2,
-                        const matrix_of<Real> &usrMuA,
+Minimisers:: Minimisers(const size_t           dim,
+                        const size_t           neurones,
                         const Real             usrGam,
                         threading::crew       *team) :
 num( team ? team->size : 1),
 mpv(num,as_capacity),
-mu1(usrMu1),
-mu2(usrMu2),
-muA(usrMuA),
+G(dim,dim),
+a(dim,neurones),
+mu1(dim,neurones),
+mu2(dim,neurones),
+muA(dim,1),
+count(neurones),
 gam(usrGam)
 {
-    assert(mu1.cols==mu2.cols);
-    assert(mu1.cols==usrG.cols);
-    assert(mu1.rows==mu2.rows);
-    assert(muA.rows==mu2.rows);
-    assert(muA.cols==1);
 
     for(size_t i=1;i<=num;++i)
     {
-        const MinPtr p( new Minimiser(usrG) );
+        const MinPtr p( new Minimiser(G) );
         mpv.push_back(p);
     }
 }
@@ -161,13 +157,29 @@ void Minimisers:: compute( const threading::context &ctx ) throw()
 {
     Minimiser   &opt      = *mpv[ctx.indx];
     const size_t neurones = mu1.cols;
-    size_t       i        = 0;
+    size_t       i        = 1;
     size_t       length   = neurones;
     ctx.split(i, length);
     for(;length>0;++i,--length)
     {
         opt.prepare(mu1, mu2, muA, i, gam);
         opt.run();
+        for(size_t r=a.rows;r>0;--r)
+        {
+            a[r][i] = opt.a[r];
+        }
+        count[i] = opt.count;
     }
 }
+
+void  Minimisers:: run(threading::crew *team)
+{
+    threading::kernel_executor &kExec = team ? *static_cast<threading::kernel_executor*>(team) : kSeq;
+    threading::kernel           kMini(this, & Minimisers::compute);
+
+    kExec(kMini);
+
+    
+}
+
 

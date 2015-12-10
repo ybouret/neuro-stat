@@ -76,37 +76,32 @@ YOCTO_UNIT_TEST_IMPL(min)
         std::cerr << "Would Minimize..." << std::endl;
         const size_t n = Phi.dim;
 
-        matrix<Real> GG(n);
-        matrix<Real> Mu1(n,Phi.neurones);
-        matrix<Real> Mu2(n,Phi.neurones);
-        matrix<Real> MuA(n,1);
 
 
-        Minimisers Opt(GG,Mu1,Mu2,MuA,1.1,&team);
+        Minimisers Opt(Phi.dim,Phi.neurones,1.1,&team);
 
         for(size_t m=1;m<=nm;++m)
         {
-            const matrix_of<Unit> &UG = G[m];
 
             // prepare matrices
             for(size_t i=1;i<=n;++i)
             {
                 for(size_t j=1;j<=n;++j)
                 {
-                    GG[i][j] = UG(i,j)/records.scale;
+                    Opt.G[i][j] = G(m)[i][j]/records.scale;
                 }
-                MuA[n][1] = muA(m)[n][1];
+                Opt.muA[n][1] = muA(m)[n][1];
                 for(size_t neurone=1;neurone<=neurones;++neurone)
                 {
-                    Mu1[i][neurone] = mu1(m)[i][neurone];
-                    Mu2[i][neurone] = mu2(m)[i][neurone];
+                    Opt.mu1[i][neurone] = mu1(m)[i][neurone];
+                    Opt.mu2[i][neurone] = mu2(m)[i][neurone];
                 }
             }
 
+            Opt.run(&team);
 
-
-            
-            
+            std::cerr << "a=" << Opt.a << std::endl;
+            std::cerr << "count=" << Opt.count << std::endl;
             
         }
         

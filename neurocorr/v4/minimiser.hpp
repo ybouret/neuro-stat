@@ -21,7 +21,8 @@ public:
     array<Real>           &a;
     array<Real>           &g;
     const Real             lnp;
-
+    size_t                 count;
+    
     //! allocate memory
     explicit Minimiser(const matrix_of<Real> &usrG);
 
@@ -53,8 +54,8 @@ public:
             g[r] = G(r,r);
             if(g[r]<=0) g[r] = 1;
         }
-        std::cerr << "b=" << b << std::endl;
-        std::cerr << "d=" << d << std::endl;
+        //std::cerr << "b=" << b << std::endl;
+        //std::cerr << "d=" << d << std::endl;
     }
 
 
@@ -77,24 +78,33 @@ public:
     typedef arc_ptr<Minimiser> MinPtr;
 
     virtual  ~Minimisers() throw();
-    explicit  Minimisers(const matrix_of<Real> &usrG,
-                         const matrix_of<Real> &usrMu1,
-                         const matrix_of<Real> &usrMu2,
-                         const matrix_of<Real> &usrMuA,
+    explicit  Minimisers(const size_t           dim,
+                         const size_t           neurones,
                          const Real             usrGam,
                          threading::crew       *team);
 
     const size_t   num;
 
+    void  run(threading::crew *team);
+
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimisers);
-    vector<MinPtr>         mpv;
-    const matrix_of<Real> &mu1;
-    const matrix_of<Real> &mu2;
-    const matrix_of<Real> &muA;
-    const Real             gam;
-
     void compute( const threading::context &ctx ) throw();
+
+    vector<MinPtr>         mpv;
+
+public:
+    matrix<Real>           G;
+    matrix<Real>           a;
+    matrix<Real>           mu1;
+    matrix<Real>           mu2;
+    matrix<Real>           muA;
+    vector<Real>           count;
+    Real                   gam;
+
+private:
+    threading::sequential_executor kSeq;
 
 
 };
