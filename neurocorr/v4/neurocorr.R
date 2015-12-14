@@ -136,6 +136,23 @@ NeuroCorr_Compute <- function(dataNeur,numNeurones,scale,delta,K,boxes,grouping)
 
 ################################################################################
 ## Compute Coefficients
+##______________________________________________________________________________
+##
+## INPUT
+##______________________________________________________________________________
+## G   : dim x dim      matrix
+## mu1 : dim x neurones matrix
+## mu2 : dim x neurones matrix
+## muA : dim x 1        matrix
+## gam : a real, gam>1
+##______________________________________________________________________________
+##
+## OUTPUT
+##______________________________________________________________________________
+##
+## a dim x neurones matrix, each column
+## is the set of coefficients for each neurone
+##
 ################################################################################
 NeuroCorr_Coeff <- function(G,mu1,mu2,muA,gam)
 {

@@ -482,7 +482,15 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
 
     auto_ptr<threading::crew> team( NumThreads>0 ? new threading::crew(NumThreads,0,false) : NULL );
     threading::crew *para = team.__get();
-
+    if(NumThreads)
+    {
+        Rprintf("[%s] #THREADS  = %u\n", __fn, unsigned(NumThreads) );
+    }
+    else
+    {
+        Rprintf("[%s] SEQUENTIAL\n", __fn);
+    }
+    Rprintf("[%s] Minimising Criteria...\n",__fn);
     Minimisers opt(G,Mu1,Mu2,MuA,a,count,gam,para);
     opt.run(para);
 
