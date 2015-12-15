@@ -21,7 +21,8 @@ public:
     array<Real>           &d;
     array<Real>           &a;
     array<Real>           &g;
-    array<Real>           &s;       //!< starting point
+    array<Real>           &s;       //!< saving last parameters;
+    array<Real>           &p;       //!< best point
     size_t                 count;   //!< #iteration for last run
     Real                   final;   //!< final value
     size_t                 neurone; //!< last processed neurone

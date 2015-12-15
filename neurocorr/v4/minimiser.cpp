@@ -1,6 +1,7 @@
 #include "minimiser.hpp"
-#include "yocto/math/opt/bracket.hpp"
-#include "yocto/math/opt/minimize.hpp"
+//#include "yocto/math/opt/bracket.hpp"
+//#include "yocto/math/opt/minimize.hpp"
+#include "yocto/math/core/tao.hpp"
 
 using namespace math;
 
@@ -25,12 +26,13 @@ Minimiser:: Minimiser(const matrix_of<Real> &usrG,
 G(usrG),
 dim( check_dims(G) ),
 Q(usrQ),
-arrays(5),
+arrays(6),
 b(  arrays.next_array() ),
 d(  arrays.next_array() ),
 a(  arrays.next_array() ),
 g(  arrays.next_array() ),
 s(  arrays.next_array() ),
+p(  arrays.next_array() ),
 count(0),
 final(0),
 neurone(0)
@@ -112,7 +114,7 @@ void Minimiser:: run()
 
     for(size_t i=dim;i>0;--i)
     {
-        a[i] = s[i] = 0;
+        a[i] = s[i] = 0;;
     }
 
     if(true)
@@ -125,8 +127,11 @@ void Minimiser:: run()
                 ans += Q(i,j) * b[j];
             }
             a[i] = ans;
+            p[i] = a[i];
         }
     }
+
+
 
     count        = 0;
     Real   H_old = compute_H();
@@ -146,9 +151,27 @@ void Minimiser:: run()
 #endif
         const Real dH = H_old - H_new;
         if(dH<=0)
+        {
+#if SAVE_H == 1
+            fp("#reached minimum\n");
+            for(size_t i=0;i<10;++i)
+            {
+                update();
+                fp("%u %.16lf %.15e\n", unsigned(++count), compute_H(), compute_err());
+            }
+#endif
             break;
+        }
+        else
+        {
+            // save better point
+            tao::set(p,a);
+        }
         H_old = H_new;
     }
+
+    // restore best point
+    tao::set(a,p);
     final = compute_H();
 }
 
