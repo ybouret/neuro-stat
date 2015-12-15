@@ -22,26 +22,27 @@ static inline size_t check_dims(const matrix_of<Real> &G)
 
 Minimiser:: Minimiser(const matrix_of<Real> &usrG) :
 G(usrG),
-n( check_dims(G) ),
+dim( check_dims(G) ),
 arrays(4),
 b(  arrays.next_array() ),
 d(  arrays.next_array() ),
 a(  arrays.next_array() ),
 g(  arrays.next_array() ),
-lnp( log(Real(n)) ),
-count(0)
+count(0),
+final(0),
+neurone(0)
 {
-    arrays.allocate(n);
+    arrays.allocate(dim);
 }
 
 
 
 void Minimiser:: update()
 {
-    for(size_t i=n;i>0;--i)
+    for(size_t i=dim;i>0;--i)
     {
         Real Di = 0;
-        for(size_t j=n;j>0;--j)
+        for(size_t j=dim;j>0;--j)
         {
             if(i!=j)
             {
@@ -74,11 +75,13 @@ Real Minimiser:: compute_H() const throw()
     Real H = 0;
     Real q = 0;
     Real p = 0;
-    for(size_t i=n;i>0;--i)
+    for(size_t i=dim;i>0;--i)
     {
         const Real ai = a[i];
         H += d[i] * Fabs( ai ) - b[i] * ai;
+
         q += g[i] * ai*ai;
+        
         Real tmp = 0;
         for(size_t j=1;j<i;++j)
         {
@@ -93,38 +96,48 @@ Real Minimiser:: compute_H() const throw()
 }
 
 
+#define SAVE_H 1
 
-
+#if SAVE_H == 1
 #include "yocto/ios/ocstream.hpp"
+#endif
 
 void Minimiser:: run()
 {
 
-    for(size_t i=n;i>0;--i)
+    for(size_t i=dim;i>0;--i)
     {
         a[i] = 0;
     }
     count        = 0;
     Real   H_old = compute_H();
 
-    //ios::wcstream fp("err.dat");
-    //fp("0 %g\n", H_old );
+#if SAVE_H == 1
+    const string filename = vformat( "H%u.dat", unsigned(neurone) );
+    ios::wcstream fp(filename);
+    fp("0 %g\n", H_old );
+#endif
     while(true)
     {
         ++count;
         update();
         const Real H_new = compute_H();
-        //fp("%u %g\n", unsigned(count), H_new );
+#if SAVE_H == 1
+        fp("%u %g\n", unsigned(count), H_new );
+#endif
         const Real dH = H_old - H_new;
-        //std::cerr << "H=" << H_new << ", dH=" << dH << std::endl;
         if(dH<=0)
             break;
         H_old = H_new;
     }
-    //std::cerr << "#count=" << count << std::endl;
+    final = compute_H();
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// using minimises in parallel
+//
 ////////////////////////////////////////////////////////////////////////////////
 Minimisers:: ~Minimisers() throw()
 {
@@ -136,6 +149,7 @@ Minimisers:: Minimisers(const matrix_of<Real> &usrG,
                         const matrix_of<Real> &usrMuA,
                         matrix_of<Real>       &usrA,
                         array<Real>           &usrCnt,
+                        array<Real>           &usrH,
                         const Real             usrGam,
                         threading::crew       *team) :
 num( team ? team->size : 1),
@@ -146,6 +160,7 @@ mu2(usrMu2),
 muA(usrMuA),
 a(usrA),
 count(usrCnt),
+H(usrH),
 gam(usrGam)
 {
 
@@ -159,11 +174,16 @@ gam(usrGam)
 
 void Minimisers:: compute( const threading::context &ctx ) throw()
 {
+    // get the corresponding minimiser
     Minimiser   &opt      = *mpv[ctx.indx];
+
+    // get the number of columns to process
     const size_t neurones = mu1.cols;
     size_t       i        = 1;
     size_t       length   = neurones;
     ctx.split(i, length);
+
+    // process each column
     for(;length>0;++i,--length)
     {
         opt.prepare(mu1, mu2, muA, i, gam);
@@ -173,6 +193,7 @@ void Minimisers:: compute( const threading::context &ctx ) throw()
             a(r,i) = opt.a[r];
         }
         count[i] = opt.count;
+        H[i]     = opt.final;
     }
 }
 

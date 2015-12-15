@@ -13,19 +13,21 @@ typedef many_arrays<Real, memory::global> ManyArrays;
 class Minimiser : public counted_object
 {
 public:
-    const matrix_of<Real> &G;
-    const size_t           n; //!< the dimension
-    ManyArrays             arrays;
+    const matrix_of<Real> &G;      //!< reference to the shared G matrix
+    const size_t           dim;    //!< the dimension
+    ManyArrays             arrays; //!< local memory
     array<Real>           &b;
     array<Real>           &d;
     array<Real>           &a;
     array<Real>           &g;
-    const Real             lnp;
-    size_t                 count;
-    
+    size_t                 count;   //!< #iteration for last run
+    Real                   final;   //!< final value
+    size_t                 neurone; //!< last processed neurone
+
     //! allocate memory
     explicit Minimiser(const matrix_of<Real> &usrG);
 
+    //! release all memory
     virtual ~Minimiser() throw();
 
     //! prepare b,d, and g for neurone i
@@ -39,13 +41,16 @@ public:
         assert(i>0);
         assert(i<=mu2.cols);
 
-        assert(n==mu2.rows);
-        assert(n==muA.rows);
+        assert(dim==mu2.rows);
+        assert(dim==muA.rows);
 
-        const Real glnp = gam*lnp;
-        const Real vfac = 2*glnp;
-        const Real afac = glnp/3;
-        for(size_t r=1;r<=n;++r)
+        const size_t neurones= mu1.cols;
+        const size_t params  = dim*neurones;
+        const Real   lnp     = math::Log( Real(params) );
+        const Real   glnp    = gam*lnp;
+        const Real   vfac    = 2*glnp;
+        const Real   afac    = glnp/3;
+        for(size_t r=1;r<=dim;++r)
         {
             b[r] = mu1(r,i);
             const Real v = mu2(r,i);
@@ -54,6 +59,8 @@ public:
             g[r] = G(r,r);
             if(g[r]<=0) g[r] = 1;
         }
+
+        neurone = i;
     }
 
 
@@ -82,10 +89,11 @@ public:
                          const matrix_of<Real> &usrMuA,
                          matrix_of<Real>       &usrA,
                          array<Real>           &usrCnt,
+                         array<Real>           &usrH,
                          const Real             usrGam,
                          threading::crew       *team);
 
-    const size_t   num;
+    const size_t   num; //!< #threads
 
     void  run(threading::crew *team);
 
@@ -103,6 +111,7 @@ public:
     const matrix_of<Real> &muA;
     matrix_of<Real>       &a;
     array<Real>           &count;
+    array<Real>           &H;
     Real                   gam;
 
 private:

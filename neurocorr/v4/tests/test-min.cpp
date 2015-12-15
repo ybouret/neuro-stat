@@ -83,8 +83,9 @@ YOCTO_UNIT_TEST_IMPL(min)
         matrix<Real> MuA(n,1);
         matrix<Real> a(n,Phi.neurones);
         vector<Real> count(Phi.neurones);
+        vector<Real> H(Phi.neurones);
 
-        Minimisers Opt(GG,Mu1,Mu2,MuA,a,count,1.1,&team);
+        Minimisers Opt(GG,Mu1,Mu2,MuA,a,count,H,1.1,&team);
 
         for(size_t m=1;m<=nm;++m)
         {
@@ -106,9 +107,9 @@ YOCTO_UNIT_TEST_IMPL(min)
 
             Opt.run(&team);
 
-            std::cerr << "a=" << Opt.a << std::endl;
+            std::cerr << "a="     << Opt.a     << std::endl;
             std::cerr << "count=" << Opt.count << std::endl;
-            
+            std::cerr << "H="     << Opt.H     << std::endl;
         }
         
         

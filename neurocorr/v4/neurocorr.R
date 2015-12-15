@@ -150,8 +150,15 @@ NeuroCorr_Compute <- function(dataNeur,numNeurones,scale,delta,K,boxes,grouping)
 ## OUTPUT
 ##______________________________________________________________________________
 ##
-## a dim x neurones matrix, each column
-## is the set of coefficients for each neurone
+## a list with :
+## |_$a    :  a dim x neurones matrix, each column
+##            is the set of coefficients for the corresponding neurone
+## |_$H    : the value of all the minima, one per neurone
+## |_$iter : the number of iteration for each neurone
+##______________________________________________________________________________
+##
+## REMARK: works in parallel as well...parallelism is on #neurones
+##______________________________________________________________________________
 ##
 ################################################################################
 NeuroCorr_Coeff <- function(G,mu1,mu2,muA,gam)

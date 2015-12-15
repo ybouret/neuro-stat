@@ -479,6 +479,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
     //__________________________________________________________________________
     RMatrix<Real> a(dim,neurones);
     RVector<Real> count(neurones);
+    RVector<Real> H(neurones);
 
     auto_ptr<threading::crew> team( NumThreads>0 ? new threading::crew(NumThreads,0,false) : NULL );
     threading::crew *para = team.__get();
@@ -491,10 +492,17 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
         Rprintf("[%s] SEQUENTIAL\n", __fn);
     }
     Rprintf("[%s] Minimising Criteria...\n",__fn);
-    Minimisers opt(G,Mu1,Mu2,MuA,a,count,gam,para);
+    Minimisers opt(G,Mu1,Mu2,MuA,a,count,H,gam,para);
     opt.run(para);
 
-    return *a;
+    static const char *ansNames[] = { "a", "H", "iter" };
+    RList              ans( ansNames, sizeof(ansNames)/sizeof(ansNames[0]) );
+
+    ans.set(0,a);
+    ans.set(1,H);
+    ans.set(2,count);
+
+    return *ans;
 }
 YOCTO_R_RETURN()
 
