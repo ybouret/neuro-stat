@@ -25,11 +25,12 @@ Minimiser:: Minimiser(const matrix_of<Real> &usrG,
 G(usrG),
 dim( check_dims(G) ),
 Q(usrQ),
-arrays(4),
+arrays(5),
 b(  arrays.next_array() ),
 d(  arrays.next_array() ),
 a(  arrays.next_array() ),
 g(  arrays.next_array() ),
+s(  arrays.next_array() ),
 count(0),
 final(0),
 neurone(0)
@@ -44,6 +45,7 @@ void Minimiser:: update()
 {
     for(size_t i=dim;i>0;--i)
     {
+        s[i] = a[i];
         Real Di = 0;
         for(size_t j=dim;j>0;--j)
         {
@@ -110,7 +112,7 @@ void Minimiser:: run()
 
     for(size_t i=dim;i>0;--i)
     {
-        a[i] = 0;
+        a[i] = s[i] = 0;
     }
 
     if(true)
@@ -132,7 +134,7 @@ void Minimiser:: run()
 #if SAVE_H == 1
     const string filename = vformat( "H%u.dat", unsigned(neurone) );
     ios::wcstream fp(filename);
-    fp("0 %g\n", H_old );
+    fp("0 %.16lf %.15e\n", H_old, compute_err() );
 #endif
     while(true)
     {
@@ -140,7 +142,7 @@ void Minimiser:: run()
         update();
         const Real H_new = compute_H();
 #if SAVE_H == 1
-        fp("%u %g\n", unsigned(count), H_new );
+        fp("%u %.16lf %.15e\n", unsigned(count), H_new, compute_err());
 #endif
         const Real dH = H_old - H_new;
         if(dH<=0)
@@ -148,6 +150,21 @@ void Minimiser:: run()
         H_old = H_new;
     }
     final = compute_H();
+}
+
+
+Real Minimiser:: compute_err() const throw()
+{
+    Real ans = 0;
+    for(size_t i=dim;i>0;--i)
+    {
+        const Real tmp = Fabs(a[i]-s[i]);
+        if(tmp>ans)
+        {
+            ans = tmp;
+        }
+    }
+    return ans;
 }
 
 

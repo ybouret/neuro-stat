@@ -21,6 +21,7 @@ public:
     array<Real>           &d;
     array<Real>           &a;
     array<Real>           &g;
+    array<Real>           &s;       //!< starting point
     size_t                 count;   //!< #iteration for last run
     Real                   final;   //!< final value
     size_t                 neurone; //!< last processed neurone
@@ -67,10 +68,11 @@ public:
 
 
     void update();
-
     Real compute_H() const throw();
-
     void run();
+
+    //! max(|a[i]-s[i]|)
+    Real compute_err() const throw();
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimiser);

@@ -500,7 +500,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
     RVector<Real> count(neurones);
     RVector<Real> H(neurones);
 
-    Rprintf("[%s] Computing Pseudo Inverse\n",__fn);
+    Rprintf("[%s] Computing (Pseudo-)Inverse\n",__fn);
     matrix<Real>  Q(dim,dim); // will be the pseudo inverse
     matrix<Real>  V(dim,dim); // eigenvectors
     vector<Real>  Lam(dim);   // eigenvalues
@@ -514,24 +514,20 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
 
     if( !symdiag<Real>::build(Q,Lam,V) )
     {
-        throw exception("Cannot factorize G");
+        throw exception("Cannot compute spectral decomposition");
     }
 
-    std::cerr << "Lam=" << Lam << std::endl;
 
     const size_t kerDim = symdiag<Real>::eiginv(Lam);
     if(kerDim)
     {
-        Rprintf("[%s] |ker(G)|= %u\n", __fn, unsigned(kerDim) );
+        Rprintf("[%s] dim(ker(G))= %u\n", __fn, unsigned(kerDim) );
     }
     else
     {
         Rprintf("[%s] G seems invertible\n", __fn);
     }
-    std::cerr << "iLam=" << Lam << std::endl;
     symdiag<Real>::compute(Q,Lam,V);
-    std::cerr << "G=" << G << ";" << std::endl;
-    std::cerr << "Q=" << Q << ";" << std::endl;
 
 
 
