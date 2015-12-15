@@ -88,7 +88,7 @@ YOCTO_UNIT_TEST_IMPL(min)
         vector<Real> count(Phi.neurones);
         vector<Real> H(Phi.neurones);
 
-        Minimisers Opt(GG,Mu1,Mu2,MuA,a,count,H,1.1,&team);
+        Minimisers Opt(GG,iG,Mu1,Mu2,MuA,a,count,H,1.1,&team);
 
         for(size_t m=1;m<=nm;++m)
         {
@@ -113,16 +113,19 @@ YOCTO_UNIT_TEST_IMPL(min)
                 throw exception("cannot symetrize G");
             }
 
-            symdiag<Real>::eigsrtA(lam,V);
-            const Real tol = numeric<Real>::epsilon * lam.size() * Fabs(lam[1]);
+            const size_t nker = symdiag<Real>::eiginv(lam);
+            if(nker>0)
+            {
+                std::cerr << "Found #ker=" << nker << std::endl;
+            }
+            symdiag<Real>::compute(iG,lam,V);
 
             Opt.run(&team);
 
             std::cerr << "a="     << Opt.a     << std::endl;
             std::cerr << "count=" << Opt.count << std::endl;
             std::cerr << "H="     << Opt.H     << std::endl;
-            std::cerr << "lam=" << lam << std::endl;
-            std::cerr << "tol=" << tol << std::endl;
+
         }
 
         

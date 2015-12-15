@@ -20,9 +20,11 @@ static inline size_t check_dims(const matrix_of<Real> &G)
     return G.rows;
 }
 
-Minimiser:: Minimiser(const matrix_of<Real> &usrG) :
+Minimiser:: Minimiser(const matrix_of<Real> &usrG,
+                      const matrix_of<Real> &usrQ) :
 G(usrG),
 dim( check_dims(G) ),
+Q(usrQ),
 arrays(4),
 b(  arrays.next_array() ),
 d(  arrays.next_array() ),
@@ -32,6 +34,7 @@ count(0),
 final(0),
 neurone(0)
 {
+    if(Q.cols!=dim||Q.rows!=dim) throw exception("Minimiser: invalid G pseudo inverse size");
     arrays.allocate(dim);
 }
 
@@ -109,6 +112,20 @@ void Minimiser:: run()
     {
         a[i] = 0;
     }
+
+    if(true)
+    {
+        for(size_t i=dim;i>0;--i)
+        {
+            Real ans = 0;
+            for(size_t j=dim;j>0;--j)
+            {
+                ans += Q(i,j) * b[j];
+            }
+            a[i] = ans;
+        }
+    }
+
     count        = 0;
     Real   H_old = compute_H();
 
@@ -144,6 +161,7 @@ Minimisers:: ~Minimisers() throw()
 }
 
 Minimisers:: Minimisers(const matrix_of<Real> &usrG,
+                        const matrix_of<Real> &usrQ,
                         const matrix_of<Real> &usrMu1,
                         const matrix_of<Real> &usrMu2,
                         const matrix_of<Real> &usrMuA,
@@ -155,6 +173,7 @@ Minimisers:: Minimisers(const matrix_of<Real> &usrG,
 num( team ? team->size : 1),
 mpv(num,as_capacity),
 G(usrG),
+Q(usrQ),
 mu1(usrMu1),
 mu2(usrMu2),
 muA(usrMuA),
@@ -166,7 +185,7 @@ gam(usrGam)
 
     for(size_t i=1;i<=num;++i)
     {
-        const MinPtr p( new Minimiser(G) );
+        const MinPtr p( new Minimiser(G,Q) );
         mpv.push_back(p);
     }
 }

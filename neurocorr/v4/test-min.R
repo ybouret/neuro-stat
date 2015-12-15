@@ -9,7 +9,7 @@ Nneur=8;
 scale=1e6;
 
 delta=0.005;
-K=4;
+K=2;
 
 ## Sequential Computation
 NeuroCorr_SetParallel(4);

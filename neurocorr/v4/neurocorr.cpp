@@ -415,6 +415,8 @@ YOCTO_R_RETURN()
 
 
 #include "minimiser.hpp"
+#include "yocto/math/core/symdiag.hpp"
+using namespace math;
 
 //==============================================================================
 //
@@ -440,6 +442,8 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
     const RMatrix<Real> Mu2( RMu2 );
     const RMatrix<Real> MuA( RMuA );
     const Real          gam = R2Scalar<Real>( Rgam );
+
+    Rprintf("[%s] Finding coefficients...\n", __fn);
 
     const size_t dim = G.rows;
     if(G.cols!=dim)
@@ -475,12 +479,8 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
 
     //__________________________________________________________________________
     //
-    // compute...
+    // Parallelism
     //__________________________________________________________________________
-    RMatrix<Real> a(dim,neurones);
-    RVector<Real> count(neurones);
-    RVector<Real> H(neurones);
-
     auto_ptr<threading::crew> team( NumThreads>0 ? new threading::crew(NumThreads,0,false) : NULL );
     threading::crew *para = team.__get();
     if(NumThreads)
@@ -491,8 +491,52 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
     {
         Rprintf("[%s] SEQUENTIAL\n", __fn);
     }
+
+    //__________________________________________________________________________
+    //
+    // algebra
+    //__________________________________________________________________________
+    RMatrix<Real> a(dim,neurones);
+    RVector<Real> count(neurones);
+    RVector<Real> H(neurones);
+
+    Rprintf("[%s] Computing Pseudo Inverse\n",__fn);
+    matrix<Real>  Q(dim,dim);
+    matrix<Real>  V(dim,dim);
+    vector<Real>  Lam(dim);
+    for(size_t i=dim;i>0;--i)
+    {
+        for(size_t j=dim;j>0;--j)
+        {
+            Q[i][j] = G[j][i]; // well, symetric, doesn't matter
+        }
+    }
+
+    if( !symdiag<Real>::build(Q,Lam,V) )
+    {
+        throw exception("Cannot factorize G");
+    }
+
+    std::cerr << "Lam=" << Lam << std::endl;
+
+    const size_t kerDim = symdiag<Real>::eiginv(Lam);
+    if(kerDim)
+    {
+        Rprintf("[%s] |ker(G)|= %u\n", __fn, unsigned(kerDim) );
+    }
+    else
+    {
+        Rprintf("[%s] G seems invertible\n", __fn);
+    }
+    std::cerr << "iLam=" << Lam << std::endl;
+    symdiag<Real>::build(Q,Lam,V);
+    std::cerr << "G=" << G << ";" << std::endl;
+    std::cerr << "Q=" << Q << ";" << std::endl;
+
+
+
     Rprintf("[%s] Minimising Criteria...\n",__fn);
-    Minimisers opt(G,Mu1,Mu2,MuA,a,count,H,gam,para);
+    Minimisers opt(G,Q,Mu1,Mu2,MuA,a,count,H,gam,para);
     opt.run(para);
 
     static const char *ansNames[] = { "a", "H", "iter" };

@@ -15,6 +15,7 @@ class Minimiser : public counted_object
 public:
     const matrix_of<Real> &G;      //!< reference to the shared G matrix
     const size_t           dim;    //!< the dimension
+    const matrix_of<Real> &Q;      //!< pseudo inverse for G
     ManyArrays             arrays; //!< local memory
     array<Real>           &b;
     array<Real>           &d;
@@ -25,7 +26,8 @@ public:
     size_t                 neurone; //!< last processed neurone
 
     //! allocate memory
-    explicit Minimiser(const matrix_of<Real> &usrG);
+    explicit Minimiser(const matrix_of<Real> &usrG,
+                       const matrix_of<Real> &usrQ);
 
     //! release all memory
     virtual ~Minimiser() throw();
@@ -84,6 +86,7 @@ public:
 
     virtual  ~Minimisers() throw();
     explicit  Minimisers(const matrix_of<Real> &usrG,
+                         const matrix_of<Real> &usrQ,
                          const matrix_of<Real> &usrMu1,
                          const matrix_of<Real> &usrMu2,
                          const matrix_of<Real> &usrMuA,
@@ -106,6 +109,7 @@ private:
 
 public:
     const matrix_of<Real> &G;
+    const matrix_of<Real> &Q;
     const matrix_of<Real> &mu1;
     const matrix_of<Real> &mu2;
     const matrix_of<Real> &muA;
