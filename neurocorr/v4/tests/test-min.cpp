@@ -78,6 +78,9 @@ YOCTO_UNIT_TEST_IMPL(min)
 
 
         matrix<Real> GG(n,n);
+        matrix<Real> iG(n,n); //!< pseudo inverse
+        matrix<Real> V(n,n);  //!< for symdiag
+        vector<Real> lam(n);  //!< for symdiag
         matrix<Real> Mu1(n,Phi.neurones);
         matrix<Real> Mu2(n,Phi.neurones);
         matrix<Real> MuA(n,1);
@@ -105,13 +108,23 @@ YOCTO_UNIT_TEST_IMPL(min)
                 }
             }
 
+            if( !symdiag<Real>::build(GG, lam, V) )
+            {
+                throw exception("cannot symetrize G");
+            }
+
+            symdiag<Real>::eigsrtA(lam,V);
+            const Real tol = numeric<Real>::epsilon * lam.size() * Fabs(lam[1]);
+
             Opt.run(&team);
 
             std::cerr << "a="     << Opt.a     << std::endl;
             std::cerr << "count=" << Opt.count << std::endl;
             std::cerr << "H="     << Opt.H     << std::endl;
+            std::cerr << "lam=" << lam << std::endl;
+            std::cerr << "tol=" << tol << std::endl;
         }
-        
+
         
         
     }
