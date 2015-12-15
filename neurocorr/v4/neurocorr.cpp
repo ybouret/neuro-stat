@@ -501,14 +501,14 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
     RVector<Real> H(neurones);
 
     Rprintf("[%s] Computing Pseudo Inverse\n",__fn);
-    matrix<Real>  Q(dim,dim);
-    matrix<Real>  V(dim,dim);
-    vector<Real>  Lam(dim);
+    matrix<Real>  Q(dim,dim); // will be the pseudo inverse
+    matrix<Real>  V(dim,dim); // eigenvectors
+    vector<Real>  Lam(dim);   // eigenvalues
     for(size_t i=dim;i>0;--i)
     {
         for(size_t j=dim;j>0;--j)
         {
-            Q[i][j] = G[j][i]; // well, symetric, doesn't matter
+            Q[i][j] = G[j][i]; // G is column major...
         }
     }
 
@@ -529,7 +529,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
         Rprintf("[%s] G seems invertible\n", __fn);
     }
     std::cerr << "iLam=" << Lam << std::endl;
-    symdiag<Real>::build(Q,Lam,V);
+    symdiag<Real>::compute(Q,Lam,V);
     std::cerr << "G=" << G << ";" << std::endl;
     std::cerr << "Q=" << Q << ";" << std::endl;
 
