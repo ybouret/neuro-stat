@@ -120,12 +120,18 @@ YOCTO_UNIT_TEST_IMPL(min)
             }
             symdiag<Real>::compute(iG,lam,V);
 
+            std::cerr << "First Algorithm..." << std::endl;
             Opt.run(&team);
 
             std::cerr << "a="     << Opt.a     << std::endl;
             std::cerr << "count=" << Opt.count << std::endl;
             std::cerr << "H="     << Opt.H     << std::endl;
 
+            std::cerr << "Second Algorithm..." << std::endl;
+            Opt.run2(&team);
+            std::cerr << "a="     << Opt.a     << std::endl;
+            std::cerr << "count=" << Opt.count << std::endl;
+            std::cerr << "H="     << Opt.H     << std::endl;
         }
 
         

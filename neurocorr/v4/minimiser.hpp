@@ -75,6 +75,10 @@ public:
     //! max(|a[i]-s[i]|)
     Real compute_err() const throw();
 
+    void update2();
+    void run2();
+
+
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimiser);
 
@@ -102,11 +106,14 @@ public:
     const size_t   num; //!< #threads
 
     void  run(threading::crew *team);
+    
+    void  run2(threading::crew *team);
 
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimisers);
     void compute( const threading::context &ctx ) throw();
+    void compute2( const threading::context &ctx ) throw();
 
     vector<MinPtr>         mpv;
 
