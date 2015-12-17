@@ -68,15 +68,16 @@ public:
     }
 
 
-    void update();
     Real compute_H() const throw();
+
     void run();
+    void update();
 
     //! max(|a[i]-s[i]|)
     Real compute_err() const throw();
 
-    Real update2(Real Horg);
-    void run2();
+    Real update_v2(Real Horg);
+    void run_v2();
 
 
 private:
@@ -100,20 +101,19 @@ public:
                          matrix_of<Real>       &usrA,
                          array<Real>           &usrCnt,
                          array<Real>           &usrH,
+                         array<Real>           &usrErr,
                          const Real             usrGam,
                          threading::crew       *team);
 
     const size_t   num; //!< #threads
 
     void  run(threading::crew *team);
-    
-    void  run2(threading::crew *team);
-
+    void  run_v2(threading::crew *team);
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimisers);
     void compute( const threading::context &ctx ) throw();
-    void compute2( const threading::context &ctx ) throw();
+    void compute_v2( const threading::context &ctx ) throw();
 
     vector<MinPtr>         mpv;
 
@@ -124,6 +124,7 @@ public:
     matrix_of<Real>       &a;
     array<Real>           &count;
     array<Real>           &H;
+    array<Real>           &err;
     Real                   gam;
 
 private:

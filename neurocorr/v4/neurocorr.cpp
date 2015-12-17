@@ -508,6 +508,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
     RMatrix<Real> a(dim,neurones);
     RVector<Real> count(neurones);
     RVector<Real> H(neurones);
+    RVector<Real> err(neurones);
 
     Rprintf("[%s] Computing (Pseudo-)Inverse\n",__fn);
     matrix<Real>  Q(dim,dim); // will be the pseudo inverse
@@ -541,15 +542,17 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
 
 
     Rprintf("[%s] Minimising Criteria...\n",__fn);
-    Minimisers opt(G,Q,Mu1,Mu2,MuA,a,count,H,gam,para);
-    opt.run2(para);
-
-    static const char *ansNames[] = { "a", "H", "iter" };
+    Minimisers opt(G,Q,Mu1,Mu2,MuA,a,count,H,err,gam,para);
+    opt.run_v2(para);
+    
+    static const char *ansNames[] = { "a", "H", "err", "iter" };
     RList              ans( ansNames, sizeof(ansNames)/sizeof(ansNames[0]) );
 
-    ans.set(0,a);
-    ans.set(1,H);
-    ans.set(2,count);
+    size_t idx=0;
+    ans.set(idx++,a);
+    ans.set(idx++,H);
+    ans.set(idx++,err);
+    ans.set(idx++,count);
 
     return *ans;
 }

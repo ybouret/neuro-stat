@@ -180,7 +180,7 @@ void Minimiser:: run()
 
 
 
-Real Minimiser:: update2(Real H_old)
+Real Minimiser:: update_v2(Real H_old)
 {
     Real H_new = H_old;
     for(size_t i=dim;i>0;--i)
@@ -257,7 +257,7 @@ Real Minimiser:: update2(Real H_old)
 
 
 
-void Minimiser:: run2()
+void Minimiser:: run_v2()
 {
     //__________________________________________________________________________
     //
@@ -271,14 +271,14 @@ void Minimiser:: run2()
     Real H_org = compute_H();
 
 #if SAVE_H == 1
-    const string filename = vformat( "newH%u.dat", unsigned(neurone) );
+    const string filename = vformat( "H%u.dat", unsigned(neurone) );
     ios::wcstream fp(filename);
     fp("0 %.16lf %.15e\n", H_org, compute_err() );
 #endif
     while(true)
     {
         ++count;
-        const Real H_new = update2(H_org);
+        const Real H_new = update_v2(H_org);
         const Real a_err = compute_err();
 #if SAVE_H == 1
         fp("%u %.16lf %.15e\n", unsigned(count), H_new, a_err);
@@ -326,6 +326,7 @@ Minimisers:: Minimisers(const matrix<Real>    &usrG,
                         matrix_of<Real>       &usrA,
                         array<Real>           &usrCnt,
                         array<Real>           &usrH,
+                        array<Real>           &usrErr,
                         const Real             usrGam,
                         threading::crew       *team) :
 num( team ? team->size : 1),
@@ -336,6 +337,7 @@ muA(usrMuA),
 a(usrA),
 count(usrCnt),
 H(usrH),
+err(usrErr),
 gam(usrGam)
 {
 
@@ -382,7 +384,7 @@ void  Minimisers:: run(threading::crew *team)
 
 }
 
-void Minimisers:: compute2( const threading::context &ctx ) throw()
+void Minimisers:: compute_v2( const threading::context &ctx ) throw()
 {
     // get the corresponding minimiser
     Minimiser   &opt      = *mpv[ctx.indx];
@@ -397,21 +399,22 @@ void Minimisers:: compute2( const threading::context &ctx ) throw()
     for(;length>0;++i,--length)
     {
         opt.prepare(mu1, mu2, muA, i, gam);
-        opt.run2();
+        opt.run_v2();
         for(size_t r=a.rows;r>0;--r)
         {
             a(r,i) = opt.a[r];
         }
         count[i] = opt.count;
         H[i]     = opt.final;
+        err[i]   = opt.compute_err();
     }
 }
 
 
-void  Minimisers:: run2(threading::crew *team)
+void  Minimisers:: run_v2(threading::crew *team)
 {
     threading::kernel_executor &kExec = team ? *static_cast<threading::kernel_executor*>(team) : kSeq;
-    threading::kernel           kMini(this, & Minimisers::compute2);
+    threading::kernel           kMini(this, & Minimisers::compute_v2);
     
     kExec(kMini);
 }

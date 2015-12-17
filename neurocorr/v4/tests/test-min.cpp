@@ -87,8 +87,9 @@ YOCTO_UNIT_TEST_IMPL(min)
         matrix<Real> a(n,Phi.neurones);
         vector<Real> count(Phi.neurones);
         vector<Real> H(Phi.neurones);
+        vector<Real> err(Phi.neurones);
 
-        Minimisers Opt(GG,iG,Mu1,Mu2,MuA,a,count,H,1.1,&team);
+        Minimisers Opt(GG,iG,Mu1,Mu2,MuA,a,count,H,err,1.1,&team);
 
         for(size_t m=1;m<=nm;++m)
         {
@@ -120,15 +121,17 @@ YOCTO_UNIT_TEST_IMPL(min)
             }
             symdiag<Real>::compute(iG,lam,V);
 
+#if 0
             std::cerr << "First Algorithm..." << std::endl;
             Opt.run(&team);
 
             std::cerr << "a="     << Opt.a     << std::endl;
             std::cerr << "count=" << Opt.count << std::endl;
             std::cerr << "H="     << Opt.H     << std::endl;
+#endif
 
-            std::cerr << "Second Algorithm..." << std::endl;
-            Opt.run2(&team);
+            std::cerr << "Algorithm V2" << std::endl;
+            Opt.run_v2(&team);
             std::cerr << "a="     << Opt.a     << std::endl;
             std::cerr << "count=" << Opt.count << std::endl;
             std::cerr << "H="     << Opt.H     << std::endl;
