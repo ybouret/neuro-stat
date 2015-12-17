@@ -75,7 +75,7 @@ public:
     //! max(|a[i]-s[i]|)
     Real compute_err() const throw();
 
-    void update2();
+    Real update2(Real Horg);
     void run2();
 
 

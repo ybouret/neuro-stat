@@ -75,48 +75,6 @@ void Minimiser:: update()
     }
 }
 
-void Minimiser:: update2()
-{
-    for(size_t i=dim;i>0;--i)
-    {
-        const Real H_old = compute_H();
-        s[i] = a[i];
-        Real Di = 0;
-        for(size_t j=dim;j>0;--j)
-        {
-            if(i!=j)
-            {
-                Di += G(i,j) * a[j];
-            }
-        }
-        Di = b[i] - Di;
-        const Real di = d[i];
-
-        if(Di>di)
-        {
-            a[i] = (Di-di)/g[i];
-            goto CHECK;
-        }
-
-        if(Di<-di)
-        {
-            a[i] = (Di+di)/g[i];
-            goto CHECK;
-        }
-
-        a[i] = 0;
-    CHECK:
-        const double H_new = compute_H();
-        if(H_new>H_old)
-        {
-            // come back !
-            a[i] = s[i];
-        }
-    }
-
-}
-
-
 
 Real Minimiser:: compute_H() const throw()
 {
@@ -216,6 +174,55 @@ void Minimiser:: run()
     final = compute_H();
 }
 
+
+
+Real Minimiser:: update2(Real H_old)
+{
+    Real H_new = H_old;
+    for(size_t i=dim;i>0;--i)
+    {
+        s[i] = a[i];
+        Real Di = 0;
+        for(size_t j=dim;j>0;--j)
+        {
+            if(i!=j)
+            {
+                Di += G(i,j) * a[j];
+            }
+        }
+        Di = b[i] - Di;
+        const Real di = d[i];
+
+        if(Di>di)
+        {
+            a[i] = (Di-di)/g[i];
+            goto CHECK;
+        }
+
+        if(Di<-di)
+        {
+            a[i] = (Di+di)/g[i];
+            goto CHECK;
+        }
+
+        a[i] = 0;
+    CHECK:
+        H_new = compute_H();
+        if(H_new>H_old)
+        {
+            a[i] = s[i];
+        }
+        else
+        {
+            H_old = H_new;
+        }
+    }
+    return H_new;
+}
+
+
+
+
 void Minimiser:: run2()
 {
     for(size_t i=dim;i>0;--i)
@@ -232,8 +239,7 @@ void Minimiser:: run2()
     while(true)
     {
         ++count;
-        update2();
-        const Real H_new = compute_H();
+        const Real H_new = update2(H_org);
 #if SAVE_H == 1
         fp("%u %.16lf %.15e\n", unsigned(count), H_new, compute_err());
 #endif
@@ -244,7 +250,7 @@ void Minimiser:: run2()
         }
         H_org = H_new;
     }
-    final = compute_H();
+    final = H_org;
 }
 
 
