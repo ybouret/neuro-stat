@@ -437,7 +437,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
     //
     // Get/Check args..
     //__________________________________________________________________________
-    const RMatrix<Real> G( RG );
+    const RMatrix<Real> rG( RG );
     const RMatrix<Real> Mu1( RMu1 );
     const RMatrix<Real> Mu2( RMu2 );
     const RMatrix<Real> MuA( RMuA );
@@ -445,10 +445,19 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
 
     Rprintf("[%s] Finding coefficients...\n", __fn);
 
-    const size_t dim = G.rows;
-    if(G.cols!=dim)
+    const size_t dim = rG.rows;
+    if(rG.cols!=dim)
     {
         throw exception("[%s] G is not square", __fn );
+    }
+
+    matrix<Real> G(dim,dim);
+    for(size_t i=dim;i>0;--i)
+    {
+        for(size_t j=dim;j>0;--j)
+        {
+            G[i][j] = rG[j][i];
+        }
     }
 
     if(Mu1.rows!=dim)
@@ -533,7 +542,7 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
 
     Rprintf("[%s] Minimising Criteria...\n",__fn);
     Minimisers opt(G,Q,Mu1,Mu2,MuA,a,count,H,gam,para);
-    opt.run(para);
+    opt.run2(para);
 
     static const char *ansNames[] = { "a", "H", "iter" };
     RList              ans( ansNames, sizeof(ansNames)/sizeof(ansNames[0]) );

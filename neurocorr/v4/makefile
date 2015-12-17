@@ -18,5 +18,5 @@ default:
 	@R CMD SHLIB -c --preclean -o neurocorr$(DYN_EXT) $(C_SRCS) $(LDFLAGS)
 
 clean:
-	@rm -f neurocorr.so neurocorr.dll Rplots.pdf *.o *.obj H*.dat
+	@rm -f neurocorr.so neurocorr.dll Rplots.pdf *.o *.obj H*.dat newH*.dat
 

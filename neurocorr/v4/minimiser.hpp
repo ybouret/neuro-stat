@@ -13,23 +13,23 @@ typedef many_arrays<Real, memory::global> ManyArrays;
 class Minimiser : public counted_object
 {
 public:
-    const matrix_of<Real> &G;      //!< reference to the shared G matrix
-    const size_t           dim;    //!< the dimension
-    const matrix_of<Real> &Q;      //!< pseudo inverse for G
-    ManyArrays             arrays; //!< local memory
-    array<Real>           &b;
-    array<Real>           &d;
-    array<Real>           &a;
-    array<Real>           &g;
-    array<Real>           &s;       //!< saving last parameters;
-    array<Real>           &p;       //!< best point
-    size_t                 count;   //!< #iteration for last run
-    Real                   final;   //!< final value
-    size_t                 neurone; //!< last processed neurone
+    const matrix<Real> &G;       //!< reference to the shared G matrix
+    const size_t        dim;     //!< the dimension
+    const matrix<Real> &Q;       //!< pseudo inverse for G
+    ManyArrays          arrays;  //!< local memory
+    array<Real>        &b;       //!< copy of b vector
+    array<Real>        &d;       //!< d vector, MUST be prepared
+    array<Real>        &a;       //!< current set of variables
+    array<Real>        &g;       //!< diagonal part of G
+    array<Real>        &s;       //!< saving last parameters;
+    array<Real>        &p;       //!< best point
+    size_t              count;   //!< #iteration for last run
+    Real                final;   //!< final value
+    size_t              neurone; //!< last processed neurone
 
     //! allocate memory
-    explicit Minimiser(const matrix_of<Real> &usrG,
-                       const matrix_of<Real> &usrQ);
+    explicit Minimiser(const matrix<Real> &usrG,
+                       const matrix<Real> &usrQ);
 
     //! release all memory
     virtual ~Minimiser() throw();
@@ -92,8 +92,8 @@ public:
     typedef arc_ptr<Minimiser> MinPtr;
 
     virtual  ~Minimisers() throw();
-    explicit  Minimisers(const matrix_of<Real> &usrG,
-                         const matrix_of<Real> &usrQ,
+    explicit  Minimisers(const matrix<Real>    &usrG,
+                         const matrix<Real>    &usrQ,
                          const matrix_of<Real> &usrMu1,
                          const matrix_of<Real> &usrMu2,
                          const matrix_of<Real> &usrMuA,
@@ -118,8 +118,6 @@ private:
     vector<MinPtr>         mpv;
 
 public:
-    const matrix_of<Real> &G;
-    const matrix_of<Real> &Q;
     const matrix_of<Real> &mu1;
     const matrix_of<Real> &mu2;
     const matrix_of<Real> &muA;
