@@ -70,13 +70,19 @@ public:
 
     Real compute_H() const throw();
 
-    void run();
-    void update();
+    
 
     //! max(|a[i]-s[i]|)
     Real compute_err() const throw();
 
+    //! update parameters with current H = Horg
+    /**
+     The update can never return a greater value.
+     \return a better Horg, with the updated parameters in a
+     */
     Real update_v2(Real Horg);
+
+    //! initialize and run until convergence
     void run_v2();
 
 
@@ -107,12 +113,10 @@ public:
 
     const size_t   num; //!< #threads
 
-    void  run(threading::crew *team);
     void  run_v2(threading::crew *team);
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimisers);
-    void compute( const threading::context &ctx ) throw();
     void compute_v2( const threading::context &ctx ) throw();
 
     vector<MinPtr>         mpv;

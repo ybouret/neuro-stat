@@ -42,7 +42,7 @@ neurone(0)
 }
 
 
-
+#if 0
 void Minimiser:: update()
 {
     for(size_t i=dim;i>0;--i)
@@ -74,7 +74,7 @@ void Minimiser:: update()
         a[i] = 0;
     }
 }
-
+#endif
 
 Real Minimiser:: compute_H() const throw()
 {
@@ -111,6 +111,7 @@ Real Minimiser:: compute_H() const throw()
 #include "yocto/ios/ocstream.hpp"
 #endif
 
+#if 0
 void Minimiser:: run()
 {
 
@@ -177,6 +178,7 @@ void Minimiser:: run()
     tao::set(a,p);
     final = compute_H();
 }
+#endif
 
 
 
@@ -348,7 +350,7 @@ gam(usrGam)
     }
 }
 
-
+#if 0
 void Minimisers:: compute( const threading::context &ctx ) throw()
 {
     // get the corresponding minimiser
@@ -383,13 +385,21 @@ void  Minimisers:: run(threading::crew *team)
 
 
 }
+#endif
+
 
 void Minimisers:: compute_v2( const threading::context &ctx ) throw()
 {
+    //__________________________________________________________________________
+    //
     // get the corresponding minimiser
+    //__________________________________________________________________________
     Minimiser   &opt      = *mpv[ctx.indx];
 
+    //__________________________________________________________________________
+    //
     // get the number of columns to process
+    //__________________________________________________________________________
     const size_t neurones = mu1.cols;
     size_t       i        = 1;
     size_t       length   = neurones;

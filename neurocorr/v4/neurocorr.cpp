@@ -420,7 +420,7 @@ using namespace math;
 
 //==============================================================================
 //
-// building matrices
+// building coefficients
 //
 //==============================================================================
 YOCTO_R_FUNCTION(NeuroCorr_Coeff,
@@ -435,7 +435,9 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
 
     //__________________________________________________________________________
     //
+    //
     // Get/Check args..
+    //
     //__________________________________________________________________________
     const RMatrix<Real> rG( RG );
     const RMatrix<Real> Mu1( RMu1 );
@@ -488,7 +490,9 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
 
     //__________________________________________________________________________
     //
+    //
     // Parallelism
+    //
     //__________________________________________________________________________
     auto_ptr<threading::crew> team( NumThreads>0 ? new threading::crew(NumThreads,0,false) : NULL );
     threading::crew *para = team.__get();
@@ -503,14 +507,27 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
 
     //__________________________________________________________________________
     //
+    //
     // algebra
+    //
     //__________________________________________________________________________
+
+    //__________________________________________________________________________
+    //
+    // returned to R
+    //__________________________________________________________________________
+
     RMatrix<Real> a(dim,neurones);
     RVector<Real> count(neurones);
     RVector<Real> H(neurones);
     RVector<Real> err(neurones);
 
-    Rprintf("[%s] Computing (Pseudo-)Inverse\n",__fn);
+    Rprintf("[%s] Decomposing G\n",__fn);
+
+    //__________________________________________________________________________
+    //
+    //local memory
+    //__________________________________________________________________________
     matrix<Real>  Q(dim,dim); // will be the pseudo inverse
     matrix<Real>  V(dim,dim); // eigenvectors
     vector<Real>  Lam(dim);   // eigenvalues
@@ -528,6 +545,10 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
     }
 
 
+    //__________________________________________________________________________
+    //
+    //numeric inversion of eigenvalues
+    //__________________________________________________________________________
     const size_t kerDim = symdiag<Real>::eiginv(Lam);
     if(kerDim)
     {
@@ -537,14 +558,28 @@ YOCTO_R_FUNCTION(NeuroCorr_Coeff,
     {
         Rprintf("[%s] G seems invertible\n", __fn);
     }
+
+    //__________________________________________________________________________
+    //
+    // pseudo inverse if necessary
+    //__________________________________________________________________________
     symdiag<Real>::compute(Q,Lam,V);
 
 
-
-    Rprintf("[%s] Minimising Criteria...\n",__fn);
+    //__________________________________________________________________________
+    //
+    // run minimisers
+    //__________________________________________________________________________
+    Rprintf("[%s] Minimising Criteria: please wait...\n",__fn);
     Minimisers opt(G,Q,Mu1,Mu2,MuA,a,count,H,err,gam,para);
     opt.run_v2(para);
-    
+
+    //__________________________________________________________________________
+    //
+    //
+    // Returning results to R
+    //
+    //__________________________________________________________________________
     static const char *ansNames[] = { "a", "H", "err", "iter" };
     RList              ans( ansNames, sizeof(ansNames)/sizeof(ansNames[0]) );
 
