@@ -279,11 +279,12 @@ void Minimiser:: run2()
     {
         ++count;
         const Real H_new = update2(H_org);
+        const Real a_err = compute_err();
 #if SAVE_H == 1
-        fp("%u %.16lf %.15e\n", unsigned(count), H_new, compute_err());
+        fp("%u %.16lf %.15e\n", unsigned(count), H_new, a_err);
 #endif
         const Real dH = H_org - H_new;
-        if(dH<=0)
+        if(dH<=0&&a_err<=0)
         {
             break;
         }
