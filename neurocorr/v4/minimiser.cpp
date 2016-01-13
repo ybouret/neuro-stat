@@ -105,7 +105,7 @@ Real Minimiser:: compute_H() const throw()
 }
 
 
-#define SAVE_H 1
+#define SAVE_H 0
 
 #if SAVE_H == 1
 #include "yocto/ios/ocstream.hpp"
