@@ -69,11 +69,6 @@ Real Minimiser:: compute_H() const throw()
 }
 
 
-#define SAVE_H 0
-
-#if SAVE_H == 1
-#include "yocto/ios/ocstream.hpp"
-#endif
 
 void Minimiser:: update_coordinate(const size_t i) throw()
 {
@@ -161,6 +156,11 @@ Real Minimiser:: update_slow(Real H_old)
     return H_new;
 }
 
+#define SAVE_H 0
+
+#if SAVE_H == 1
+#include "yocto/ios/ocstream.hpp"
+#endif
 
 
 void Minimiser:: run()
@@ -184,16 +184,47 @@ void Minimiser:: run()
 
     //__________________________________________________________________________
     //
-    // global decrease
+    // fast look up
     //__________________________________________________________________________
+    while(true)
+    {
+        //______________________________________________________________________
+        //
+        // try one sweep
+        //______________________________________________________________________
+        for(size_t i=dim;i>0;--i)
+        {
+            update_coordinate(i);
+        }
+        const Real H_new = compute_H();
+        if(H_new>=H_org)
+        {
+            // reject and break: restore previous coordinates
+            tao::set(a,s);
+            break;
+        }
+        else
+        {
+            // accept and go one
+            ++count;
+            H_org = H_new;
+#if SAVE_H == 1
+            fp("%u %.16lf %.15e\n", unsigned(count), H_new, compute_err());
+#endif
+        }
+    }
 
+    //__________________________________________________________________________
+    //
+    // slow correction
+    //__________________________________________________________________________
     while(true)
     {
         ++count;
         const Real H_new = update_slow(H_org);
         const Real a_err = compute_err();
 #if SAVE_H == 1
-        fp("%u %.16lf %.15e\n", unsigned(count), H_new, a_err);
+        fp("%u %.16lf %.15e\n", unsigned(count+10), H_new, a_err);
 #endif
         const Real dH = H_org - H_new;
         if(dH<=0&&a_err<=0)
