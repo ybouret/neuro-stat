@@ -54,11 +54,12 @@ public:
         const Real   glnp    = gam*lnp;
         const Real   vfac    = 2*glnp;
         const Real   afac    = glnp/3;
+
         for(size_t r=1;r<=dim;++r)
         {
-            b[r] = mu1(r,i);
             const Real v = mu2(r,i);
             const Real A = muA(r,1);
+            b[r] = mu1(r,i);
             d[r] = math::Sqrt(vfac*v)+afac*A;
             g[r] = G(r,r);
             if(g[r]<=0) g[r] = 1;
@@ -75,15 +76,24 @@ public:
     //! max(|a[i]-s[i]|)
     Real compute_err() const throw();
 
+    
+    
     //! update parameters with current H = Horg
     /**
      The update can never return a greater value.
      \return a better Horg, with the updated parameters in a
      */
-    Real update_v2(Real Horg);
+    Real update_slow(Real Horg);
+
 
     //! initialize and run until convergence
-    void run_v2();
+    void run();
+
+    //! algorithm to update one coordinate
+    /**
+     old coordinate is backed up in s[i]
+     */
+    void update_coordinate(const size_t i) throw();
 
 
 private:
@@ -117,7 +127,7 @@ public:
 
 private:
     YOCTO_DISABLE_COPY_AND_ASSIGN(Minimisers);
-    void compute_v2( const threading::context &ctx ) throw();
+    void compute( const threading::context &ctx ) throw();
 
     vector<MinPtr>         mpv;
 

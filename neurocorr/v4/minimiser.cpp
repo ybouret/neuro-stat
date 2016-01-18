@@ -1,6 +1,4 @@
 #include "minimiser.hpp"
-//#include "yocto/math/opt/bracket.hpp"
-//#include "yocto/math/opt/minimize.hpp"
 #include "yocto/math/core/tao.hpp"
 
 using namespace math;
@@ -42,40 +40,6 @@ neurone(0)
 }
 
 
-#if 0
-void Minimiser:: update()
-{
-    for(size_t i=dim;i>0;--i)
-    {
-        s[i] = a[i];
-        Real Di = 0;
-        for(size_t j=dim;j>0;--j)
-        {
-            if(i!=j)
-            {
-                Di += G(i,j) * a[j];
-            }
-        }
-        Di = b[i] - Di;
-        const Real di = d[i];
-
-        if(Di>di)
-        {
-            a[i] = (Di-di)/g[i];
-            continue;
-        }
-
-        if(Di<-di)
-        {
-            a[i] = (Di+di)/g[i];
-            continue;
-        }
-
-        a[i] = 0;
-    }
-}
-#endif
-
 Real Minimiser:: compute_H() const throw()
 {
     Real H = 0;
@@ -111,109 +75,50 @@ Real Minimiser:: compute_H() const throw()
 #include "yocto/ios/ocstream.hpp"
 #endif
 
-#if 0
-void Minimiser:: run()
+void Minimiser:: update_coordinate(const size_t i) throw()
 {
+    assert(i>0);
+    assert(i<=dim);
 
-    for(size_t i=dim;i>0;--i)
-    {
-        a[i] = s[i] = p[i] = 0;
-    }
+    const array<Real> &Gi = G[i];
+    // back up old coordinate
+    s[i] = a[i];
 
-    if(false)
+    // applu algorithm
+    Real Di = 0;
+    for(size_t j=dim;j>0;--j)
     {
-        for(size_t i=dim;i>0;--i)
+        if(i!=j)
         {
-            Real ans = 0;
-            const array<Real> &Qi = Q[i];
-            for(size_t j=dim;j>0;--j)
-            {
-                ans += Qi[j] * b[j];
-            }
-            a[i] = ans;
-            p[i] = a[i];
+            Di += Gi[j] * a[j];
         }
     }
+    Di = b[i] - Di;
+    const Real di = d[i];
 
-
-
-    count        = 0;
-    Real   H_old = compute_H();
-
-#if SAVE_H == 1
-    const string filename = vformat( "H%u.dat", unsigned(neurone) );
-    ios::wcstream fp(filename);
-    fp("0 %.16lf %.15e\n", H_old, compute_err() );
-#endif
-    while(true)
+    if(Di>di)
     {
-        ++count;
-        update();
-        const Real H_new = compute_H();
-#if SAVE_H == 1
-        fp("%u %.16lf %.15e\n", unsigned(count), H_new, compute_err());
-#endif
-        const Real dH = H_old - H_new;
-        if(dH<=0)
-        {
-#if SAVE_H == 1
-            fp("#reached minimum\n");
-            for(size_t i=0;i<10;++i)
-            {
-                update();
-                fp("%u %.16lf %.15e\n", unsigned(++count), compute_H(), compute_err());
-            }
-#endif
-            break;
-        }
-        else
-        {
-            // save better point
-            tao::set(p,a);
-        }
-        H_old = H_new;
+        a[i] = (Di-di)/g[i];
+        return;
     }
 
-    // restore best point
-    tao::set(a,p);
-    final = compute_H();
+    if(Di<-di)
+    {
+        a[i] = (Di+di)/g[i];
+        return;
+    }
+
+    a[i] = 0;
+
 }
-#endif
 
 
-
-Real Minimiser:: update_v2(Real H_old)
+Real Minimiser:: update_slow(Real H_old)
 {
     Real H_new = H_old;
     for(size_t i=dim;i>0;--i)
     {
-        const array<Real> &Gi = G[i];
-        s[i] = a[i];
-        Real Di = 0;
-        for(size_t j=dim;j>0;--j)
-        {
-            if(i!=j)
-            {
-                Di += Gi[j] * a[j];
-            }
-        }
-        Di = b[i] - Di;
-        const Real di = d[i];
-
-        if(Di>di)
-        {
-            a[i] = (Di-di)/g[i];
-            goto CHECK;
-        }
-
-        if(Di<-di)
-        {
-            a[i] = (Di+di)/g[i];
-            goto CHECK;
-        }
-
-        a[i] = 0;
-    CHECK:
+        update_coordinate(i);
         H_new = compute_H();
         if(H_new < H_old )
         {
@@ -258,8 +163,7 @@ Real Minimiser:: update_v2(Real H_old)
 
 
 
-
-void Minimiser:: run_v2()
+void Minimiser:: run()
 {
     //__________________________________________________________________________
     //
@@ -277,10 +181,16 @@ void Minimiser:: run_v2()
     ios::wcstream fp(filename);
     fp("0 %.16lf %.15e\n", H_org, compute_err() );
 #endif
+
+    //__________________________________________________________________________
+    //
+    // global decrease
+    //__________________________________________________________________________
+
     while(true)
     {
         ++count;
-        const Real H_new = update_v2(H_org);
+        const Real H_new = update_slow(H_org);
         const Real a_err = compute_err();
 #if SAVE_H == 1
         fp("%u %.16lf %.15e\n", unsigned(count), H_new, a_err);
@@ -350,66 +260,33 @@ gam(usrGam)
     }
 }
 
-#if 0
+
+
 void Minimisers:: compute( const threading::context &ctx ) throw()
 {
+    //__________________________________________________________________________
+    //
     // get the corresponding minimiser
+    //__________________________________________________________________________
     Minimiser   &opt      = *mpv[ctx.indx];
 
+    //__________________________________________________________________________
+    //
     // get the number of columns to process
+    //__________________________________________________________________________
     const size_t neurones = mu1.cols;
     size_t       i        = 1;
     size_t       length   = neurones;
     ctx.split(i, length);
 
+    //__________________________________________________________________________
+    //
     // process each column
+    //__________________________________________________________________________
     for(;length>0;++i,--length)
     {
         opt.prepare(mu1, mu2, muA, i, gam);
         opt.run();
-        for(size_t r=a.rows;r>0;--r)
-        {
-            a(r,i) = opt.a[r];
-        }
-        count[i] = opt.count;
-        H[i]     = opt.final;
-    }
-}
-
-void  Minimisers:: run(threading::crew *team)
-{
-    threading::kernel_executor &kExec = team ? *static_cast<threading::kernel_executor*>(team) : kSeq;
-    threading::kernel           kMini(this, & Minimisers::compute);
-
-    kExec(kMini);
-
-
-}
-#endif
-
-
-void Minimisers:: compute_v2( const threading::context &ctx ) throw()
-{
-    //__________________________________________________________________________
-    //
-    // get the corresponding minimiser
-    //__________________________________________________________________________
-    Minimiser   &opt      = *mpv[ctx.indx];
-
-    //__________________________________________________________________________
-    //
-    // get the number of columns to process
-    //__________________________________________________________________________
-    const size_t neurones = mu1.cols;
-    size_t       i        = 1;
-    size_t       length   = neurones;
-    ctx.split(i, length);
-
-    // process each column
-    for(;length>0;++i,--length)
-    {
-        opt.prepare(mu1, mu2, muA, i, gam);
-        opt.run_v2();
         for(size_t r=a.rows;r>0;--r)
         {
             a(r,i) = opt.a[r];
@@ -424,7 +301,7 @@ void Minimisers:: compute_v2( const threading::context &ctx ) throw()
 void  Minimisers:: run_v2(threading::crew *team)
 {
     threading::kernel_executor &kExec = team ? *static_cast<threading::kernel_executor*>(team) : kSeq;
-    threading::kernel           kMini(this, & Minimisers::compute_v2);
+    threading::kernel           kMini(this, & Minimisers::compute);
     
     kExec(kMini);
 }
