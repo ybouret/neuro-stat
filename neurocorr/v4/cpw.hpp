@@ -5,7 +5,7 @@
 #include "yocto/container/tuple.hpp"
 
 //! coordinates for a Constant PieceWise function
-YOCTO_PAIR_DECL(coord,const Unit,tau,const Unit,value);
+YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,coord,const Unit,tau,const Unit,value);
 friend inline bool operator==(const coord &lhs, const coord &rhs) throw()
 {
     return (lhs.tau == rhs.tau) && (lhs.value==rhs.value);
@@ -19,7 +19,7 @@ YOCTO_SUPPORT_C_STYLE_OPS(coord);
 
 
 //! moments collector for computation
-YOCTO_PAIR_DECL(Moments,Unit,mu1,Unit,mu2);
+YOCTO_PAIR_DECL(YOCTO_TUPLE_STANDARD,Moments,Unit,mu1,Unit,mu2);
 inline Moments() throw() : mu1(0), mu2(0) {}
 inline friend bool operator==(const Moments &lhs,const Moments &rhs) throw()
 {
